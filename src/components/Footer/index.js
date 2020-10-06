@@ -1,36 +1,59 @@
 import React from "react";
-import { MDBCol, MDBContainer, MDBRow, MDBFooter } from "mdbreact";
+import { MDBContainer, MDBFooter } from "mdbreact";
 import "./footer.css"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCreativeCommons,
+    faCreativeCommonsNc,
+    faCreativeCommonsBy,
+    faInstagram,
+    faFacebook,
+    faTwitter,
+    faDiscord,
+    faYoutube} from '@fortawesome/free-brands-svg-icons'
 
 const Footer = () => {
     return (
-        <MDBFooter color="green" className="font-small pt-4 mt-4 footer">
-            <MDBContainer fluid className="text-center text-md-left">
-                <MDBRow className="flex-center">
-
-                </MDBRow>
-            </MDBContainer>
+        <MDBFooter color="stylish-color-dark" className="page-footer font-small pt-4 mt-4 footer">
+            <div className="text-center">
+                <ul className="list-unstyled list-inline">
+                    <li className="list-inline-item">
+                        <a className=" btn-sm btn-dribbble mx-1" href="https://instagram.com">
+                            <FontAwesomeIcon icon={faInstagram} size="3x" className="hoverable" />
+                        </a>
+                    </li>
+                    <li className="list-inline-item">
+                        <a className=" btn-sm btn-dribbble mx-1" href="https://twitter.com">
+                            <FontAwesomeIcon icon={faTwitter} size="3x" className="hoverable" />
+                        </a>
+                    </li>
+                    <li className="list-inline-item">
+                        <a className=" btn-sm btn-dribbble mx-1" href="https://discord.com">
+                            <FontAwesomeIcon icon={faDiscord} size="3x" className="hoverable" />
+                        </a>
+                    </li>
+                    <li className="list-inline-item">
+                        <a className=" btn-sm btn-dribbble mx-1" href="https://youtube.com">
+                            <FontAwesomeIcon icon={faYoutube} size="3x" className="hoverable" />
+                        </a>
+                    </li>
+                    <li className="list-inline-item">
+                        <a className=" btn-sm btn-dribbble mx-1" href="https://facebook.com">
+                            <FontAwesomeIcon icon={faFacebook} size="3x" className="hoverable"  />
+                        </a>
+                    </li>
+                </ul>
+            </div>
             <div className="footer-copyright text-center py-3">
                 <MDBContainer fluid>
-                    <p
-                        // xmlns:dct="http://purl.org/dc/terms/" xmlns:cc="http://creativecommons.org/ns#"
-                        className="license-text">
                         <a rel="cc:attributionURL" property="dct:title" href="https://bsclibrary.com">BASIS Scottsdale
                             Library</a> by <a
                         rel="cc:attributionURL dct:creator" property="cc:attributionName"
                         href="https://github.com/epodol">@epodol</a> is licensed under
-                        <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0">CC BY-NC 4.0
-                            <img className="ccicon"
-                                 src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"
-                                 alt="Creative Commons"/>
-                            <img className="ccicon"
-                                 src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"
-                                 alt="Attribution"/>
-                            <img className="ccicon"
-                                 src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1"
-                                 alt="Non-Commercial"/>
+                        <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0"> CC BY-NC 4.0
+                            <FontAwesomeIcon icon={faCreativeCommons} size="lg" />
+                            <FontAwesomeIcon icon={faCreativeCommonsNc} size="lg" />
+                            <FontAwesomeIcon icon={faCreativeCommonsBy} size="lg" />
                         </a>
-                    </p>
                 </MDBContainer>
             </div>
         </MDBFooter>

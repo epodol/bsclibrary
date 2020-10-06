@@ -1,5 +1,6 @@
 export const HOME = '/';
 export const MYACCOUNT = '/myaccount';
+export const MYCHECKOUTS = '/mycheckouts';
 export const SCHOOLADMIN = '/school-admin';
 export const LIBRARYADMIN = '/library-admin';
 export const BOOKS = '/books';

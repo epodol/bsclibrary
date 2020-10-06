@@ -1,68 +1,93 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# BASIS Scottsdale Library Website
 
-## Available Scripts
+### React + Firebase Setup
 
-In the project directory, you can run:
+This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
-### `npm start`
+### Includes:
+- Firebase setup
+- Authentication
+- Database: Retrieve and push data
+- Cloud Storage: Upload file and save to database
+- Cloud Functions: Cloud Messaging, Message notification
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Getting Started
+- Create your Firebase Project in `http://console.firebase.google.com`.
+- Copy config in dashboard's  **Web Setup** and paste to a new file named `.env.local`.
+- Clone project and install dependencies.
+```
+> git clone 
+> cd bsclibrary
+> npm install
+```
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+#### Authentication
+See [Firebase Authentication](https://firebase.google.com/docs/auth/web/start) docs.
+`firebase.auth()`
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+#### Firestore
+See [Firebase Authentication](https://firebase.google.com/docs/firestore) docs.
+`firebase.firestore()`
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+#### Cloud Storage
+See [Firebase Storage](https://firebase.google.com/docs/storage/web/start) docs.
+`firebase.storage()`
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+#### Cloud Functions
+See [Cloud Functions](https://firebase.google.com/docs/functions/get-started) for more details.
+Checkout the [examples](https://github.com/firebase/functions-samples) of other functions
+The example here is creating message alert using cloud functions
 
-### `npm run eject`
+Follow this steps to get started.
+1.  Create a file named `firebase-messaging-sw.js` in public folder to serve it statically in the host.
+This file is our [Service Worker](https://developers.google.com/web/fundamentals/getting-started/primers/service-workers) for messaging. Follow this [guide](https://firebase.google.com/docs/cloud-messaging/js/receive#handle_messages_when_your_web_app_is_in_the_foreground). 
+You can find your **sender id** located at your project `settings > cloud functions > sender id`
+- Create handler here for showing the notification in the device.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+2. Create the function in `function/index.js`. See the file.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+3. Create file `request-messaging-permission` to notify new logged-in users if they want to allow notification.
+- Apply this method during user login in the app.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+4. Check function logs in firebase console.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Deployment process with firebase
+1. Install **Firebase Tools** globally. (You may need `sudo` here)
+```
+> npm install -g firebase-tools
+```
+2. Login to firebase using this tool in CLI
+```
+> firebase login
+```
+3. CD to your working project and initialize firebase.
+```
+> cd react-firebase
+> firebase init
+```
+4. Configure firebase:
+- Allow CLI features for **Database**, **Functions**, **Hosting**.
+- Select your Firebase project to be used.
+- Accept default rules to write on default file `database.rules.json`
+- Install dependencies.
+- Choose a `build` name directory since we build our app.
+- Select **Yes** for configuring single app page. This is suitable also when app is using `react-router`.
+- **Firebase initialization complete!**
 
-## Learn More
+5. Then we will build our app.
+```
+> npm build
+```
+6. Deploy!
+```
+> firebase deploy
+```
+Access your running application to the given **Hosting URL**.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+**__Important__**
+- Make sure to rebuild your app if you made changes and want to deploy again.
+- If you only edited the firebase-generated folder `functions/**`, you can just deploy by running `firebase deploy --only functions`.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
