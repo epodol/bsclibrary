@@ -64,7 +64,7 @@ class SignedOutNavbar extends Component {
                                 <MDBInput id="signInFormPassword" label="Password" icon="lock" group type="password"
                                           validate required/>
                                 <p className="font-small grey-text d-flex justify-content-end">
-                                    <a href="" className="dark-grey-text ml-1 font-weight-bold">Forgot Password?</a>
+                                    <p className="dark-grey-text ml-1 font-weight-bold">Forgot Password?</p>
                                 </p>
                             </div>
                         </MDBModalBody>

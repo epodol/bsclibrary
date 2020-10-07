@@ -10,30 +10,21 @@ import {
     MDBIcon,
 } from "mdbreact";
 import {Link} from "react-router-dom";
-import * as ROUTES from "../../constants/routes";
+import * as ROUTES from "../../../../constants/routes";
 
-class StudentNavbar extends Component {
+class LibraryVolunteerNavbar extends Component {
     render() {
         return (
             <>
                 <MDBNavbarNav left>
                     <MDBNavItem>
-                        <MDBNavLink as={Link} to={ROUTES.SCHOOLADMIN}>School Admin</MDBNavLink>
-                    </MDBNavItem>
-                    <MDBNavItem>
                         <MDBNavLink as={Link} to={ROUTES.BOOKS}>Books</MDBNavLink>
-                    </MDBNavItem>
-                    <MDBNavItem>
-                        <MDBNavLink as={Link} to={ROUTES.LIBRARYADMIN}>Library Admin</MDBNavLink>
                     </MDBNavItem>
                     <MDBNavItem>
                         <MDBNavLink as={Link} to={ROUTES.CHECKOUT}>Check Out</MDBNavLink>
                     </MDBNavItem>
                     <MDBNavItem>
                         <MDBNavLink as={Link} to={ROUTES.CHECKIN}>Check In</MDBNavLink>
-                    </MDBNavItem>
-                    <MDBNavItem>
-                        <MDBNavLink as={Link} to={ROUTES.CHECKOUTS}>Checkouts</MDBNavLink>
                     </MDBNavItem>
                 </MDBNavbarNav>
                 <MDBNavbarNav right>
@@ -58,7 +49,7 @@ class StudentNavbar extends Component {
                                 <MDBDropdownItem divider/>
                                 <MDBDropdownItem>
                                     <MDBNavLink link to={ROUTES.HOME} className='text-dark p-1'>
-                                       <MDBIcon icon="sign-out-alt"/> Sign out
+                                        <MDBIcon icon="sign-out-alt"/> Sign out
                                     </MDBNavLink>
                                 </MDBDropdownItem>
                             </MDBDropdownMenu>
@@ -70,4 +61,4 @@ class StudentNavbar extends Component {
     }
 }
 
-export default StudentNavbar;
+export default LibraryVolunteerNavbar;

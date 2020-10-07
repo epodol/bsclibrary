@@ -165,3 +165,28 @@ exports.onDeleteUpdateBookSummary =
         return (batch.commit());
 
     }))
+
+exports.makeAdmin = functions.https.onRequest(((req, resp) => {
+    return admin.auth().setCustomUserClaims('bFG1dJFQgChTQz93UAZzOifBcng1', {admin: true}).then({
+    }).catch(error => {
+        console.log('ERROR: ', error)
+    })
+}))
+
+exports.makeStudent = functions.https.onRequest(((req, res) => {
+    admin.auth().setCustomUserClaims('0d1MOmLNlMO6CetizkBkuwEy2dQ2', {student: true}).then(() => {
+        return res.send("Success");
+    }).catch(error => {
+        console.log('ERROR: ', error)
+    })
+}))
+
+exports.getClaims = functions.https.onRequest(((req, res) => {
+    admin.auth().getUser("0d1MOmLNlMO6CetizkBkuwEy2dQ2").then((userRecord) => {
+        // The claims can be accessed on the user record.
+        console.log(userRecord.customClaims)
+        return res.send(userRecord.customClaims);
+    }).catch((error) => {
+        console.log('error')
+    });
+}))
