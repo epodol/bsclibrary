@@ -1,6 +1,5 @@
 import React from "react";
 import {MDBContainer, MDBFooter} from "mdbreact";
-import "./footer.css"
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {
     faCreativeCommons,
