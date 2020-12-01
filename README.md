@@ -6,9 +6,11 @@
     ```
     > git clone 
     > cd bsclibrary
-    > npm install
     ```
 1. Install dependencies
+    ```
+    > npm install
+    ```
 1. Install **Firebase Tools** globally
     ```
     > npm install -g firebase-tools
@@ -17,9 +19,8 @@
     ```
     > firebase login
     ```
-1. CD into the repo and initialize firebase.
+1. Initialize firebase.
     ```
-    > cd bsclibrary
     > firebase init
     ```
 1. Configure firebase:
@@ -38,7 +39,7 @@
     1. Enable the Emulator UI, use any availale port, and download the emulators now.
     1. *Firebase initialization complete!*
     
-1. Copy your Firebase config from your dashboard's  Web Setup and paste to a new file named `.env.local`.
+1. Copy your Firebase config from your Firebase dashboard's  Web Setup and paste to a new file named `.env.local`.
 1. Start the react development server and emulators.
 ```
 > npm start
