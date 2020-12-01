@@ -4,6 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
+/.eslintcache
 
 # testing
 /coverage
@@ -23,6 +24,7 @@ yarn-debug.log*
 yarn-error.log*
 
 /dir
+/emulator-data
 
 # Created by https://www.toptal.com/developers/gitignore/api/react,firebase,webstorm+iml,windows,macos
 # Edit at https://www.toptal.com/developers/gitignore?templates=react,firebase,webstorm+iml,windows,macos
