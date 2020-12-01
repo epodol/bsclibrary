@@ -4,58 +4,107 @@ import {
     BrowserRouter as Router,
     Switch,
     Route,
+    Redirect
 } from "react-router-dom";
 
 import Navigation from '../Navigation';
 import Home from '../Home';
-import MyAccount from '../Account';
-import SchoolAdmin from '../SchoolAdmin';
-import LibraryAdmin from '../LibraryAdmin';
+import MyAccount from '../MyAccount';
+import Admin from '../Admin';
 import Books from '../Books'
 import CheckOut from '../CheckOut';
 import CheckIn from '../CheckIn';
 import CheckOuts from '../CheckOuts';
-import Error404 from '../Errors';
 import Footer from "../Footer";
 
-const Routing = () => (
-    <Router>
-        <div>
-            <Navigation/>
+import './routing.css'
+import {FirebaseContext} from "../../Firebase";
 
-            <Switch>
-                <Route exact path="/">
-                    <Home />
-                </Route>
-                <Route path="/myaccount">
-                    <MyAccount />
-                </Route>
-                <Route path="/school-admin">
-                    <SchoolAdmin />
-                </Route>
-                <Route path="/library-admin">
-                    <LibraryAdmin />
-                </Route>
-                <Route path="/books">
-                    <Books />
-                </Route>
-                <Route path="/checkout">
-                    <CheckOut />
-                </Route>
-                <Route path="/checkin">
-                    <CheckIn />
-                </Route>
-                <Route path="/checkouts">
-                    <CheckOuts />
-                </Route>
-                <Route path="*">
-                    <Error404/>
-                </Route>
-            </Switch>
+const Routing = (props) => {
 
-            <Footer />
+    const DetermineHomePage = ({component: Component, ...rest}) => {
+        return (
+            <Route
+                {...rest}
+                render={location =>
+                    !props.firebase.user ? (
+                        <Home {...location}/>
+                    ) : (
+                        <MyAccount {...location}/>
+                    )
+                }
+            />
+        );
+    }
+
+    const ProtectedRoute = ({component: Component, minrole, ...rest}) => {
+        let canViewPage = false;
+        if (props.firebase.userInfo) {
+            canViewPage = props.firebase.userInfo.claims.role >= minrole;
+        }
+        return (
+            <Route
+                {...rest}
+                render={location =>
+                    canViewPage ? (
+                        <FirebaseContext.Consumer>
+                            {firebase => <Component {...location} firebase={firebase}/>}
+                        </FirebaseContext.Consumer>
+                    ) : (
+                        <Redirect
+                            to={{
+                                pathname: "/",
+                                // state: {
+                                //     error: {
+                                //         type: "auth-required"
+                                //     }
+                                // },
+                            }}
+                        />
+
+                    )
+                }
+            />
+        );
+    }
+
+    return (
+        <div className='page cloudy-knoxville-gradient'>
+
+            <Router>
+
+                {props.firebase.firebase &&
+                <div className='content'>
+
+                    <Navigation/>
+
+                    <Switch>
+                        <DetermineHomePage exact path="/"/>
+
+                        <ProtectedRoute path="/books" minrole="100" component={Books}/>
+                        <ProtectedRoute path="/checkout" minrole="300" component={CheckOut}/>
+                        <ProtectedRoute path="/checkin" minrole="300" component={CheckIn}/>
+                        <ProtectedRoute path="/checkouts" minrole="500" component={CheckOuts}/>
+                        <ProtectedRoute path="/admin" minrole="1000" component={Admin}/>
+
+                        <Redirect to="/" exact/>
+                    </Switch>
+
+                </div>
+                }
+                {!props.firebase.firebase &&
+                <div className="spinner-border" role="status">
+                    <span className="sr-only">Loading...</span>
+                </div>
+                }
+
+                <div className='mt-auto py-3'>
+                    <Footer/>
+                </div>
+            </Router>
+
         </div>
-    </Router>
-);
+    )
+};
 
 export default Routing;
