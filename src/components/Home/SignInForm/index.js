@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect} from 'react';
 import {
     MDBIcon,
     MDBBtn,
@@ -7,7 +7,12 @@ import {
 import {Formik, Form} from 'formik';
 import * as yup from 'yup';
 
-const SignInForm = (props) => {
+import { useFirebaseContext, useFirebaseUpdateContext } from "../../../Firebase/FirebaseContext"
+
+const SignInForm = () => {
+
+    const firebaseState = useFirebaseContext()
+    const firebaseUpdate = useFirebaseUpdateContext()
 
     const SignInSchema = yup.object().shape({
         email: yup.string().email('Please enter a valid email').required('Please enter your email'),
@@ -28,9 +33,10 @@ const SignInForm = (props) => {
                 validationSchema={SignInSchema}
                 onSubmit={async (values, actions) => {
                     console.log("SUBMITTING", values)
-                        props.firebase.auth.signInWithEmailAndPassword(values.email, values.password)
+                    firebaseState.firebase.auth().signInWithEmailAndPassword(values.email, values.password)
                         .then((user) => {
                             console.log("Signed in user: ", user)
+                            firebaseUpdate()
                         })
                         .catch(err => {
                             console.log('Error signing in:', err)
@@ -76,7 +82,12 @@ const SignInForm = (props) => {
                             value={values.password}
                             onChange={handleChange}
                         />
-                        {errors.password && touched.password ? <div className="invalid-feedback align-content-center" style={{display: "inline"}}>{errors.password}</div> : null}
+                        {errors.password && touched.password 
+                            ? 
+                                <div className="invalid-feedback align-content-center" style={{display: "inline"}}>
+                                    {errors.password}
+                                </div> 
+                            : null}
                         <p className="d-flex justify-content-end">
                             <b className="btn-link font-small grey-text ml-1 font-weight-bold">
                                 Forgot Password?

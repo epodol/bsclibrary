@@ -10,7 +10,7 @@
     "source": "functions"
   },
   "hosting": {
-    "public": "build",
+    "public": "public",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -34,6 +34,9 @@
     },
     "functions": {
       "port": "5001"
+    },
+    "hosting": {
+      "port": 5000
     }
   }
 }

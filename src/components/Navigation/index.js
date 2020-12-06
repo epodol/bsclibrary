@@ -9,13 +9,15 @@ import {
 
 import {NavLink, useLocation} from "react-router-dom";
 import * as ROUTES from "../../constants/routes";
-import {FirebaseContext} from "../../Firebase";
 
+import { useFirebaseContext } from "../../Firebase/FirebaseContext"
 
-const NavBarItems = (props) => {
+const NavBarItems = () => {
+
+    const firebaseState = useFirebaseContext()
 
     function signOut() {
-        props.firebase.auth.signOut();
+        firebaseState.firebase.auth.signOut();
     }
 
     let location = useLocation();
@@ -23,12 +25,12 @@ const NavBarItems = (props) => {
     return (
         <>
             <MDBNavbarNav left>
-                {props.firebase.viewBooks &&
+                {firebaseState.viewBooks &&
                 <MDBNavItem active={location.pathname === ROUTES.BOOKS}>
                     <MDBNavLink as={NavLink} to={ROUTES.BOOKS}>Books</MDBNavLink>
                 </MDBNavItem>
                 }
-                {props.firebase.canCheckout &&
+                {firebaseState.canCheckout &&
                 <>
                     <MDBNavItem active={location.pathname === ROUTES.CHECKOUT}>
                         <MDBNavLink as={NavLink} to={ROUTES.CHECKOUT}>Check Out</MDBNavLink>
@@ -38,18 +40,18 @@ const NavBarItems = (props) => {
                     </MDBNavItem>
                 </>
                 }
-                {props.firebase.canViewCheckouts &&
+                {firebaseState.canViewCheckouts &&
                 <MDBNavItem active={location.pathname === ROUTES.CHECKOUTS}>
                     <MDBNavLink as={NavLink} to={ROUTES.CHECKOUTS}>Checkouts</MDBNavLink>
                 </MDBNavItem>
                 }
-                {props.firebase.isAdmin &&
+                {firebaseState.isAdmin &&
                 <MDBNavItem active={location.pathname === ROUTES.ADMIN}>
                     <MDBNavLink as={NavLink} to={ROUTES.ADMIN}>Admin</MDBNavLink>
                 </MDBNavItem>
                 }
             </MDBNavbarNav>
-            {props.firebase.user &&
+            {firebaseState.user &&
             <MDBNavbarNav right>
                 <MDBNavItem>
                     <MDBDropdown>
@@ -95,9 +97,7 @@ const Navigation = () => {
             </MDBNavLink>
             <MDBNavbarToggler onClick={() => setIsOpen(!isOpen)}/>
             <MDBCollapse id="navbar" isOpen={isOpen} navbar>
-                <FirebaseContext.Consumer>
-                    {firebase => <NavBarItems firebase={firebase}/>}
-                </FirebaseContext.Consumer>
+            <NavBarItems />
             </MDBCollapse>
         </MDBNavbar>
     );

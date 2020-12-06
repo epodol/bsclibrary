@@ -1,8 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {MDBDataTableV5} from 'mdbreact';
 
+import { useFirebaseContext } from "../../Firebase/FirebaseContext"
 
-const Books = (props) => {
+const Books = () => {
+
+    const firebaseState = useFirebaseContext()
 
     const columns = [
         {
@@ -30,7 +33,7 @@ const Books = (props) => {
 
 
     useEffect(() => {
-        props.firebase.firestore.collection('books')
+        firebaseState.firebase.firestore().collection('books')
             .limit(25)
             .get()
             .then((data) => {
@@ -50,7 +53,7 @@ const Books = (props) => {
             console.error(error)
         })
 
-    }, [props.firebase.firestore]);
+    }, [firebaseState.firebase.firestore]);
 
 
 

@@ -18,16 +18,20 @@ import CheckOuts from '../CheckOuts';
 import Footer from "../Footer";
 
 import './routing.css'
-import {FirebaseContext} from "../../Firebase";
+import { useFirebaseContext } from "../../Firebase/FirebaseContext"
 
-const Routing = (props) => {
+const Routing = () => {
+
+    const firebaseState = useFirebaseContext()
+
+    console.log('routing......', firebaseState.userInfo)
 
     const DetermineHomePage = ({component: Component, ...rest}) => {
         return (
             <Route
                 {...rest}
                 render={location =>
-                    !props.firebase.user ? (
+                    !firebaseState.user ? (
                         <Home {...location}/>
                     ) : (
                         <MyAccount {...location}/>
@@ -39,17 +43,15 @@ const Routing = (props) => {
 
     const ProtectedRoute = ({component: Component, minrole, ...rest}) => {
         let canViewPage = false;
-        if (props.firebase.userInfo) {
-            canViewPage = props.firebase.userInfo.claims.role >= minrole;
+        if (firebaseState.userInfo) {
+            canViewPage = firebaseState.userInfo.claims.role >= minrole;
         }
         return (
             <Route
                 {...rest}
                 render={location =>
                     canViewPage ? (
-                        <FirebaseContext.Consumer>
-                            {firebase => <Component {...location} firebase={firebase}/>}
-                        </FirebaseContext.Consumer>
+                        <Component {...location} />
                     ) : (
                         <Redirect
                             to={{
@@ -73,7 +75,7 @@ const Routing = (props) => {
 
             <Router>
 
-                {props.firebase.firebase &&
+                {firebaseState &&
                 <div className='content'>
 
                     <Navigation/>
@@ -92,7 +94,7 @@ const Routing = (props) => {
 
                 </div>
                 }
-                {!props.firebase.firebase &&
+                {!firebaseState &&
                 <div className="spinner-border" role="status">
                     <span className="sr-only">Loading...</span>
                 </div>

@@ -1,17 +1,14 @@
-import React, {Component} from 'react';
+import React from 'react';
 import Routing from "./components/Routing";
-import Firebase, {FirebaseContext} from "./Firebase";
 
-class App extends Component {
-    render() {
-        return (
-            <Firebase>
-                <FirebaseContext.Consumer>
-                    {firebase => <Routing firebase={firebase}/>}
-                </FirebaseContext.Consumer>
-            </Firebase>
-        );
-    }
+import { FirebaseProvider } from './Firebase/FirebaseContext'
+
+const App = () => {    
+    return (
+        <FirebaseProvider>
+            <Routing />
+        </FirebaseProvider>
+    )
 }
 
 export default App;

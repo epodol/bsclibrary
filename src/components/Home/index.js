@@ -13,7 +13,6 @@ import {
 } from 'mdbreact';
 import './home.css';
 import SignInForm from "./SignInForm";
-import {FirebaseContext} from "../../Firebase";
 
 const Home = (props) => {
     let displayAuthError = (props.location && props.location.state) ? props.location.state.error.type === "auth-required" : false
@@ -23,13 +22,13 @@ const Home = (props) => {
         <div id='classicformpage'>
             <MDBView>
                 <MDBMask className='d-flex justify-content-center align-items-center'/>
-                {displayAuthError &&
+                {/* {displayAuthError &&
                 <MDBContainer style={{height: '100%', width: '100%', paddingTop: '1rem'}}>
                     <MDBAlert color="warning" dismiss>
                         <strong>Holy guacamole!</strong> You should check in on some of those fields below.
                     </MDBAlert>
                 </MDBContainer>
-                }
+                } */}
                 <MDBContainer
                     style={{height: '100%', width: '100%', paddingTop: '10rem'}}
                     className='mt-5 d-flex justify-content-center align-items-center'
@@ -56,9 +55,7 @@ const Home = (props) => {
                             <MDBAnimation type='fadeInRight' delay='.5s'>
                                 <MDBCard id='classic-card' className="">
                                     <MDBCardBody>
-                                        <FirebaseContext.Consumer>
-                                            {firebase => <SignInForm firebase={firebase}/>}
-                                        </FirebaseContext.Consumer>
+                                      <SignInForm />
                                     </MDBCardBody>
                                 </MDBCard>
                             </MDBAnimation>
