@@ -31,7 +31,7 @@
     1. Select `JavaScript` for your Cloud Functions language.
     1. Enable ESLint *(optional)*.
     1. Install dependencies.
-    1. Accept the default public directory for Hosting `public`.
+    1. Set the default public directory for Hosting to `build`.
     1. Do **not** configure as a single-page app.
     1. Do **not** setup automatic builds and deploys with GitHub.
     1. Accept default rules file for Storage `storage.rules`.
