@@ -1,11 +1,14 @@
-import React from "react";
+/* eslint-disable */
+/* ^Remove when hooks complete^*/
+
+import React from 'react';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
 import 'firebase/storage';
 import 'firebase/functions';
 import 'firebase/analytics';
-import FirebaseContext from "./FirebaseContext";
+import FirebaseContext from './FirebaseContext';
 
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -84,7 +87,6 @@ class Firebase extends React.Component {
     }
 }
 
-
 export default Firebase;
 
-export { FirebaseContext }
+export { FirebaseContext };

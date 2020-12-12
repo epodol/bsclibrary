@@ -1,3 +1,6 @@
+/* eslint-disable */
+/* ^Remove when hooks complete^*/
+
 import React from 'react';
 
 import {

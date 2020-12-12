@@ -1,7 +1,18 @@
 {
   "name": "bsclibrary",
   "version": "0.1.0",
+  "description": "The BASIS Scottsdale Library Website",
+  "keywords": [],
+  "homepage": "https://bsclibrary.net",
+  "bugs": {
+    "url": "https://github.com/epodol/bsclibrary/issues"
+  },
+  "license": "CC-BY-NC-4.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/epodol/bsclibrary.git"
+  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-brands-svg-icons": "^5.15.1",
@@ -9,29 +20,24 @@
     "@fortawesome/react-fontawesome": "^0.1.11",
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
-    "@testing-library/user-event": "^12.2.2",
-    "firebase": "^8.1.1",
-    "formik": "^2.2.5",
-    "mdbreact": "^4.27.0",
-    "react-dom": "^16.13.1",
+    "@testing-library/user-event": "^12.5.0",
+    "firebase": "^8.2.0",
+    "formik": "^2.2.6",
+    "mdbreact": "^5.0.1",
+    "prop-types": "^15.7.2",
+    "react-dom": "^17.0.1",
     "react-redux": "^7.2.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
-    "redux": "^4.0.5",
-    "yup": "^0.31.0"
+    "reactfire": "^3.0.0-rc.0",
+    "yup": "^0.32.8"
   },
   "scripts": {
-    "start": "run-p --race start:firebase-emulators start:react",
-    "start:react": "react-scripts start",
-    "start:firebase-emulators": "firebase emulators:start --import=./emulator-data --export-on-exit",
+    "start": "react-scripts start",
+    "dev": "firebase emulators:start --import=./emulator-data --export-on-exit",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "dev": "run-p --race dev:firebase dev:react",
-    "dev:firebase": "firebase serve -p 4000"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
+    "eject": "react-scripts eject"
   },
   "browserslist": {
     "production": [
@@ -46,6 +52,15 @@
     ]
   },
   "devDependencies": {
-    "npm-run-all": "^4.1.5"
+    "eslint": "^7.15.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-prettier": "^7.0.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "^3.2.0",
+    "eslint-plugin-react": "^7.21.5",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.2.1"
   }
 }

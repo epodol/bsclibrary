@@ -1,15 +1,15 @@
 #classicformpage .view {
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
 }
 
 #classicformpage .gradient {
-    background: linear-gradient(
-            0deg,
-            rgba(63, 191, 63, 0.3),
-            rgba(63, 191, 63, 0.4) 100%
-    );
+  background: linear-gradient(
+    0deg,
+    rgba(63, 191, 63, 0.3),
+    rgba(63, 191, 63, 0.4) 100%
+  );
 }
 
 /*#classicformpage .card {*/
@@ -17,5 +17,5 @@
 /*}*/
 
 #classicformpage h6 {
-    line-height: 1.7;
+  line-height: 1.7;
 }
