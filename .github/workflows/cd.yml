@@ -21,7 +21,7 @@ jobs:
         run: npm ci
 
       - name: Jest Tests
-        run: npm run test --passWithNoTests
+        run: npm run test
 
       - name: Formatting Tests
         run: prettier --check
