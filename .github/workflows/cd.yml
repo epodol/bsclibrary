@@ -32,9 +32,6 @@ jobs:
       - name: Jest Tests
         run: npm run test
 
-      - name: Formatting Tests
-        run: prettier --check
-
       - name: Build
         run: npm run build
 
