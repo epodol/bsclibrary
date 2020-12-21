@@ -37,7 +37,9 @@
     "dev": "firebase emulators:start --import=./emulator-data --export-on-exit",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prettier": "prettier --check .",
+    "eslint": "eslint ."
   },
   "browserslist": {
     "production": [
