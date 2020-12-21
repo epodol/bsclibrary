@@ -1,7 +1,6 @@
 # BASIS Scottsdale Library Website
 
 ## Setting up your workspace
-1. Create a Firebase Project in `http://console.firebase.google.com`.
 1. Clone the repo
     ```
     > git clone 
@@ -19,31 +18,14 @@
     ```
     > firebase login
     ```
-1. Initialize firebase.
-    ```
-    > firebase init
-    ```
-1. Configure firebase:
-    1. Allow CLI features for **Firestore**, **Functions**, **Hosting**, **Storage**, and **Emulators**.
-    1. Select your Firebase project to be used.
-    1. Accept default rules file for Firestore `firestore.rules`.
-    1. Accept default rules file for Firestore `firestore.indexes.json`.
-    1. Select `JavaScript` for your Cloud Functions language.
-    1. Enable ESLint *(optional)*.
-    1. Install dependencies.
-    1. Set the default public directory for Hosting to `build`.
-    1. Do **not** configure as a single-page app.
-    1. Do **not** setup automatic builds and deploys with GitHub.
-    1. Accept default rules file for Storage `storage.rules`.
-    1. Setup emulators for **Authentication**, **Functions**, **Firestore**, and **Hosting** and use the default ports.
-    1. Enable the Emulator UI, use any availale port, and download the emulators now.
-    1. *Firebase initialization complete!*
-    
+1. Create a Firebase Project in `http://console.firebase.google.com`. 
+1. Copy your Firebase Project's id into `.firebaserc`
 1. Copy your Firebase config from your Firebase dashboard's  Web Setup and paste to a new file named `.env.local`.
-1. Start the react development server and emulators.
-```
-> npm start
-```
+1. Start the React development server and emulators.
+   ```
+   > npm start
+   > npm run dev
+   ```
 
 ## License <img src="https://creativecommons.org/images/deed/cc_icon_white_x2.png" alt="Creative Commons" width="25"/> <img src="https://creativecommons.org/images/deed/attribution_icon_white_x2.png" alt="Attribution" width="25"/> <img src="https://creativecommons.org/images/deed/nc_white_x2.png" alt="NonCommercial" width="25"/>
 
