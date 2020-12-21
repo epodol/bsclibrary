@@ -21,7 +21,7 @@
    ```
 1. Create a Firebase Project in `http://console.firebase.google.com`.
 1. Copy your Firebase Project's id into `.firebaserc`
-1. Copy your Firebase config from your Firebase dashboard's Web Setup and paste to a new file named `.env.local`.
+1. Copy your Firebase config from your Firebase dashboard's Web Setup and paste to a new file named `.env`.
 1. Start the React development server and emulators.
    ```
    > npm start

@@ -33,15 +33,18 @@ jobs:
       - name: Jest Tests
         run: npm run test
 
+      - name: Prettier Tests
+        run: prettier --check .
+
       - name: Build
         run: npm run build
 
-#      - name: Deploy to Firebase
-#        uses: w9jds/firebase-action@master
-#        with:
-#          args: deploy
-#        env:
-#          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BASIS_SCOTTSDALE_LIBRARY }}
+      #      - name: Deploy to Firebase
+      #        uses: w9jds/firebase-action@master
+      #        with:
+      #          args: deploy
+      #        env:
+      #          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BASIS_SCOTTSDALE_LIBRARY }}
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
