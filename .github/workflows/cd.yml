@@ -28,7 +28,16 @@ jobs:
           node-version: '12'
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm ci
+          cd functions
+          npm ci
+
+      - name: Prettier Tests
+        run: npm run prettier
+
+      - name: ESLint Tests
+        run: npm run eslint
 
       - name: Jest Tests
         run: npm run test
@@ -36,12 +45,12 @@ jobs:
       - name: Build
         run: npm run build
 
-#      - name: Deploy to Firebase
-#        uses: w9jds/firebase-action@master
-#        with:
-#          args: deploy
-#        env:
-#          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BASIS_SCOTTSDALE_LIBRARY }}
+      #      - name: Deploy to Firebase
+      #        uses: w9jds/firebase-action@master
+      #        with:
+      #          args: deploy
+      #        env:
+      #          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BASIS_SCOTTSDALE_LIBRARY }}
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
