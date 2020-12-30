@@ -5,7 +5,7 @@ updates:
     schedule:
       interval: 'daily'
       time: '09:00'
-      timezone: '	America/Phoenix'
+      timezone: 'America/Phoenix'
     reviewers:
       - 'epodol'
 
@@ -13,7 +13,7 @@ updates:
     directory: '/functions'
     schedule:
       time: '09:00'
-      timezone: '	America/Phoenix'
+      timezone: 'America/Phoenix'
       interval: 'daily'
     reviewers:
       - 'epodol'
