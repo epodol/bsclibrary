@@ -9,7 +9,19 @@ exports.setRole = functions.https.onCall(async (data, context) => {
     );
   }
 
-  if (context.auth.token.role < data.role && context.auth.token.role !== 1000) {
+  if (typeof context.auth.token.role === 'undefined') {
+    throw new functions.https.HttpsError(
+      'permission-denied',
+      'The caller must already have a set role.'
+    );
+  }
+
+  if (
+    (context.auth.token.role <= data.role &&
+      context.auth.token.role !== 1000) ||
+    data.role > 1000 ||
+    context.auth.token.role < 700
+  ) {
     throw new functions.https.HttpsError(
       'permission-denied',
       'The user calling the function must have a higher role than the claim they are assigning or be an admin.'
@@ -37,7 +49,10 @@ exports.setRole = functions.https.onCall(async (data, context) => {
       throw new functions.https.HttpsError('invalid-argument', error);
     });
 
-  if (userRecord.customClaims.role === data.role) {
+  if (
+    typeof userRecord.customClaims !== 'undefined' &&
+    userRecord.customClaims.role === data.role
+  ) {
     throw new functions.https.HttpsError(
       'already-exists',
       'This user already has this role.'
@@ -58,5 +73,8 @@ exports.setRole = functions.https.onCall(async (data, context) => {
       email: user.email,
       uid: user.uid,
       role: user.customClaims.role,
-    }));
+    }))
+    .catch((error) => {
+      throw new functions.https.HttpsError('internal', error);
+    });
 });
