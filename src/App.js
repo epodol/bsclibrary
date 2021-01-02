@@ -1,14 +1,12 @@
 import React from 'react';
-import Routing from "./components/Routing";
+import Routing from './components/Routing';
 
-import { FirebaseProvider } from './Firebase/FirebaseContext'
+import { FirebaseProvider } from './Firebase';
 
-const App = () => {    
-    return (
-        <FirebaseProvider>
-            <Routing />
-        </FirebaseProvider>
-    )
-}
+const App = () => (
+  <FirebaseProvider>
+    <Routing />
+  </FirebaseProvider>
+);
 
 export default App;
