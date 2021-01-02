@@ -18,13 +18,26 @@ const SetRoleForm = () => {
       .email('Please enter a valid email')
       .required("Please enter the user's email"),
     role: yup
-      .string('Please enter a valid role')
+      .number('Please enter a valid role')
+      .min(0, 'The role must be greater than or equal to 0')
+      .max(1000, 'The role must be less than or equal to 1000')
       .required("Please enter the user's new role"),
   });
   const [alert, setAlert] = useState({ show: false, user: '', newRole: '' });
 
   return (
     <MDBContainer>
+      {alert.show && (
+        <MDBTypography
+          note
+          noteColor="primary"
+          noteTitle="Successfully updated roles: "
+        >
+          <>
+            Set {alert.user}&apos;s role to <MDBBadge>{alert.newRole}</MDBBadge>
+          </>
+        </MDBTypography>
+      )}
       <Formik
         initialValues={{
           email: '',
@@ -72,16 +85,6 @@ const SetRoleForm = () => {
       >
         {({ values, touched, errors, isSubmitting, handleChange }) => (
           <Form noValidate>
-            {alert.show && (
-              <MDBTypography
-                note
-                noteColor="primary"
-                noteTitle="Successfully updated roles: "
-              >
-                Set {alert.user}&apos;s role to{' '}
-                <MDBBadge>{alert.newRole}</MDBBadge>
-              </MDBTypography>
-            )}
             <MDBInput
               id="email"
               type="email"
