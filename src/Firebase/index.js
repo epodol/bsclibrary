@@ -1,14 +1,12 @@
-/* eslint-disable */
-/* ^Remove when hooks complete^*/
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
 import 'firebase/storage';
 import 'firebase/functions';
 import 'firebase/analytics';
-import FirebaseContext from './FirebaseContext';
+
+const FirebaseContext = React.createContext({});
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -21,40 +19,39 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_MEASUREMENT_ID,
 };
 
-class Firebase extends React.Component {
-  constructor(props) {
-    super(props);
+export const FirebaseProvider = ({ children }) => {
+  const [firebaseContextState, setFirebaseContextState] = useState({
+    firebase: firebase.apps.length
+      ? firebase
+      : firebase.initializeApp(firebaseConfig),
+    analytics:
+      process.env.NODE_ENV === 'production' ? firebase.analytics() : null,
+    user: null,
+    userInfo: null,
+    viewBooks: false,
+    canCheckout: false,
+    canViewCheckouts: false,
+    isAdmin: false,
+  });
 
-    this.state = {
-      firebase: firebase.apps.length
-        ? firebase
-        : firebase.initializeApp(firebaseConfig),
-      firestore: firebase.firestore(),
-      auth: firebase.auth(),
-      storage: firebase.storage(),
-      functions: firebase.functions(),
-      analytics:
-        process.env.NODE_ENV === 'production' ? firebase.analytics() : null,
-      user: null,
-      userInfo: null,
-      viewBooks: false,
-      canCheckout: false,
-      canViewCheckouts: false,
-      isAdmin: false,
-    };
-
-    if (window.location.hostname === 'localhost') {
-      this.state.firestore.useEmulator('localhost', 8080);
-      this.state.functions.useEmulator('localhost', 5001);
-      this.state.auth.useEmulator('http://localhost:9099/');
+  useEffect(() => {
+    firebase.firestore();
+    firebase.auth();
+    firebase.functions();
+    firebase.storage();
+    if (process.env.NODE_ENV !== 'production') {
+      firebase.firestore().useEmulator('localhost', 8080);
+      firebase.functions().useEmulator('localhost', 5001);
+      firebase.auth().useEmulator('http://localhost:9099/');
+    } else {
+      firebase.analytics();
     }
-
-    this.state.auth.onAuthStateChanged((user) => {
+    firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         user.getIdTokenResult().then((claims) => {
-          console.log(claims.claims);
-          this.setState({
-            user: user,
+          setFirebaseContextState({
+            firebase,
+            user,
             userInfo: claims,
             viewBooks: claims.claims.role >= 100,
             canCheckout: claims.claims.role >= 300,
@@ -63,7 +60,8 @@ class Firebase extends React.Component {
           });
         });
       } else {
-        this.setState({
+        setFirebaseContextState({
+          firebase,
           user: null,
           userInfo: null,
           viewBooks: false,
@@ -73,21 +71,13 @@ class Firebase extends React.Component {
         });
       }
     });
-  }
+  }, []);
 
-  signOut() {
-    this.state.auth.signOut();
-  }
+  return (
+    <FirebaseContext.Provider value={firebaseContextState}>
+      {children}
+    </FirebaseContext.Provider>
+  );
+};
 
-  render() {
-    return (
-      <FirebaseContext.Provider value={this.state}>
-        {this.props.children}
-      </FirebaseContext.Provider>
-    );
-  }
-}
-
-export default Firebase;
-
-export { FirebaseContext };
+export default FirebaseContext;

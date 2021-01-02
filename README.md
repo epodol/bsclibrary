@@ -4,7 +4,7 @@
 
 1. Clone the repo
    ```
-   > git clone
+   > git clone https://github.com/epodol/bsclibrary.git
    > cd bsclibrary
    ```
 1. Install dependencies
@@ -24,7 +24,7 @@
 1. Copy your Firebase config from your Firebase dashboard's Web Setup and paste to a new file named `.env`.
 1. Start the React development server and emulators.
    ```
-   > npm start
+   > npm run start
    > npm run dev
    ```
 

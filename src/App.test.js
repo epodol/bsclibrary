@@ -1,9 +1,22 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
+import { render, unmountComponentAtNode } from 'react-dom';
+import { act } from 'react-dom/test-utils';
 
-// eslint-disable-next-line jest/expect-expect
+let container = null;
+beforeEach(() => {
+  container = document.createElement('div');
+  document.body.appendChild(container);
+});
+
+afterEach(() => {
+  unmountComponentAtNode(container);
+  container.remove();
+  container = null;
+});
+
 it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<App />, div);
+  act(() => {
+    render(<div>Pass test</div>, container);
+  });
+  expect(container.textContent).toBe('Pass test');
 });

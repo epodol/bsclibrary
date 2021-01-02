@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   MDBNavbar,
   MDBNavbarBrand,
@@ -16,11 +16,14 @@ import {
 
 import { NavLink, useLocation } from 'react-router-dom';
 import * as ROUTES from '../../constants/routes';
-import { FirebaseContext } from '../../Firebase';
 
-const NavBarItems = ({ firebase }) => {
+import FirebaseContext from '../../Firebase';
+
+const NavBarItems = () => {
+  const firebase = useContext(FirebaseContext);
+
   function signOut() {
-    firebase.auth.signOut();
+    firebase.firebase.auth().signOut();
   }
 
   const location = useLocation();
@@ -118,9 +121,7 @@ const Navigation = () => {
       </MDBNavLink>
       <MDBNavbarToggler onClick={() => setIsOpen(!isOpen)} />
       <MDBCollapse id="navbar" isOpen={isOpen} navbar>
-        <FirebaseContext.Consumer>
-          {(firebase) => <NavBarItems firebase={firebase} />}
-        </FirebaseContext.Consumer>
+        <NavBarItems />
       </MDBCollapse>
     </MDBNavbar>
   );

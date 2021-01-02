@@ -13,7 +13,6 @@ import {
 } from 'mdbreact';
 import './home.css';
 import SignInForm from './SignInForm';
-import { FirebaseContext } from '../../Firebase';
 
 const Home = (props, { location }) => {
   const displayAuthError =
@@ -52,14 +51,11 @@ const Home = (props, { location }) => {
               <h6 className="mb-4">Cool text about the library</h6>
               <MDBBtn>Learn More</MDBBtn>
             </MDBAnimation>
-
             <MDBCol md="6" m="5" className="mb-4">
               <MDBAnimation type="fadeInRight" delay=".5s">
                 <MDBCard id="classic-card" className="">
                   <MDBCardBody>
-                    <FirebaseContext.Consumer>
-                      {(firebase) => <SignInForm firebase={firebase} />}
-                    </FirebaseContext.Consumer>
+                    <SignInForm />
                   </MDBCardBody>
                 </MDBCard>
               </MDBAnimation>

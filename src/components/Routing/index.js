@@ -1,7 +1,4 @@
-/* eslint-disable */
-/* ^Remove when hooks complete^*/
-
-import React from 'react';
+import React, { useContext } from 'react';
 
 import {
   BrowserRouter as Router,
@@ -21,37 +18,35 @@ import CheckOuts from '../CheckOuts';
 import Footer from '../Footer';
 
 import './routing.css';
-import { FirebaseContext } from '../../Firebase';
+import FirebaseContext from '../../Firebase';
 
-const Routing = (props) => {
-  const DetermineHomePage = ({ component: Component, ...rest }) => {
-    return (
-      <Route
-        {...rest}
-        render={(location) =>
-          !props.firebase.user ? (
-            <Home {...location} />
-          ) : (
-            <MyAccount {...location} />
-          )
-        }
-      />
-    );
-  };
+const Routing = () => {
+  const firebase = useContext(FirebaseContext);
+
+  const DetermineHomePage = ({ component: Component, ...rest }) => (
+    <Route
+      {...rest} // eslint-disable-line react/jsx-props-no-spreading
+      render={(location) =>
+        !firebase.user ? (
+          <Home {...location} /> // eslint-disable-line react/jsx-props-no-spreading
+        ) : (
+          <MyAccount {...location} /> // eslint-disable-line react/jsx-props-no-spreading
+        )
+      }
+    />
+  );
 
   const ProtectedRoute = ({ component: Component, minrole, ...rest }) => {
     let canViewPage = false;
-    if (props.firebase.userInfo) {
-      canViewPage = props.firebase.userInfo.claims.role >= minrole;
+    if (firebase.userInfo) {
+      canViewPage = firebase.userInfo.claims.role >= minrole;
     }
     return (
       <Route
-        {...rest}
+        {...rest} // eslint-disable-line react/jsx-props-no-spreading
         render={(location) =>
           canViewPage ? (
-            <FirebaseContext.Consumer>
-              {(firebase) => <Component {...location} firebase={firebase} />}
-            </FirebaseContext.Consumer>
+            <Component {...location} /> // eslint-disable-line react/jsx-props-no-spreading
           ) : (
             <Redirect
               to={{
@@ -68,11 +63,10 @@ const Routing = (props) => {
       />
     );
   };
-
   return (
     <div className="page cloudy-knoxville-gradient">
       <Router>
-        {props.firebase.firebase && (
+        {firebase && (
           <div className="content">
             <Navigation />
 
@@ -101,7 +95,7 @@ const Routing = (props) => {
             </Switch>
           </div>
         )}
-        {!props.firebase.firebase && (
+        {!firebase && (
           <div className="spinner-border" role="status">
             <span className="sr-only">Loading...</span>
           </div>

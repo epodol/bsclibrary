@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { MDBDataTableV5 } from 'mdbreact';
 
-const Books = ({ firebase }) => {
+import FirebaseContext from '../../Firebase';
+
+const Books = () => {
+  const firebase = useContext(FirebaseContext);
   const columns = [
     {
       label: 'Title',
@@ -23,11 +26,11 @@ const Books = ({ firebase }) => {
       width: 270,
     },
   ];
-
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    firebase.firestore
+    firebase.firebase
+      .firestore()
       .collection('books')
       .limit(25)
       .get()
@@ -52,10 +55,11 @@ const Books = ({ firebase }) => {
         setRows(docsData);
       })
       .catch();
-  }, [firebase.firestore]);
+  }, [firebase]);
 
   return (
     <>
+      <h1>Currently Out of Service - Pending reactfire</h1>
       <div className="container">
         <MDBDataTableV5
           hover
