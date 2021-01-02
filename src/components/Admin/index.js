@@ -1,8 +1,10 @@
 import React from 'react';
+import SetRoleForm from './SetRoleForm';
 
 const Admin = () => (
   <div>
-    <h1>Super Scary Admin Panel</h1>
+    <h1>Admin Panel</h1>
+    <SetRoleForm />
   </div>
 );
 
