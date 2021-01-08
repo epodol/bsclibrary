@@ -19,7 +19,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@testing-library/jest-dom": "^5.11.8",
-    "@testing-library/react": "^11.2.2",
+    "@testing-library/react": "^11.2.3",
     "@testing-library/user-event": "^12.6.0",
     "firebase": "^8.2.1",
     "formik": "^2.2.6",
