@@ -1,12 +1,11 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { MDBIcon, MDBBtn, MDBInput } from 'mdbreact';
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
-
-import FirebaseContext from '../../../Firebase';
+import { useAuth } from 'reactfire';
 
 const SignInForm = () => {
-  const firebase = useContext(FirebaseContext);
+  const auth = useAuth();
 
   const SignInSchema = yup.object().shape({
     email: yup
@@ -31,8 +30,7 @@ const SignInForm = () => {
         }}
         validationSchema={SignInSchema}
         onSubmit={async (values, actions) => {
-          firebase.firebase
-            .auth()
+          auth
             .signInWithEmailAndPassword(values.email, values.password)
             .catch((err) => {
               if (err.code === 'auth/wrong-password') {

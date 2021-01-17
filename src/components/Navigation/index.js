@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, Suspense } from 'react';
 import {
   MDBNavbar,
   MDBNavbarBrand,
@@ -13,94 +13,92 @@ import {
   MDBDropdownItem,
   MDBIcon,
 } from 'mdbreact';
+import { AuthCheck, useAuth } from 'reactfire';
 
 import { NavLink, useLocation } from 'react-router-dom';
-import * as ROUTES from '../../constants/routes';
 
-import FirebaseContext from '../../Firebase';
+import FirebaseContext from '../Firebase';
 
 const NavBarItems = () => {
-  const firebase = useContext(FirebaseContext);
-
-  function signOut() {
-    firebase.firebase.auth().signOut();
-  }
-
+  const firebaseContext = useContext(FirebaseContext);
+  const auth = useAuth();
   const location = useLocation();
 
   return (
     <>
       <MDBNavbarNav left>
-        {firebase.viewBooks && (
-          <MDBNavItem active={location.pathname === ROUTES.BOOKS}>
-            <MDBNavLink as={NavLink} to={ROUTES.BOOKS}>
+        {firebaseContext.viewBooks && (
+          <MDBNavItem active={location.pathname === '/books'}>
+            <MDBNavLink as={NavLink} to="/books">
               Books
             </MDBNavLink>
           </MDBNavItem>
         )}
-        {firebase.canCheckout && (
+        {firebaseContext.canCheckout && (
           <>
-            <MDBNavItem active={location.pathname === ROUTES.CHECKOUT}>
-              <MDBNavLink as={NavLink} to={ROUTES.CHECKOUT}>
+            <MDBNavItem active={location.pathname === '/checkout'}>
+              <MDBNavLink as={NavLink} to="/checkout">
                 Check Out
               </MDBNavLink>
             </MDBNavItem>
-            <MDBNavItem active={location.pathname === ROUTES.CHECKIN}>
-              <MDBNavLink as={NavLink} to={ROUTES.CHECKIN}>
+            <MDBNavItem active={location.pathname === '/checkin'}>
+              <MDBNavLink as={NavLink} to="/checkin">
                 Check In
               </MDBNavLink>
             </MDBNavItem>
           </>
         )}
-        {firebase.canViewCheckouts && (
-          <MDBNavItem active={location.pathname === ROUTES.CHECKOUTS}>
-            <MDBNavLink as={NavLink} to={ROUTES.CHECKOUTS}>
+        {firebaseContext.canViewCheckouts && (
+          <MDBNavItem active={location.pathname === '/checkouts'}>
+            <MDBNavLink as={NavLink} to="/checkouts">
               Checkouts
             </MDBNavLink>
           </MDBNavItem>
         )}
-        {firebase.isAdmin && (
-          <MDBNavItem active={location.pathname === ROUTES.ADMIN}>
-            <MDBNavLink as={NavLink} to={ROUTES.ADMIN}>
+        {firebaseContext.isAdmin && (
+          <MDBNavItem active={location.pathname === '/admin'}>
+            <MDBNavLink as={NavLink} to="/admin">
               Admin
             </MDBNavLink>
           </MDBNavItem>
         )}
       </MDBNavbarNav>
-      {firebase.user && (
-        <MDBNavbarNav right>
-          <MDBNavItem>
-            <MDBDropdown>
-              <MDBDropdownToggle nav caret>
-                <img
-                  src="https://mdbootstrap.com/img/Photos/Avatars/avatar-4.jpg"
-                  className="rounded-circle z-depth-0"
-                  style={{ height: '35px', padding: 0 }}
-                  alt=""
-                />
-              </MDBDropdownToggle>
-              <MDBDropdownMenu className="dropdown-default" right>
-                <MDBDropdownItem>
-                  <MDBNavLink to="/myaccount" className="text-dark p-1">
-                    <MDBIcon icon="home" /> My Account
-                  </MDBNavLink>
-                </MDBDropdownItem>
-                <MDBDropdownItem>
-                  <MDBNavLink to="/checkouts" className="text-dark p-1">
-                    <MDBIcon icon="book" /> My Checkouts
-                  </MDBNavLink>
-                </MDBDropdownItem>
-                <MDBDropdownItem divider />
-                <MDBDropdownItem onClick={signOut}>
-                  <MDBNavLink to="/" className="text-dark p-1">
-                    <MDBIcon icon="sign-out-alt" /> Sign out
-                  </MDBNavLink>
-                </MDBDropdownItem>
-              </MDBDropdownMenu>
-            </MDBDropdown>
-          </MDBNavItem>
-        </MDBNavbarNav>
-      )}
+      <Suspense fallback="loading...">
+        <AuthCheck fallback={<></>}>
+          <MDBNavbarNav right>
+            <MDBNavItem>
+              <MDBDropdown>
+                <MDBDropdownToggle nav caret>
+                  <img
+                    src="https://mdbootstrap.com/img/Photos/Avatars/avatar-4.jpg"
+                    className="rounded-circle z-depth-0"
+                    style={{ height: '35px', padding: 0 }}
+                    alt=""
+                  />
+                </MDBDropdownToggle>
+                <MDBDropdownMenu className="dropdown-default" right>
+                  <MDBDropdownItem>
+                    <MDBNavLink to="/myaccount" className="text-dark p-1">
+                      <MDBIcon icon="home" /> My Account
+                    </MDBNavLink>
+                  </MDBDropdownItem>
+                  <MDBDropdownItem>
+                    <MDBNavLink to="/checkouts" className="text-dark p-1">
+                      <MDBIcon icon="book" /> My Checkouts
+                    </MDBNavLink>
+                  </MDBDropdownItem>
+                  <MDBDropdownItem divider />
+                  <MDBDropdownItem onClick={() => auth.signOut()}>
+                    <MDBNavLink to="/" className="text-dark p-1">
+                      <MDBIcon icon="sign-out-alt" /> Sign out
+                    </MDBNavLink>
+                  </MDBDropdownItem>
+                </MDBDropdownMenu>
+              </MDBDropdown>
+            </MDBNavItem>
+          </MDBNavbarNav>
+        </AuthCheck>
+      </Suspense>
     </>
   );
 };
@@ -109,7 +107,7 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <MDBNavbar color="rgba-green-strong" dark expand="md">
-      <MDBNavLink as={NavLink} to={ROUTES.HOME}>
+      <MDBNavLink as={NavLink} to="/">
         <MDBNavbarBrand>
           <img
             src="https://cdn.discordapp.com/attachments/743524646497943702/760190005074591804/BS_Bulldogs_OL.svg"

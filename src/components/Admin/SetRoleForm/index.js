@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import {
   MDBInput,
   MDBBtn,
@@ -8,10 +8,10 @@ import {
 } from 'mdbreact';
 import { Form, Formik } from 'formik';
 import * as yup from 'yup';
-import { FirebaseContext } from '../../../Firebase';
+import { useFunctions } from 'reactfire';
 
 const SetRoleForm = () => {
-  const firebase = useContext(FirebaseContext);
+  const functions = useFunctions();
   const SetRoleSchema = yup.object().shape({
     email: yup
       .string()
@@ -45,7 +45,7 @@ const SetRoleForm = () => {
         }}
         validationSchema={SetRoleSchema}
         onSubmit={(values, actions) => {
-          firebase.functions
+          functions
             .httpsCallable('setRole')({
               email: values.email,
               role: values.role,
