@@ -4,7 +4,6 @@
     "indexes": "firestore.indexes.json"
   },
   "functions": {
-    "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run lint"],
     "source": "functions"
   },
   "hosting": {
@@ -34,6 +33,9 @@
     },
     "functions": {
       "port": "5001"
+    },
+    "hosting": {
+      "port": 5000
     }
   }
 }
