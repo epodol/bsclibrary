@@ -8,19 +8,14 @@ const EditBook = ({ volumeInfo }) => {
   return (
     <>
       <div className="pb-5 px-5">
-        {typeof volumeInfo.imageLinks !== 'undefined' &&
-          typeof volumeInfo.imageLinks.thumbnail !== 'undefined' && (
-            <div className="text-center">
-              <img
-                src={volumeInfo.imageLinks.thumbnail}
-                alt={
-                  typeof volumeInfo.title !== 'undefined'
-                    ? volumeInfo.title
-                    : 'Book Thumbnail'
-                }
-              />
-            </div>
-          )}
+        {volumeInfo.image && (
+          <div className="text-center">
+            <img
+              src={volumeInfo.image}
+              alt={volumeInfo.title || 'Book Thumbnail'}
+            />
+          </div>
+        )}
         <div className="text-center">
           <p className="lead">
             {volumeInfo.subtitle ? volumeInfo.subtitle : null}{' '}
@@ -28,7 +23,7 @@ const EditBook = ({ volumeInfo }) => {
               icon="edit"
               style={{ cursor: 'pointer' }}
               onClick={() => {
-                // console.log('edit subtitle');
+                console.log('edit subtitle');
               }}
             />
           </p>
