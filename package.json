@@ -20,7 +20,7 @@
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
-    "@testing-library/user-event": "^12.7.1",
+    "@testing-library/user-event": "^12.8.0",
     "firebase": "^8.2.8",
     "formik": "^2.2.6",
     "mdbreact": "^5.0.1",
