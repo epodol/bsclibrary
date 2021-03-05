@@ -21,7 +21,7 @@
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.7.1",
-    "firebase": "^8.2.8",
+    "firebase": "^8.2.10",
     "formik": "^2.2.6",
     "mdbreact": "^5.0.1",
     "prop-types": "^15.7.2",
