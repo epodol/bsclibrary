@@ -7,7 +7,7 @@
   "bugs": {
     "url": "https://github.com/epodol/bsclibrary/issues"
   },
-  "license": "CC-BY-NC-4.0",
+  "license": "MIT",
   "private": true,
   "repository": {
     "type": "git",
