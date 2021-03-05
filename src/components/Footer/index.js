@@ -1,10 +1,7 @@
 import React from 'react';
-import { MDBContainer, MDBFooter } from 'mdbreact';
+import { MDBContainer, MDBFooter, MDBTooltip } from 'mdbreact';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faCreativeCommons,
-  faCreativeCommonsNc,
-  faCreativeCommonsBy,
   faInstagram,
   faFacebook,
   faTwitter,
@@ -56,29 +53,26 @@ const Footer = () => (
     </div>
     <div className="footer-copyright text-center py-3">
       <MDBContainer fluid>
-        <a
-          rel="cc:attributionURL"
-          property="dct:title"
-          href="https://bsclibrary.com"
-        >
-          BASIS Scottsdale Library
-        </a>{' '}
-        by{' '}
-        <a
-          rel="cc:attributionURL dct:creator"
-          property="cc:attributionName"
-          href="https://github.com/epodol"
-        >
-          @epodol
-        </a>{' '}
-        is licensed under
-        <a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0">
-          {' '}
-          CC BY-NC 4.0
-          <FontAwesomeIcon icon={faCreativeCommons} size="lg" />
-          <FontAwesomeIcon icon={faCreativeCommonsNc} size="lg" />
-          <FontAwesomeIcon icon={faCreativeCommonsBy} size="lg" />
-        </a>
+        <MDBTooltip domElement placement="bottom">
+          <span>
+            <a
+              href="https://github.com/epodol/bsclibrary/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Open source on GitHub
+            </a>
+            <br />
+            <a
+              href="https://github.com/epodol/bsclibrary/blob/main/LICENSE/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Copyright &copy; 2021 BASIS Scottsdale Library
+            </a>
+          </span>
+          <span>Licenced under the MIT License</span>
+        </MDBTooltip>
       </MDBContainer>
     </div>
   </MDBFooter>
