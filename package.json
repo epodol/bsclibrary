@@ -20,7 +20,7 @@
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
-    "@testing-library/user-event": "^12.7.1",
+    "@testing-library/user-event": "^12.8.1",
     "firebase": "^8.2.10",
     "formik": "^2.2.6",
     "mdbreact": "^5.0.1",
@@ -28,7 +28,7 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.2",
+    "react-scripts": "4.0.3",
     "react-spring": "^8.0.27",
     "reactfire": "^3.0.0-rc.0",
     "yup": "^0.32.9"
@@ -71,7 +71,7 @@
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "firebase-tools": "^9.4.0",
+    "firebase-tools": "^9.5.0",
     "prettier": "^2.2.1"
   }
 }
