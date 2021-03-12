@@ -29,7 +29,7 @@ export const FirebaseProvider = ({ children }) => {
         if (process.env.NODE_ENV !== 'production') {
           firestore().useEmulator('localhost', 8080);
         }
-        return firestore().enablePersistence();
+        return firestore().enablePersistence({ synchronizeTabs: true });
       },
       suspense: true,
     }),
@@ -55,6 +55,7 @@ export const FirebaseProvider = ({ children }) => {
       if (user) {
         user.getIdTokenResult().then((claims) => {
           setFirebaseContextState({
+            user,
             viewBooks: claims.claims.role >= 100,
             canCheckout: claims.claims.role >= 300,
             canViewCheckouts: claims.claims.role >= 500,
@@ -63,6 +64,7 @@ export const FirebaseProvider = ({ children }) => {
         });
       } else {
         setFirebaseContextState({
+          user: null,
           viewBooks: false,
           canCheckout: false,
           canViewCheckouts: false,

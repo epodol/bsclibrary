@@ -34,6 +34,7 @@
     "yup": "^0.32.9"
   },
   "scripts": {
+    "postinstall": "cd functions && npm ci",
     "start": "react-scripts start",
     "emulators": "firebase emulators:start --import=./emulator-data",
     "emulators:export": "firebase emulators:start --import=./emulator-data --export-on-exit",

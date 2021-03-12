@@ -72,7 +72,9 @@ const TableBody = () => {
           <MDBRow>
             <MDBCol md="1">
               <MDBDropdown>
-                <MDBDropdownToggle caret>{search.field}</MDBDropdownToggle>
+                <MDBDropdownToggle caret color="green">
+                  {search.field}
+                </MDBDropdownToggle>
                 <MDBDropdownMenu color="secondary">
                   <MDBDropdownItem
                     active={search.field === 'title'}

@@ -1,7 +1,8 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const firebase = require('firebase');
 
-exports.setRole = functions.https.onCall(async (data, context) => {
+exports.addNewUser = functions.https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError(
       'unauthenticated',
@@ -28,46 +29,50 @@ exports.setRole = functions.https.onCall(async (data, context) => {
     );
   }
 
-  if (typeof data.email !== 'string' || typeof data.role !== 'number') {
+  if (
+    typeof data.email !== 'string' ||
+    typeof data.first_name !== 'string' ||
+    typeof data.last_name !== 'string' ||
+    typeof data.role !== 'number'
+  ) {
     throw new functions.https.HttpsError(
       'invalid-argument',
       'The function must be called with an email and role'
     );
   }
 
-  const userRecord = await admin
+  const newUser = await admin
     .auth()
-    .getUserByEmail(data.email)
-    .catch((error) => {
-      throw new functions.https.HttpsError('invalid-argument', error);
+    .createUser({
+      email: data.email,
+      emailVerified: false,
+      displayName: `${data.first_name} ${data.last_name}`,
+      disabled: false,
+      role: data.role,
+    })
+    .catch(() => {
+      throw new functions.https.HttpsError(
+        'already-exists',
+        'This user already exists'
+      );
     });
-
-  if (
-    typeof userRecord.customClaims !== 'undefined' &&
-    userRecord.customClaims.role === data.role
-  ) {
-    throw new functions.https.HttpsError(
-      'already-exists',
-      'This user already has this role.'
-    );
-  }
 
   await admin
     .auth()
-    .setCustomUserClaims(userRecord.uid, { role: data.role })
+    .setCustomUserClaims(newUser.uid, { role: data.role })
     .catch((error) => {
       throw new functions.https.HttpsError('internal', error);
     });
 
-  return admin
-    .auth()
-    .getUser(userRecord.uid)
-    .then((user) => ({
-      email: user.email,
-      uid: user.uid,
-      role: user.customClaims.role,
-    }))
-    .catch((error) => {
-      throw new functions.https.HttpsError('internal', error);
-    });
+  console.log(newUser);
+  return {
+    uid: newUser.uid,
+    email: newUser.email,
+    emailVerified: newUser.emailVerified,
+    displayName: newUser.displayName,
+    photoURL: newUser.photoURL,
+    phoneNumber: newUser.phoneNumber,
+    disabled: newUser.disabled,
+    role: data.role,
+  };
 });

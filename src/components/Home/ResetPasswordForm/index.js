@@ -4,7 +4,7 @@ import { Formik, Form } from 'formik';
 import * as yup from 'yup';
 import { useAuth } from 'reactfire';
 
-const SignInForm = ({ setShowResetPasswordForm }) => {
+const ResetPasswordForm = ({ setShowResetPasswordForm }) => {
   const auth = useAuth();
 
   const SignInSchema = yup.object().shape({
@@ -12,37 +12,41 @@ const SignInForm = ({ setShowResetPasswordForm }) => {
       .string()
       .email('Please enter a valid email')
       .required('Please enter your email'),
-    password: yup
-      .string('Please enter a valid password')
-      .required('Please enter your password'),
   });
 
   return (
     <div>
       <h3 className="text-center">
-        <MDBIcon icon="user" /> Sign In
+        <MDBIcon icon="lock" /> Reset Password
       </h3>
       <hr className="hr-dark" />
       <Formik
         initialValues={{
           email: '',
-          password: '',
         }}
         validationSchema={SignInSchema}
         onSubmit={async (values, actions) => {
           actions.setSubmitting(true);
+          const actionCodeSettings = {
+            url: window.location.href,
+            handleCodeInApp: true,
+          };
           await auth
-            .signInWithEmailAndPassword(values.email, values.password)
+            .sendPasswordResetEmail(values.email, actionCodeSettings)
+            .then(() => {
+              setShowResetPasswordForm(false);
+            })
             .catch((err) => {
-              if (err.code === 'auth/wrong-password') {
-                actions.setFieldError('password', 'Wrong Password');
+              if (err.code === 'auth/invalid-email') {
+                actions.setFieldError('email', 'Invalid email');
               } else if (err.code === 'auth/user-not-found') {
                 actions.setFieldError('email', 'User not Found');
               } else if (err.code === 'auth/user-disabled') {
                 actions.setFieldError('email', 'This user has been disabled');
               } else if (err.code === 'auth/invalid-email') {
                 actions.setFieldError('email', 'Please enter a valid email');
-              }
+              } else
+                actions.setFieldError('email', `Internal error: ${err.code}`);
             })
             .finally(() => {
               actions.setSubmitting(false);
@@ -77,46 +81,24 @@ const SignInForm = ({ setShowResetPasswordForm }) => {
                 {errors.email}
               </div>
             ) : null}
-            <MDBInput
-              id="password"
-              type="password"
-              className={
-                errors.password && (touched.password || submitCount > 1)
-                  ? 'is-invalid'
-                  : ''
-              }
-              label="Password"
-              icon="lock"
-              autoComplete="current-password"
-              value={values.password}
-              onChange={handleChange}
-            />
-            {errors.password && touched.password ? (
-              <div
-                className="invalid-feedback align-content-center"
-                style={{ display: 'inline' }}
-              >
-                {errors.password}
-              </div>
-            ) : null}
             <p
               className="btn-link font-small ml-1 font-weight-bold d-flex justify-content-end"
               aria-hidden="true"
               style={{ cursor: 'pointer' }}
               onClick={() => {
-                setShowResetPasswordForm(true);
+                setShowResetPasswordForm(false);
               }}
             >
-              Reset password
+              Sign In
             </p>
-            <div className="text-center mt-4 black-text">
+            <div className="text-center mt-5 mb-4">
               <MDBBtn
-                size="lg"
+                // className="ml-3 px-5"
                 color="orange"
                 type="submit"
                 disabled={isSubmitting}
               >
-                {!isSubmitting && <>Sign In</>}
+                {!isSubmitting && <>Send Email</>}
                 {isSubmitting && (
                   <div className="spinner-border" role="status">
                     <span className="sr-only">Loading...</span>
@@ -131,4 +113,4 @@ const SignInForm = ({ setShowResetPasswordForm }) => {
   );
 };
 
-export default SignInForm;
+export default ResetPasswordForm;

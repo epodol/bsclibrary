@@ -8,17 +8,20 @@ import {
   MDBContainer,
   MDBRow,
 } from 'mdbreact';
-import { useFirestore } from 'reactfire';
+import { useFirestore, useUser } from 'reactfire';
 import TableBody from './TableBody';
 import Loading from '../../Loading';
 
 const BooksTable = () => {
-  const firebase = useFirestore();
+  const firestore = useFirestore();
+  const fieldValue = useFirestore.FieldValue;
+
+  const user = useUser().data;
   const history = useHistory();
 
   return (
     <>
-      <MDBCard className="py-2 my-4 mx-5">
+      <MDBCard className="py-2 my-4 mx-5 mb-5">
         <MDBCardHeader className="rgba-green-strong m-4">
           <MDBContainer>
             <MDBRow>
@@ -33,15 +36,42 @@ const BooksTable = () => {
                   color="white"
                   className="px-3"
                   onClick={() => {
-                    firebase
+                    firestore
                       .collection('books')
                       .add({
                         featured: false,
-                        volumeInfo: {},
+                        volumeInfo: {
+                          authors: [],
+                          genres: [],
+                          description: '',
+                          image: '',
+                          isbn10: '',
+                          isbn13: '',
+                          grades: {
+                            grade0: false,
+                            grade1: false,
+                            grade2: false,
+                            grade3: false,
+                            grade4: false,
+                            grade5: false,
+                            grade6: false,
+                            grade7: false,
+                            grade8: false,
+                            grade9: false,
+                            grade10: false,
+                            grade11: false,
+                            grade12: false,
+                            grade13: false,
+                          },
+                          subtitle: '',
+                          title: '',
+                        },
                         copies: [],
+                        lastEditedBy: user.uid,
+                        lastEdited: fieldValue.serverTimestamp(),
                       })
                       .then((book) => {
-                        history.push(book.path, { edit: true });
+                        history.push(book.path, { editing: true });
                       });
                   }}
                 >
