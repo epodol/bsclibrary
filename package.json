@@ -20,8 +20,8 @@
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
-    "@testing-library/user-event": "^12.8.1",
-    "firebase": "^8.2.10",
+    "@testing-library/user-event": "^12.8.3",
+    "firebase": "^8.3.0",
     "formik": "^2.2.6",
     "mdbreact": "^5.0.1",
     "prop-types": "^15.7.2",
@@ -67,12 +67,12 @@
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jest": "^24.1.5",
+    "eslint-plugin-jest": "^24.2.1",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "firebase-tools": "^9.5.0",
+    "firebase-tools": "^9.6.0",
     "prettier": "^2.2.1"
   }
 }
