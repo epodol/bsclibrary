@@ -7,21 +7,25 @@ import {
   MDBListGroupItem,
   MDBContainer,
 } from 'mdbreact';
-import AddUserForm from './AddUserForm';
-import SetRoleForm from './SetRoleForm';
 
-const Admin = () => {
-  // 0: User Managment
-  // 1: Other
+import Introduction from './AboutTheLibrary/Introduction';
+import DueDates from './LibraryPolicies/DueDates';
+import MissingBooks from './LibraryPolicies/MissingBooks';
+import Renewing from './LibraryPolicies/Renewing';
+
+const About = () => {
+  // 0: About the Library
+  // 1: Library Policies
   const [currentMenu, setCurrentMenu] = useState('0');
 
-  // 0.0: Add New User
-  // 0.1: Get User
-  // 0.2: Set User Role
+  // 0.0: Introduction
+  // 1.0: Due Dates
+  // 1.1: Renewing
+  // 1.2: Missing Books
   const [currentComponent, setCurrentComponent] = useState('0.0');
   return (
     <>
-      <h1 className="flex-center m-4">Admin Panel</h1>
+      <h1 className="flex-center m-4">About</h1>
       <MDBContainer fluid>
         <MDBRow>
           <MDBCol md="3">
@@ -37,7 +41,7 @@ const Admin = () => {
                   color="success"
                   active={currentMenu === '0'}
                 >
-                  User Management
+                  About the Library
                 </MDBListGroupItem>
                 <MDBListGroupItem
                   hover
@@ -48,7 +52,7 @@ const Admin = () => {
                   color="success"
                   active={currentMenu === '1'}
                 >
-                  Other
+                  Library Policies
                 </MDBListGroupItem>
               </MDBListGroup>
 
@@ -61,23 +65,7 @@ const Admin = () => {
                     color="success"
                     active={currentComponent === '0.0'}
                   >
-                    Add New User
-                  </MDBListGroupItem>
-                  <MDBListGroupItem
-                    hover
-                    onClick={() => setCurrentComponent('0.1')}
-                    color="success"
-                    active={currentComponent === '0.1'}
-                  >
-                    Get a User&apos;s Info
-                  </MDBListGroupItem>
-                  <MDBListGroupItem
-                    hover
-                    onClick={() => setCurrentComponent('0.2')}
-                    color="success"
-                    active={currentComponent === '0.2'}
-                  >
-                    Set a User&apos;s Role
+                    Introduction
                   </MDBListGroupItem>
                 </MDBListGroup>
               )}
@@ -90,7 +78,23 @@ const Admin = () => {
                     color="success"
                     active={currentComponent === '1.0'}
                   >
-                    Coming soon
+                    Due Dates
+                  </MDBListGroupItem>
+                  <MDBListGroupItem
+                    hover
+                    onClick={() => setCurrentComponent('1.1')}
+                    color="success"
+                    active={currentComponent === '1.1'}
+                  >
+                    Missing Books
+                  </MDBListGroupItem>
+                  <MDBListGroupItem
+                    hover
+                    onClick={() => setCurrentComponent('1.2')}
+                    color="success"
+                    active={currentComponent === '1.2'}
+                  >
+                    Renewing
                   </MDBListGroupItem>
                 </MDBListGroup>
               )}
@@ -98,9 +102,18 @@ const Admin = () => {
           </MDBCol>
           <MDBCol md="9">
             <MDBJumbotron className="m-5">
-              {currentComponent === '0.0' && <AddUserForm />}
-              {currentComponent === '0.1' && <></>}
-              {currentComponent === '0.2' && <SetRoleForm />}
+              {currentComponent === '0.0' && <Introduction />}
+              {currentComponent === '1.0' && <DueDates />}
+              {currentComponent === '1.1' && <MissingBooks />}
+              {currentComponent === '1.2' && <Renewing />}
+              <div className="footer-copyright text-center py-3">
+                <MDBContainer fluid>
+                  <span className="font-italic">
+                    This information is subject to change. Always check your
+                    account for up-to-date information.
+                  </span>
+                </MDBContainer>
+              </div>
             </MDBJumbotron>
           </MDBCol>
         </MDBRow>
@@ -109,4 +122,4 @@ const Admin = () => {
   );
 };
 
-export default Admin;
+export default About;

@@ -3,10 +3,10 @@ import { MDBContainer, MDBFooter, MDBTooltip } from 'mdbreact';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faInstagram,
-  faFacebook,
-  faTwitter,
-  faDiscord,
-  faYoutube,
+  // faFacebook,
+  // faTwitter,
+  // faDiscord,
+  // faYoutube,
 } from '@fortawesome/free-brands-svg-icons';
 
 const Footer = () => (
@@ -16,16 +16,16 @@ const Footer = () => (
   >
     <div className="text-center">
       <ul className="list-unstyled list-inline">
-        <li className="list-inline-item">
+        {/* <li className="list-inline-item">
           <a className=" btn-sm btn-dribbble mx-3" href="https://twitter.com">
             <FontAwesomeIcon icon={faTwitter} size="3x" className="hoverable" />
           </a>
-        </li>
-        <li className="list-inline-item">
+        </li> */}
+        {/* <li className="list-inline-item">
           <a className=" btn-sm btn-dribbble mx-3" href="https://youtube.com">
             <FontAwesomeIcon icon={faYoutube} size="3x" className="hoverable" />
           </a>
-        </li>
+        </li> */}
         <li className="list-inline-item">
           <a className=" btn-sm btn-dribbble mx-3" href="https://instagram.com">
             <FontAwesomeIcon
@@ -35,12 +35,12 @@ const Footer = () => (
             />
           </a>
         </li>
-        <li className="list-inline-item">
+        {/* <li className="list-inline-item">
           <a className=" btn-sm btn-dribbble mx-3" href="https://discord.com">
             <FontAwesomeIcon icon={faDiscord} size="3x" className="hoverable" />
           </a>
-        </li>
-        <li className="list-inline-item">
+        </li> */}
+        {/* <li className="list-inline-item">
           <a className=" btn-sm btn-dribbble mx-3" href="https://facebook.com">
             <FontAwesomeIcon
               icon={faFacebook}
@@ -48,7 +48,7 @@ const Footer = () => (
               className="hoverable"
             />
           </a>
-        </li>
+        </li> */}
       </ul>
     </div>
     <div className="footer-copyright text-center py-3">

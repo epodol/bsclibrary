@@ -10,6 +10,8 @@ import {
 import { AuthCheck, useIdTokenResult, useUser } from 'reactfire';
 
 import Loading from '../Loading';
+import Contribute from '../Contribute';
+import About from '../About';
 
 import Navigation from '../Navigation';
 import Home from '../Home';
@@ -48,6 +50,12 @@ const Routing = () => {
                 <MyAccount />
               </AuthCheck>
             </Route>
+            <Route exact path="/about">
+              <About />
+            </Route>
+            <Route exact path="/contribute">
+              <Contribute />
+            </Route>
 
             <AuthCheck fallback={<Redirect to="/" exact />}>
               <Switch>
@@ -61,17 +69,25 @@ const Routing = () => {
                     <ProtectedRoute Component={DisplayBook} minRole="100" />
                   </Suspense>
                 </Route>
-                <Route path="/checkout" minrole="300">
-                  <CheckOut />
+                <Route path="/checkout">
+                  <Suspense fallback={<Loading />}>
+                    <ProtectedRoute Component={CheckOut} minRole="300" />
+                  </Suspense>
                 </Route>
-                <Route path="/checkin" minrole="300">
-                  <CheckIn />
+                <Route path="/checkin">
+                  <Suspense fallback={<Loading />}>
+                    <ProtectedRoute Component={CheckIn} minRole="300" />
+                  </Suspense>
                 </Route>
-                <Route path="/checkouts" minrole="500">
-                  <CheckOuts />
+                <Route path="/checkouts">
+                  <Suspense fallback={<Loading />}>
+                    <ProtectedRoute Component={CheckOuts} minRole="500" />
+                  </Suspense>
                 </Route>
-                <Route path="/admin" minrole="1000">
-                  <Admin />
+                <Route path="/admin">
+                  <Suspense fallback={<Loading />}>
+                    <ProtectedRoute Component={Admin} minRole="1000" />
+                  </Suspense>
                 </Route>
                 <Redirect to="/" exact />
               </Switch>

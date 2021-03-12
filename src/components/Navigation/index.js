@@ -27,6 +27,16 @@ const NavBarItems = () => {
   return (
     <>
       <MDBNavbarNav left>
+        <MDBNavItem active={location.pathname === '/about'}>
+          <MDBNavLink as={NavLink} to="/about">
+            About
+          </MDBNavLink>
+        </MDBNavItem>
+        <MDBNavItem active={location.pathname === '/contribute'}>
+          <MDBNavLink as={NavLink} to="/contribute">
+            Contribute
+          </MDBNavLink>
+        </MDBNavItem>
         {firebaseContext.viewBooks && (
           <MDBNavItem active={location.pathname === '/books'}>
             <MDBNavLink as={NavLink} to="/books">
@@ -68,13 +78,14 @@ const NavBarItems = () => {
           <MDBNavbarNav right>
             <MDBNavItem>
               <MDBDropdown>
-                <MDBDropdownToggle nav caret>
-                  <img
-                    src="https://mdbootstrap.com/img/Photos/Avatars/avatar-4.jpg"
-                    className="rounded-circle z-depth-0"
-                    style={{ height: '35px', padding: 0 }}
-                    alt=""
+                <MDBDropdownToggle nav caret className="py-0 pt-3">
+                  <MDBIcon
+                    icon="user"
+                    // size="2x"
+                    className="rounded-circle z-depth-0 mr-2"
+                    style={{ height: '35px', padding: 0, color: 'white' }}
                   />
+                  {firebaseContext?.user?.displayName || ''}
                 </MDBDropdownToggle>
                 <MDBDropdownMenu className="dropdown-default" right>
                   <MDBDropdownItem>

@@ -4,9 +4,11 @@ const admin = require('firebase-admin');
 exports.setBookQueryData = functions.firestore
   .document('books/{docId}')
   .onWrite(({ after }) => {
+    if (!after.exists) return null;
+
     const { volumeInfo = {} } = after.data();
 
-    if (!after.exists || Object.keys(volumeInfo).length < 1) return null;
+    if (Object.keys(volumeInfo).length < 1) return null;
 
     const set = {};
 
@@ -62,10 +64,30 @@ exports.setBookQueryData = functions.firestore
       set.authorsQuery = FieldValue.delete();
 
     // Genres
-    if (typeof volumeInfo.genres !== 'undefined')
-      set.genresQuery = volumeInfo.genres.map((v) => v.toLowerCase());
-    else if (typeof volumeInfo.genresQuery !== 'undefined')
+    if (typeof volumeInfo.genres !== 'undefined') {
+      // set.genresQuery = volumeInfo.genres.map((v) => v.toLowerCase());
+      set.genresQuery = [];
+      volumeInfo.genres.map((v) =>
+        v
+          .toLowerCase()
+          .split(' ')
+          .forEach((item) => {
+            set.genresQuery.push(item);
+          })
+      );
+    } else if (typeof volumeInfo.genresQuery !== 'undefined')
       set.genresQuery = FieldValue.delete();
 
+    if (
+      JSON.stringify(volumeInfo.titleQuery) ===
+        JSON.stringify(set.titleQuery) &&
+      JSON.stringify(volumeInfo.authorsQuery) ===
+        JSON.stringify(set.authorsQuery) &&
+      JSON.stringify(volumeInfo.genresQuery) === JSON.stringify(set.genresQuery)
+    ) {
+      console.log('No need to change anything.');
+      return null;
+    }
+    console.log('WRITEING ');
     return after.ref.set({ volumeInfo: set }, { merge: true });
   });

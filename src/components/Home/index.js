@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   MDBMask,
   MDBRow,
@@ -12,13 +12,20 @@ import {
   MDBAlert,
 } from 'mdbreact';
 import './home.css';
+import { useHistory } from 'react-router';
+
 import SignInForm from './SignInForm';
+import ResetPasswordForm from './ResetPasswordForm';
 
 const Home = (props, { location }) => {
+  const history = useHistory();
+
   const displayAuthError =
     location && location.state
       ? location.state.error.type === 'auth-required'
       : false;
+
+  const [showResetPasswordForm, setShowResetPasswordForm] = useState(false);
 
   return (
     <div id="classicformpage">
@@ -48,14 +55,31 @@ const Home = (props, { location }) => {
                 BASIS Scottsdale Library
               </h1>
               <hr className="hr-dark" />
-              <h6 className="mb-4">Cool text about the library</h6>
-              <MDBBtn>Learn More</MDBBtn>
+              <h6 className="mb-4 font-italic">Coming Soon</h6>
+              <MDBBtn
+                onClick={() =>
+                  history.push({
+                    pathname: '/about',
+                  })
+                }
+              >
+                Learn More
+              </MDBBtn>
             </MDBAnimation>
             <MDBCol md="6" m="5" className="mb-4">
               <MDBAnimation type="fadeInRight" delay=".5s">
                 <MDBCard id="classic-card" className="">
                   <MDBCardBody>
-                    <SignInForm />
+                    {showResetPasswordForm && (
+                      <ResetPasswordForm
+                        setShowResetPasswordForm={setShowResetPasswordForm}
+                      />
+                    )}
+                    {!showResetPasswordForm && (
+                      <SignInForm
+                        setShowResetPasswordForm={setShowResetPasswordForm}
+                      />
+                    )}
                   </MDBCardBody>
                 </MDBCard>
               </MDBAnimation>

@@ -70,12 +70,7 @@ const FeaturedBooks = () => {
               {
                 volumeInfo: {
                   title = 'Unknown book',
-                  imageLinks: {
-                    thumbnail = 'https://www.abbeville.com/assets/common/images/edition_placeholder.png',
-                  } = {
-                    thumbnail:
-                      'https://www.abbeville.com/assets/common/images/edition_placeholder.png',
-                  },
+                  image = 'https://www.abbeville.com/assets/common/images/edition_placeholder.png',
                 },
                 id,
               },
@@ -91,7 +86,7 @@ const FeaturedBooks = () => {
                     >
                       <img
                         className="img-fluid mx-auto z-depth-3"
-                        src={thumbnail}
+                        src={image}
                         style={{ height: 250 }}
                         alt={`${title} | Cover`}
                       />

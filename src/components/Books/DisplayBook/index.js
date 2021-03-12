@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { useFirestoreDocData, useFirestore } from 'reactfire';
 import {
   MDBContainer,
@@ -18,6 +18,7 @@ import EditBook from './EditBook';
 const Book = () => {
   const { id } = useParams();
   const location = useLocation();
+  const history = useHistory();
   const firestore = useFirestore();
   const ref = firestore.collection('books').doc(id);
   const { data } = useFirestoreDocData(ref, {
@@ -26,18 +27,14 @@ const Book = () => {
   const { volumeInfo, featured } = data;
   const firebaseContext = useContext(FirebaseContext);
 
-  const [editing, setEditing] = useState(
-    typeof location?.state?.editing !== 'undefined'
-      ? location?.state?.editing
-      : false
-  );
+  const [editing, setEditing] = useState(location?.state?.editing || false);
 
   if (typeof volumeInfo === 'undefined') {
     return <h1>Book Not Found!</h1>;
   }
 
   return (
-    <MDBContainer className="my-4">
+    <MDBContainer className="my-5">
       <MDBRow>
         <MDBCol>
           <MDBCard>
@@ -47,16 +44,32 @@ const Book = () => {
                   <MDBCol size="2">
                     {firebaseContext.isAdmin && (
                       <MDBTooltip placement="bottom">
-                        <MDBBtn outline className="px-3" color="danger">
+                        <MDBBtn
+                          outline
+                          className="px-3"
+                          color="danger"
+                          onClick={() => {
+                            ref.delete();
+                            history.push({
+                              pathname: '/books',
+                            });
+                          }}
+                        >
                           <MDBIcon icon="trash" />
                         </MDBBtn>
-                        <div>Delete Book</div>
+                        <div>
+                          Delete Book <br />
+                          (This option will not be available in a future
+                          release.)
+                        </div>
                       </MDBTooltip>
                     )}
                   </MDBCol>
                   <MDBCol className="text-center" size="8">
                     {typeof volumeInfo.title !== 'undefined' && (
-                      <h1 className="hr-bold">{volumeInfo.title}</h1>
+                      <h1 className="hr-bold font-italic">
+                        {volumeInfo.title}
+                      </h1>
                     )}
                   </MDBCol>
                   <MDBCol className="text-right" size="2">
@@ -95,7 +108,13 @@ const Book = () => {
               </MDBContainer>
             </MDBCardHeader>
             {!editing && <ViewBook volumeInfo={volumeInfo} />}
-            {editing && <EditBook volumeInfo={volumeInfo} />}
+            {editing && (
+              <EditBook
+                volumeInfo={volumeInfo}
+                bookID={id}
+                setEditing={setEditing}
+              />
+            )}
           </MDBCard>
         </MDBCol>
       </MDBRow>
