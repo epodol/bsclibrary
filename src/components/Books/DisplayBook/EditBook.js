@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MDBBadge, MDBBtn, MDBIcon, MDBInput, MDBInputGroup } from 'mdbreact';
 import { Formik, Form, FieldArray } from 'formik';
 import * as yup from 'yup';
+<<<<<<< HEAD
 import { useFirestore, useUser } from 'reactfire';
 
 const EditBook = ({ volumeInfo, bookID, setEditing }) => {
@@ -9,6 +10,11 @@ const EditBook = ({ volumeInfo, bookID, setEditing }) => {
 
   const user = useUser().data;
 
+=======
+import { useFirestore } from 'reactfire';
+
+const EditBook = ({ volumeInfo, bookID, setEditing }) => {
+>>>>>>> main
   const EditBookSchema = yup.object().shape({
     authors: yup.array().of(yup.string()),
     genres: yup.array().of(yup.string()),

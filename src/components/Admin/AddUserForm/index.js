@@ -51,15 +51,22 @@ const AddUserForm = () => {
           role: '',
         }}
         validationSchema={SetRoleSchema}
+<<<<<<< HEAD
         onSubmit={async (values, actions) => {
           actions.setSubmitting(true);
           await functions
+=======
+        onSubmit={(values, actions) => {
+          actions.setSubmitting(true);
+          functions
+>>>>>>> main
             .httpsCallable('addNewUser')({
               email: values.email,
               first_name: values.first_name,
               last_name: values.last_name,
               role: values.role,
             })
+<<<<<<< HEAD
             .then((newUser) => {
               const actionCodeSettings = {
                 url: 'https://bsclibrary.net',
@@ -69,6 +76,9 @@ const AddUserForm = () => {
                 newUser.data.email,
                 actionCodeSettings
               );
+=======
+            .then((result) => {
+>>>>>>> main
               actions.setFieldValue('email', '', true);
               actions.setFieldTouched('email', false, true);
               actions.setFieldValue('first_name', '', true);
@@ -77,10 +87,17 @@ const AddUserForm = () => {
               actions.setFieldTouched('last_name', false, true);
               setAlert({
                 show: true,
+<<<<<<< HEAD
                 user: newUser.data.displayName
                   ? newUser.data.displayName
                   : newUser.data.email,
                 email: newUser.data.email,
+=======
+                user: result.data.displayName
+                  ? result.data.displayName
+                  : result.data.email,
+                email: result.data.email,
+>>>>>>> main
               });
             })
             .catch((err) => {

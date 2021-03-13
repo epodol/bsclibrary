@@ -22,9 +22,12 @@ const Admin = () => {
   return (
     <>
       <h1 className="flex-center m-4">Admin Panel</h1>
+<<<<<<< HEAD
       <p className="flex-center font-italic">
         This page is still a work in progress.
       </p>
+=======
+>>>>>>> main
       <MDBContainer fluid>
         <MDBRow>
           <MDBCol md="3">
