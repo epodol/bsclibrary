@@ -2,9 +2,13 @@ import React, { useState } from 'react';
 import { MDBBadge, MDBBtn, MDBIcon, MDBInput, MDBInputGroup } from 'mdbreact';
 import { Formik, Form, FieldArray } from 'formik';
 import * as yup from 'yup';
-import { useFirestore } from 'reactfire';
+import { useFirestore, useUser } from 'reactfire';
 
 const EditBook = ({ volumeInfo, bookID, setEditing }) => {
+  const fieldValue = useFirestore.FieldValue;
+
+  const user = useUser().data;
+
   const EditBookSchema = yup.object().shape({
     authors: yup.array().of(yup.string()),
     genres: yup.array().of(yup.string()),
@@ -97,6 +101,8 @@ const EditBook = ({ volumeInfo, bookID, setEditing }) => {
                 subtitle: values.subtitle,
                 title: values.title,
               },
+              lastEditedBy: user.uid,
+              lastEdited: fieldValue.serverTimestamp(),
             },
             { merge: true }
           );

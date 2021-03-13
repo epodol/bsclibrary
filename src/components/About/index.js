@@ -26,6 +26,9 @@ const About = () => {
   return (
     <>
       <h1 className="flex-center m-4">About</h1>
+      <p className="flex-center font-italic">
+        This page is still a work in progress.
+      </p>
       <MDBContainer fluid>
         <MDBRow>
           <MDBCol md="3">

@@ -66,7 +66,6 @@ const BooksTable = () => {
                           subtitle: '',
                           title: '',
                         },
-                        copies: [],
                         lastEditedBy: user.uid,
                         lastEdited: fieldValue.serverTimestamp(),
                       })

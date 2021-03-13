@@ -1,54 +1,96 @@
-name: Continuous Integration
+name: CI
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
 
 jobs:
-  build_and_test:
-    name: Build and Test
+  prettier:
+    name: Prettier Tests
     runs-on: ubuntu-latest
-    env:
-      REACT_APP_FIREBASE_API_KEY: ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
-      REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.REACT_APP_FIREBASE_AUTH_DOMAIN }}
-      REACT_APP_FIREBASE_DATABASE_URL: ${{ secrets.REACT_APP_FIREBASE_DATABASE_URL }}
-      REACT_APP_FIREBASE_PROJECT_ID: ${{ secrets.REACT_APP_FIREBASE_PROJECT_ID }}
-      REACT_APP_FIREBASE_STORAGE_BUCKET: ${{ secrets.REACT_APP_FIREBASE_STORAGE_BUCKET }}
-      REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.REACT_APP_FIREBASE_MESSAGING_SENDER_ID }}
-      REACT_APP_FIREBASE_APP_ID: ${{ secrets.REACT_APP_FIREBASE_APP_ID }}
-      REACT_APP_FIREBASE_MEASUREMENT_ID: ${{ secrets.REACT_APP_FIREBASE_MEASUREMENT_ID }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      - name: Use Node.js 12
-        uses: actions/setup-node@v1
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
         with:
-          node-version: '12'
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
-          npm ci --no-optional
+          npm ci --prefer-offline --no-audit
           cd functions
-          npm ci --no-optional
+          npm ci --prefer-offline --no-audit
 
-      - name: Prettier Tests
+      - name: Run Prettier Tests
         run: npm run prettier
 
-      - name: ESLint Tests
+  eslint:
+    name: ESLint Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install Dependencies
+        run: |
+          npm ci --prefer-offline --no-audit
+          cd functions
+          npm ci --prefer-offline --no-audit
+
+      - name: Run ESLint Tests
         run: npm run eslint
 
-      - name: Jest Tests
-        run: npm run test
+  jest:
+    name: React Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
 
-      - name: Build
-        run: npm run build
-
-      - name: Deploy to Preview Channel
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_BASIS_SCOTTSDALE_LIBRARY }}'
-          expires: 30d
-          projectId: basis-scottsdale-library
+      - name: Cache node modules
+        uses: actions/cache@v2
         env:
-          FIREBASE_CLI_PREVIEWS: hostingchannels
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install Dependencies
+        run: |
+          npm ci --prefer-offline --no-audit
+          cd functions
+          npm ci --prefer-offline --no-audit
+
+      - name: Run react-scripts Tests
+        run: npm run test
+        env:
+          REACT_APP_FIREBASE_API_KEY: AIzaSyDcJMYRqjq9HVPN5651DUQJ5LtudV4VOro
+          REACT_APP_FIREBASE_AUTH_DOMAIN: basis-scottsdale-library.firebaseapp.com
+          REACT_APP_FIREBASE_DATABASE_URL: https://basis-scottsdale-library.firebaseio.com
+          REACT_APP_FIREBASE_PROJECT_ID: basis-scottsdale-library
+          REACT_APP_FIREBASE_STORAGE_BUCKET: basis-scottsdale-library.appspot.com
+          REACT_APP_FIREBASE_APP_ID: 1:547349848920:web:05b2531ebd920c8716bb2d

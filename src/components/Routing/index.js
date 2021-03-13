@@ -15,7 +15,7 @@ import About from '../About';
 
 import Navigation from '../Navigation';
 import Home from '../Home';
-import MyAccount from '../MyAccount';
+import Account from '../Account';
 import Admin from '../Admin';
 import Books from '../Books';
 import DisplayBook from '../Books/DisplayBook';
@@ -47,7 +47,7 @@ const Routing = () => {
           <Switch>
             <Route exact path="/">
               <AuthCheck fallback={<Home />}>
-                <MyAccount />
+                <Account />
               </AuthCheck>
             </Route>
             <Route exact path="/about">

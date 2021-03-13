@@ -1,10 +1,9 @@
 import React from 'react';
 
-const CheckOut = () => (
+const Account = () => (
   <div className="text-center lead m-5">
-    <h1>Check Out</h1>
+    <h1>Account</h1>
     <p className="font-italic">This page is still a work in progress.</p>
   </div>
 );
-
-export default CheckOut;
+export default Account;

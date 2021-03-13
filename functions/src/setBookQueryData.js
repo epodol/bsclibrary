@@ -85,9 +85,7 @@ exports.setBookQueryData = functions.firestore
         JSON.stringify(set.authorsQuery) &&
       JSON.stringify(volumeInfo.genresQuery) === JSON.stringify(set.genresQuery)
     ) {
-      console.log('No need to change anything.');
       return null;
     }
-    console.log('WRITEING ');
     return after.ref.set({ volumeInfo: set }, { merge: true });
   });
