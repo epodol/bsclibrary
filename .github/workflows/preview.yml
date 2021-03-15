@@ -31,9 +31,9 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          npm ci --prefer-offline --no-audit
+          npm ci --prefer-offline --no-audit --no-optional
           cd functions
-          npm ci --prefer-offline --no-audit
+          npm ci --prefer-offline --no-audit --no-optional
 
       - name: Build
         run: npm run build
