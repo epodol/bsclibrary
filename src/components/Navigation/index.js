@@ -89,7 +89,7 @@ const NavBarItems = () => {
                 </MDBDropdownToggle>
                 <MDBDropdownMenu className="dropdown-default" right>
                   <MDBDropdownItem>
-                    <MDBNavLink to="/myaccount" className="text-dark p-1">
+                    <MDBNavLink to="/" className="text-dark p-1">
                       <MDBIcon icon="home" /> My Account
                     </MDBNavLink>
                   </MDBDropdownItem>

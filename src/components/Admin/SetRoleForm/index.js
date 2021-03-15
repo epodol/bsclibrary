@@ -54,8 +54,9 @@ const SetRoleForm = () => {
           role: '',
         }}
         validationSchema={SetRoleSchema}
-        onSubmit={(values, actions) => {
-          functions
+        onSubmit={async (values, actions) => {
+          actions.setSubmitting(true);
+          await functions
             .httpsCallable('setRole')({
               email: values.email,
               role: values.role,
@@ -87,8 +88,10 @@ const SetRoleForm = () => {
               } else {
                 actions.setFieldError('email', 'An internal error occurred.');
               }
+            })
+            .finally(() => {
+              actions.setSubmitting(false);
             });
-          actions.setSubmitting(false);
         }}
       >
         {({ values, touched, errors, isSubmitting, handleChange }) => (
@@ -127,7 +130,12 @@ const SetRoleForm = () => {
             ) : null}
             <div className="text-center mt-4 black-text">
               <MDBBtn color="orange" type="submit" disabled={isSubmitting}>
-                Set Role
+                {!isSubmitting && <>Set Role</>}
+                {isSubmitting && (
+                  <div className="spinner-border" role="status">
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                )}
               </MDBBtn>
             </div>
           </Form>

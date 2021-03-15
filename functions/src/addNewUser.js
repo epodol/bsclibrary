@@ -1,6 +1,5 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-const firebase = require('firebase');
 
 exports.addNewUser = functions.https.onCall(async (data, context) => {
   if (!context.auth) {
@@ -64,7 +63,6 @@ exports.addNewUser = functions.https.onCall(async (data, context) => {
       throw new functions.https.HttpsError('internal', error);
     });
 
-  console.log(newUser);
   return {
     uid: newUser.uid,
     email: newUser.email,

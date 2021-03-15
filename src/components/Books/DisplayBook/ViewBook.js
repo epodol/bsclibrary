@@ -81,22 +81,24 @@ const ViewBook = ({ volumeInfo }) => {
             </h3>
           )}
         <MDBRow>
-          {typeof volumeInfo.isbn10 !== 'undefined' && (
-            <h3 className="mx-3">
-              ISBN-10:
-              <MDBBadge color="light" pill className="mx-1">
-                {volumeInfo.isbn10}
-              </MDBBadge>
-            </h3>
-          )}
-          {typeof volumeInfo.isbn13 !== 'undefined' && (
-            <h3>
-              ISBN-13:
-              <MDBBadge color="light" pill className="mx-1">
-                {volumeInfo.isbn13}
-              </MDBBadge>
-            </h3>
-          )}
+          {typeof volumeInfo.isbn10 !== 'undefined' &&
+            volumeInfo?.isbn10?.length > 0 && (
+              <h3 className="mx-3">
+                ISBN-10:
+                <MDBBadge color="light" pill className="mx-1">
+                  {volumeInfo.isbn10}
+                </MDBBadge>
+              </h3>
+            )}
+          {typeof volumeInfo.isbn13 !== 'undefined' &&
+            volumeInfo?.isbn13?.length > 0 && (
+              <h3>
+                ISBN-13:
+                <MDBBadge color="light" pill className="mx-1">
+                  {volumeInfo.isbn13}
+                </MDBBadge>
+              </h3>
+            )}
         </MDBRow>
 
         <MDBRow>

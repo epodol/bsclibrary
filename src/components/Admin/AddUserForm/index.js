@@ -8,10 +8,11 @@ import {
 } from 'mdbreact';
 import { Form, Formik } from 'formik';
 import * as yup from 'yup';
-import { useFunctions } from 'reactfire';
+import { useAuth, useFunctions } from 'reactfire';
 
 const AddUserForm = () => {
   const functions = useFunctions();
+  const auth = useAuth();
   const SetRoleSchema = yup.object().shape({
     email: yup
       .string()
@@ -50,16 +51,24 @@ const AddUserForm = () => {
           role: '',
         }}
         validationSchema={SetRoleSchema}
-        onSubmit={(values, actions) => {
+        onSubmit={async (values, actions) => {
           actions.setSubmitting(true);
-          functions
+          await functions
             .httpsCallable('addNewUser')({
               email: values.email,
               first_name: values.first_name,
               last_name: values.last_name,
               role: values.role,
             })
-            .then((result) => {
+            .then((newUser) => {
+              const actionCodeSettings = {
+                url: 'https://bsclibrary.net',
+                handleCodeInApp: true,
+              };
+              auth.sendPasswordResetEmail(
+                newUser.data.email,
+                actionCodeSettings
+              );
               actions.setFieldValue('email', '', true);
               actions.setFieldTouched('email', false, true);
               actions.setFieldValue('first_name', '', true);
@@ -68,10 +77,10 @@ const AddUserForm = () => {
               actions.setFieldTouched('last_name', false, true);
               setAlert({
                 show: true,
-                user: result.data.displayName
-                  ? result.data.displayName
-                  : result.data.email,
-                email: result.data.email,
+                user: newUser.data.displayName
+                  ? newUser.data.displayName
+                  : newUser.data.email,
+                email: newUser.data.email,
               });
             })
             .catch((err) => {

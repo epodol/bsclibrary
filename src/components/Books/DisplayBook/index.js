@@ -73,22 +73,25 @@ const Book = () => {
                     )}
                   </MDBCol>
                   <MDBCol className="text-right" size="2">
-                    <MDBTooltip placement="bottom">
-                      <MDBBtn
-                        color="yellow"
-                        className="px-3"
-                        disabled={!firebaseContext.isAdmin}
-                        onClick={() => {
-                          ref.update({
-                            featured: !featured,
-                          });
-                        }}
-                      >
-                        <MDBIcon fas={featured} far={!featured} icon="star" />
-                      </MDBBtn>
-                      <div>Featured Book</div>
-                    </MDBTooltip>
-                    {firebaseContext.isAdmin && (
+                    {(data.featured ||
+                      firebaseContext?.claims?.role >= 500) && (
+                      <MDBTooltip placement="bottom">
+                        <MDBBtn
+                          color="yellow"
+                          className="px-3"
+                          disabled={!firebaseContext.isAdmin}
+                          onClick={() => {
+                            ref.update({
+                              featured: !featured,
+                            });
+                          }}
+                        >
+                          <MDBIcon fas={featured} far={!featured} icon="star" />
+                        </MDBBtn>
+                        <div>Featured Book</div>
+                      </MDBTooltip>
+                    )}
+                    {firebaseContext?.claims?.role >= 500 && (
                       <MDBTooltip placement="bottom">
                         <MDBBtn
                           outline

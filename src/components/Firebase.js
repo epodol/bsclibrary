@@ -56,12 +56,20 @@ export const FirebaseProvider = ({ children }) => {
         user.getIdTokenResult().then((claims) => {
           setFirebaseContextState({
             user,
+            claims: claims.claims,
             viewBooks: claims.claims.role >= 100,
             canCheckout: claims.claims.role >= 300,
             canViewCheckouts: claims.claims.role >= 500,
             isAdmin: claims.claims.role >= 1000,
           });
         });
+        if (!user.emailVerified) {
+          const actionCodeSettings = {
+            url: window.location.href,
+            handleCodeInApp: true,
+          };
+          user.sendEmailVerification(actionCodeSettings);
+        }
       } else {
         setFirebaseContextState({
           user: null,

@@ -9,6 +9,7 @@ const Contribute = () => {
     <>
       <div className="text-center mt-3">
         <h2>How can you contribute?</h2>
+        <p className="font-italic">This page is still a work in progress.</p>
         <MDBBtnGroup size="md" className="">
           <MDBBtn
             color="dark-green"

@@ -1,13 +1,11 @@
-name: CD
+name: Firebase Preview Channel
 
 on:
-  release:
-    types:
-      - created
+  pull_request:
 
 jobs:
-  deploy:
-    name: Deploy to Firebase
+  build:
+    name: Build
     if: github.repository_owner == 'epodol'
     runs-on: ubuntu-latest
     steps:
@@ -50,16 +48,8 @@ jobs:
       - name: Deploy to Preview Channel
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_BASIS_SCOTTSDALE_LIBRARY }}'
-          expires: 30d
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BASIS_SCOTTSDALE_LIBRARY }}
           projectId: basis-scottsdale-library
-          channelId: preview
-
-      - name: Deploy to Firebase
-        if: '!github.event.release.prerelease'
-        uses: w9jds/firebase-action@master
-        with:
-          args: deploy
         env:
-          FIREBASE_TOKEN: '${{ secrets.FIREBASE_TOKEN }}'
+          FIREBASE_CLI_PREVIEWS: hostingchannels
