@@ -78,10 +78,10 @@ const EditBook = ({ volumeInfo, bookID, setEditing }) => {
               volumeInfo: {
                 authors: values.authors,
                 genres: values.genres,
-                description: values.description,
-                image: values.image,
-                isbn10: values.isbn10,
-                isbn13: values.isbn13,
+                description: values.description.trim(),
+                image: values.image.trim(),
+                isbn10: values.isbn10.trim(),
+                isbn13: values.isbn13.trim(),
                 grades: {
                   grade0: values.grade0,
                   grade1: values.grade1,
@@ -98,8 +98,8 @@ const EditBook = ({ volumeInfo, bookID, setEditing }) => {
                   grade12: values.grade12,
                   grade13: values.grade13,
                 },
-                subtitle: values.subtitle,
-                title: values.title,
+                subtitle: values.subtitle.trim(),
+                title: values.title.trim(),
               },
               lastEditedBy: user.uid,
               lastEdited: fieldValue.serverTimestamp(),
@@ -117,7 +117,18 @@ const EditBook = ({ volumeInfo, bookID, setEditing }) => {
           handleChange,
           submitCount,
         }) => (
-          <Form noValidate className="pb-5 px-5">
+          <Form
+            noValidate
+            className="pb-5 px-5"
+            onKeyDown={(keyEvent) => {
+              if (
+                (keyEvent.key || keyEvent.code) === 'Enter' &&
+                keyEvent.target.id !== 'description'
+              ) {
+                keyEvent.preventDefault();
+              }
+            }}
+          >
             <MDBInput
               id="title"
               type="text"
@@ -226,7 +237,7 @@ const EditBook = ({ volumeInfo, bookID, setEditing }) => {
                     onChange={(event) => setNewAuthor(event.target.value)}
                     onIconClick={() => {
                       if (newAuthor !== '') {
-                        arrayHelpers.push(newAuthor);
+                        arrayHelpers.push(newAuthor.trim());
                         setNewAuthor('');
                       }
                     }}
@@ -266,7 +277,7 @@ const EditBook = ({ volumeInfo, bookID, setEditing }) => {
                     onChange={(event) => setNewGenre(event.target.value)}
                     onIconClick={() => {
                       if (newGenre !== '') {
-                        arrayHelpers.push(newGenre);
+                        arrayHelpers.push(newGenre.trim());
                         setNewGenre('');
                       }
                     }}
@@ -281,7 +292,6 @@ const EditBook = ({ volumeInfo, bookID, setEditing }) => {
               prepend="ISBN (No spaces or dashes)"
               inputs={
                 <>
-                  {/* <MDBInput noTag type="text" hint="Type sth" /> */}
                   <MDBInput
                     noTag
                     id="isbn10"
@@ -493,8 +503,6 @@ const EditBook = ({ volumeInfo, bookID, setEditing }) => {
                 onChange={handleChange}
               />
             </div>
-            <hr className="hr-dark" />
-            <h2>Copies</h2>
             <hr className="hr-dark" />
             <div className="text-center mt-4 black-text">
               <MDBBtn
