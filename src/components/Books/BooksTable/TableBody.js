@@ -41,18 +41,18 @@ const TableBody = () => {
     history.push(location.pathname);
   }, [history, location.pathname]);
 
-  const booksCollection = useFirestore()
-    .collection('books')
-    .orderBy(`volumeInfo.${query.field}`);
+  const booksCollection = useFirestore().collection('books');
 
   const booksQueryRef =
     query.search.length > 0
-      ? booksCollection.where(
-          `volumeInfo.${query.field}Query`,
-          'array-contains-any',
-          query.search.toLowerCase().split(' ')
-        )
-      : booksCollection;
+      ? booksCollection
+          .where(
+            `volumeInfo.${query.field}Query`,
+            'array-contains-any',
+            query.search.toLowerCase().split(' ')
+          )
+          .orderBy(`volumeInfo.${query.field}`)
+      : booksCollection.where(`copiesAvailable`, '>', 0);
 
   const books = useFirestoreCollectionData(booksQueryRef.limit(25), {
     idField: 'id',
@@ -64,7 +64,7 @@ const TableBody = () => {
         <form
           className="md-form my-0 mx-auto"
           onSubmit={(event) => {
-            setQuery({ search: search.search, field: search.field });
+            setQuery({ search: search.search.trim(), field: search.field });
             event.preventDefault();
           }}
           // style={{ width: '100%' }}
@@ -131,23 +131,29 @@ const TableBody = () => {
             <th className="h4">Title</th>
             <th className="h4">Authors</th>
             <th className="h4">Genres</th>
+            <th className="h4">Availability</th>
           </tr>
         </MDBTableHead>
         <MDBTableBody>
           {books.map(
             ({
               id,
-              volumeInfo: { title } = '',
+              copiesCount = 0,
+              copiesAvailable = 0,
+              volumeInfo: { title, subtitle } = '',
               volumeInfo: { authors, genres } = [],
             }) => (
               <Book
                 key={id}
                 id={id}
                 title={title}
+                subtitle={subtitle}
                 authors={authors}
                 genres={genres}
                 setQuery={setQuery}
                 setSearch={setSearch}
+                copiesCount={copiesCount}
+                copiesAvailable={copiesAvailable}
               />
             )
           )}

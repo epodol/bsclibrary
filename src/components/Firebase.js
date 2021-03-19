@@ -1,54 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import {
-  useFirebaseApp,
-  useAuth,
-  preloadFirestore,
-  preloadAuth,
-  preloadFunctions,
-} from 'reactfire';
+import { useAuth } from 'reactfire';
 
 const FirebaseContext = React.createContext({});
 
 export const FirebaseProvider = ({ children }) => {
-  const firebaseApp = useFirebaseApp();
   const auth = useAuth();
-  if (process.env.NODE_ENV !== 'production') {
-    auth.useEmulator('http://localhost:9099/');
-  }
-  const [firebaseContextState, setFirebaseContextState] = useState({
-    viewBooks: false,
-    canCheckout: false,
-    canViewCheckouts: false,
-    isAdmin: false,
-  });
 
-  Promise.all([
-    preloadFirestore({
-      firebaseApp,
-      setup(firestore) {
-        if (process.env.NODE_ENV !== 'production') {
-          firestore().useEmulator('localhost', 8080);
-        }
-        return firestore().enablePersistence({ synchronizeTabs: true });
-      },
-      suspense: true,
-    }),
-    preloadAuth({
-      firebaseApp,
-      suspense: true,
-    }),
-    preloadFunctions({
-      firebaseApp,
-      setup(functions) {
-        if (process.env.NODE_ENV !== 'production') {
-          functions().useEmulator('localhost', 5001);
-        }
-      },
-      suspense: true,
-    }),
-  ])
-    .then()
-    .catch();
+  const [firebaseContextState, setFirebaseContextState] = useState({
+    user: null,
+    claims: null,
+  });
 
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
@@ -57,10 +18,6 @@ export const FirebaseProvider = ({ children }) => {
           setFirebaseContextState({
             user,
             claims: claims.claims,
-            viewBooks: claims.claims.role >= 100,
-            canCheckout: claims.claims.role >= 300,
-            canViewCheckouts: claims.claims.role >= 500,
-            isAdmin: claims.claims.role >= 1000,
           });
         });
         if (!user.emailVerified) {
@@ -73,10 +30,7 @@ export const FirebaseProvider = ({ children }) => {
       } else {
         setFirebaseContextState({
           user: null,
-          viewBooks: false,
-          canCheckout: false,
-          canViewCheckouts: false,
-          isAdmin: false,
+          claims: null,
         });
       }
     });

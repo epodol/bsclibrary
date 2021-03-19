@@ -1,5 +1,5 @@
 import React from 'react';
-import { MDBBadge, MDBRow } from 'mdbreact';
+import { MDBBadge, MDBRow, MDBTypography, MDBBox } from 'mdbreact';
 import { useHistory } from 'react-router-dom';
 
 const ViewBook = ({ volumeInfo }) => {
@@ -9,8 +9,10 @@ const ViewBook = ({ volumeInfo }) => {
     <>
       <div className="pb-5 px-5">
         {volumeInfo.image && (
-          <div className="text-center">
+          <div className="mb-3">
             <img
+              style={{ maxHeight: 500 }}
+              className="rounded mx-auto d-block img-fluid z-depth-3"
               src={volumeInfo.image}
               alt={volumeInfo.title || 'Book Thumbnail'}
             />
@@ -22,7 +24,11 @@ const ViewBook = ({ volumeInfo }) => {
           </div>
         )}
         {typeof volumeInfo.description !== 'undefined' && (
-          <p>{volumeInfo.description}</p>
+          <MDBTypography blockquote className="text-center">
+            <MDBBox tag="p" mb={0}>
+              {volumeInfo.description}
+            </MDBBox>
+          </MDBTypography>
         )}
         {volumeInfo?.authors?.length !== 0 &&
           typeof volumeInfo.authors !== 'undefined' && (

@@ -37,14 +37,14 @@ const NavBarItems = () => {
             Contribute
           </MDBNavLink>
         </MDBNavItem>
-        {firebaseContext.viewBooks && (
-          <MDBNavItem active={location.pathname === '/books'}>
+        {firebaseContext.claims?.role >= 100 && (
+          <MDBNavItem active={location.pathname.startsWith('/books')}>
             <MDBNavLink as={NavLink} to="/books">
               Books
             </MDBNavLink>
           </MDBNavItem>
         )}
-        {firebaseContext.canCheckout && (
+        {firebaseContext.claims?.role >= 300 && (
           <>
             <MDBNavItem active={location.pathname === '/checkout'}>
               <MDBNavLink as={NavLink} to="/checkout">
@@ -58,14 +58,14 @@ const NavBarItems = () => {
             </MDBNavItem>
           </>
         )}
-        {firebaseContext.canViewCheckouts && (
+        {firebaseContext.claims?.role >= 500 && (
           <MDBNavItem active={location.pathname === '/checkouts'}>
             <MDBNavLink as={NavLink} to="/checkouts">
               Checkouts
             </MDBNavLink>
           </MDBNavItem>
         )}
-        {firebaseContext.isAdmin && (
+        {firebaseContext.claims?.role >= 1000 && (
           <MDBNavItem active={location.pathname === '/admin'}>
             <MDBNavLink as={NavLink} to="/admin">
               Admin
@@ -85,7 +85,7 @@ const NavBarItems = () => {
                     className="rounded-circle z-depth-0 mr-2"
                     style={{ height: '35px', padding: 0, color: 'white' }}
                   />
-                  {firebaseContext?.user?.displayName || ''}
+                  {firebaseContext?.claims?.name || ''}
                 </MDBDropdownToggle>
                 <MDBDropdownMenu className="dropdown-default" right>
                   <MDBDropdownItem>

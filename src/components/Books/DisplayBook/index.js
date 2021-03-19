@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, Suspense } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { useFirestoreDocData, useFirestore } from 'reactfire';
 import {
@@ -10,10 +10,13 @@ import {
   MDBCard,
   MDBCardHeader,
   MDBTooltip,
+  MDBCollapse,
 } from 'mdbreact';
 import FirebaseContext from '../../Firebase';
 import ViewBook from './ViewBook';
 import EditBook from './EditBook';
+import CopiesTable from './CopiesTable';
+import Loading from '../../Loading';
 
 const Book = () => {
   const { id } = useParams();
@@ -28,6 +31,8 @@ const Book = () => {
   const firebaseContext = useContext(FirebaseContext);
 
   const [editing, setEditing] = useState(location?.state?.editing || false);
+
+  const [viewCopies, setViewCopies] = useState(false);
 
   if (typeof volumeInfo === 'undefined') {
     return <h1>Book Not Found!</h1>;
@@ -79,7 +84,7 @@ const Book = () => {
                         <MDBBtn
                           color="yellow"
                           className="px-3"
-                          disabled={!firebaseContext.isAdmin}
+                          disabled={!(firebaseContext?.claims?.role >= 500)}
                           onClick={() => {
                             ref.update({
                               featured: !featured,
@@ -118,6 +123,24 @@ const Book = () => {
                 setEditing={setEditing}
               />
             )}
+            <MDBBtn
+              className="text-center mx-auto mb-5"
+              onClick={() => setViewCopies(!viewCopies)}
+            >
+              {!viewCopies && 'View Copies'}
+              {viewCopies && 'Hide Copies'}
+            </MDBBtn>
+            <MDBCollapse isOpen={viewCopies}>
+              {viewCopies && (
+                <Suspense fallback={<Loading />}>
+                  <CopiesTable
+                    bookID={id}
+                    editing={editing}
+                    setEditing={setEditing}
+                  />
+                </Suspense>
+              )}
+            </MDBCollapse>
           </MDBCard>
         </MDBCol>
       </MDBRow>

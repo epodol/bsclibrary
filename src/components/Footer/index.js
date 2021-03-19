@@ -27,7 +27,12 @@ const Footer = () => (
           </a>
         </li> */}
         <li className="list-inline-item">
-          <a className=" btn-sm btn-dribbble mx-3" href="https://instagram.com">
+          <a
+            className=" btn-sm btn-dribbble mx-3"
+            href="https://www.instagram.com/basis_scottsdale_library/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <FontAwesomeIcon
               icon={faInstagram}
               size="3x"

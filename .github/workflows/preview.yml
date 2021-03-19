@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: Build
-    if: github.repository_owner == 'epodol'
+    if: github.repository_owner == 'epodol' && !contains(github.event.pull_request.labels.*.name, 'dependencies')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
