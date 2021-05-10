@@ -14,9 +14,14 @@ exports.setBookQueryData = functions.firestore
 
     const { FieldValue } = admin.firestore;
 
+    if (
+      typeof volumeInfo.title !== 'undefined' ||
+      typeof volumeInfo.subtitle !== 'undefined'
+    )
+      set.titleQuery = [];
+
     // Title
     if (typeof volumeInfo.title !== 'undefined') {
-      set.titleQuery = [];
       let curName = '';
       volumeInfo.title
         .toLowerCase()
@@ -45,7 +50,47 @@ exports.setBookQueryData = functions.firestore
           i += 1;
         }
       }
-    } else if (typeof volumeInfo.titleQuery !== 'undefined')
+      set.titleQuery = Array.from(new Set(set.titleQuery));
+    }
+
+    // SubTitle
+    if (typeof volumeInfo.subtitle !== 'undefined') {
+      let curName = '';
+      volumeInfo.subtitle
+        .toLowerCase()
+        .split('')
+        .forEach((letter) => {
+          curName += letter;
+          set.titleQuery.push(curName);
+        });
+      volumeInfo.subtitle
+        .toLowerCase()
+        .split(' ')
+        .forEach((item) => set.titleQuery.push(item));
+      if (set.titleQuery.includes('the'))
+        set.titleQuery.splice(set.titleQuery.indexOf('the'), 1);
+      if (set.titleQuery.includes('and'))
+        set.titleQuery.splice(set.titleQuery.indexOf('and'), 1);
+      let i = 0;
+      while (i < set.titleQuery.length) {
+        if (
+          set.titleQuery[i] === 'the' ||
+          set.titleQuery[i] === 'and' ||
+          set.titleQuery[i] === 'or'
+        ) {
+          set.titleQuery.splice(i, 1);
+        } else {
+          i += 1;
+        }
+      }
+      set.titleQuery = Array.from(new Set(set.titleQuery));
+    }
+
+    if (
+      typeof volumeInfo.titleQuery !== 'undefined' &&
+      typeof volumeInfo.title === 'undefined' &&
+      typeof volumeInfo.subtitle === 'undefined'
+    )
       set.titleQuery = FieldValue.delete();
 
     // Authors
