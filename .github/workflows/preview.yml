@@ -6,11 +6,14 @@ on:
 jobs:
   build:
     name: Build
-    if: github.repository_owner == 'epodol' && !contains(github.event.pull_request.labels.*.name, 'dependencies')
+    if: github.repository_owner == 'epodol' && !contains(github.event.pull_request.labels.*.name, 'dependencies') && github.event.pull_request.user.login != 'dependabot'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: View PR author
+        run: echo "This PR is opened by ${{ github.event.pull_request.user.login }} ."
 
       - name: Setup Node
         uses: actions/setup-node@v2
