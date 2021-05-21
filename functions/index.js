@@ -4,10 +4,7 @@ const setBookQueryData = require('./src/setBookQueryData');
 const setBookCopiesData = require('./src/setBookCopiesData');
 
 const updateUser = require('./src/updateUser');
-const setRole = require('./src/setRole');
 const addNewUser = require('./src/addNewUser');
-
-const setGenesisUser = require('./src/setGenesisUser');
 
 admin.initializeApp();
 
