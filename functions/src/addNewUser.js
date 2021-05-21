@@ -19,12 +19,18 @@ exports.addNewUser = functions.https.onCall(async (data, context) => {
   if (
     (context.auth.token.role <= data.role &&
       context.auth.token.role !== 1000) ||
-    data.role > 1000 ||
-    context.auth.token.role < 700
+    data.role > 1000
   ) {
     throw new functions.https.HttpsError(
       'permission-denied',
       'The user calling the function must have a higher role than the claim they are assigning or be an admin.'
+    );
+  }
+
+  if (!context.auth.token.permissions.MANAGE_USERS) {
+    throw new functions.https.HttpsError(
+      'permission-denied',
+      "The user calling the function must have the 'MANAGE_USERS' permission."
     );
   }
 

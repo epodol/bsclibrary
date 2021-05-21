@@ -7,13 +7,13 @@ service cloud.firestore {
       match /books/{book} {
         allow read: if request.auth.token.permissions.VIEW_BOOKS;
         allow create, update: if request.auth.token.permissions.MANAGE_BOOKS;
-        allow delete: if request.auth.token.role >= 1000;
+        allow delete: if request.auth.token.role >= 1000 && request.auth.token.permissions.MANAGE_BOOKS;
       }
 
       match /books/{book}/copies/{copy} {
         allow read: if request.auth.token.permissions.VIEW_BOOKS;
         allow create, update: if request.auth.token.permissions.MANAGE_BOOKS;
-        allow delete: if request.auth.token.role >= 1000;
+        allow delete: if request.auth.token.role >= 1000 && request.auth.token.permissions.MANAGE_BOOKS;
       }
 
       match /users/{user} {

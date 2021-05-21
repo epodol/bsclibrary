@@ -157,7 +157,7 @@ const UserInfo = ({ user }) => {
               userInfo: {
                 editedBy: currentUser.uid,
                 editedTime: FieldValue.serverTimestamp(),
-                displayName: values.displayName,
+                displayName: `${values.firstName} ${values.lastName}`,
                 email: values.email,
                 firstName: values.firstName,
                 lastName: values.lastName,

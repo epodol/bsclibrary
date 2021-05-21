@@ -38,7 +38,7 @@ const TableBody = () => {
   const booksCollection = useFirestore().collection('books');
 
   const booksQueryRef =
-    query.search.length > 0
+    query.search.length > 0 && query.search !== ''
       ? booksCollection
           .where(
             `volumeInfo.${query.field}Query`,
