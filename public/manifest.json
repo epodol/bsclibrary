@@ -1,25 +1,45 @@
 {
-  "short_name": "bsclibrary",
+  "short_name": "BASIS Scottsdale Library",
   "name": "BASIS Scottsdale Library",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
+      "src": "./assets/logos/favicon.ico",
+      "sizes": "48x48",
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "./assets/logos/BASIS Scottsdale Library Logo - v0.1.1 - 192h.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "logo512.png",
+      "src": "./assets/logos/BASIS Scottsdale Library Logo - v0.1.1 - 512h.png",
       "type": "image/png",
       "sizes": "512x512"
+    },
+    {
+      "src": "./assets/logos/BASIS Scottsdale Library Logo - v0.1.1 - 0.5x.png",
+      "type": "image/png",
+      "sizes": "1000x1000"
+    },
+    {
+      "src": "./assets/logos/BASIS Scottsdale Library Logo - v0.1.1 - 1x.png",
+      "type": "image/png",
+      "sizes": "2000x2000"
+    },
+    {
+      "src": "./assets/logos/BASIS Scottsdale Library Logo - v0.1.1 - 2x.png",
+      "type": "image/png",
+      "sizes": "4000x4000"
+    },
+    {
+      "src": "./assets/logos/BASIS Scottsdale Library Logo - v0.1.1 - 4x.png",
+      "type": "image/png",
+      "sizes": "8000x8000"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
+  "theme_color": "#6DB058",
   "background_color": "#ffffff"
 }

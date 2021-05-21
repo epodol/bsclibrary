@@ -47,14 +47,13 @@ jobs:
           REACT_APP_FIREBASE_STORAGE_BUCKET: basis-scottsdale-library.appspot.com
           REACT_APP_FIREBASE_APP_ID: 1:547349848920:web:05b2531ebd920c8716bb2d
 
-      - name: Deploy to Preview Channel
-        uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: Deploy to Firebase
+        if: 'github.event.release.prerelease'
+        uses: w9jds/firebase-action@master
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_BASIS_SCOTTSDALE_LIBRARY }}'
-          expires: 30d
-          projectId: basis-scottsdale-library
-          channelId: preview
+          args: firebase deploy --only hosting:preview
+        env:
+          FIREBASE_TOKEN: '${{ secrets.FIREBASE_TOKEN }}'
 
       - name: Deploy to Firebase
         if: '!github.event.release.prerelease'

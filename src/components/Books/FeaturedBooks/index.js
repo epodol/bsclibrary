@@ -42,7 +42,7 @@ const FeaturedBooks = () => {
                     style={{ minHeight: '26rem' }}
                   >
                     <MDBCardBody>
-                      <h4 className="font-weight-bold white-text mb-3">
+                      <h4 className="font-weight-bold white-text mb-3 rgba-green-strong">
                         There are no featured books right now!
                       </h4>
                     </MDBCardBody>

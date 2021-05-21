@@ -22,14 +22,8 @@ const TableBody = () => {
   const history = useHistory();
   const location = useLocation();
   const [query, setQuery] = useState({
-    field:
-      typeof location?.state?.query?.field !== 'undefined'
-        ? location?.state?.query?.field
-        : 'title',
-    search:
-      typeof location?.state?.query?.search !== 'undefined'
-        ? location?.state?.query?.search
-        : '',
+    field: location?.state?.query?.field || 'title',
+    search: location?.state?.query?.search || '',
   });
 
   const [search, setSearch] = useState({
@@ -72,7 +66,7 @@ const TableBody = () => {
           <MDBRow>
             <MDBCol md="1">
               <MDBDropdown>
-                <MDBDropdownToggle caret color="green">
+                <MDBDropdownToggle caret color="green" className="white-text">
                   {search.field}
                 </MDBDropdownToggle>
                 <MDBDropdownMenu color="secondary">

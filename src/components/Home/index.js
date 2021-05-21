@@ -66,7 +66,7 @@ const Home = (props, { location }) => {
                 Learn More
               </MDBBtn>
             </MDBAnimation>
-            <MDBCol md="6" m="5" className="mb-4">
+            <MDBCol md="6" m="5" className="mb-5">
               <MDBAnimation type="fadeInRight" delay=".5s">
                 <MDBCard id="classic-card" className="">
                   <MDBCardBody>

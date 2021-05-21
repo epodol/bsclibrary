@@ -10,16 +10,16 @@ const Contribute = () => {
       <div className="text-center mt-3">
         <h2>How can you contribute?</h2>
         <p className="font-italic">This page is still a work in progress.</p>
-        <MDBBtnGroup size="md" className="">
+        <MDBBtnGroup size="md">
           <MDBBtn
-            color="dark-green"
+            color="dark-green white-text"
             active={type === 0}
             onClick={() => setType(0)}
           >
             Time
           </MDBBtn>
           <MDBBtn
-            color="dark-green"
+            color="dark-green white-text"
             active={type === 1}
             onClick={() => setType(1)}
           >

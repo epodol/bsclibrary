@@ -2,11 +2,26 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /{document=**} {
-      allow read, write: if request.auth.token.role >= 1000;
+      allow read, write: if false;
 
       match /books/{book} {
-        allow read: if request.auth.token.role >= 100;
-        allow write: if request.auth.token.role >= 500;
+        allow read: if request.auth.token.permissions.VIEW_BOOKS;
+        allow create, update: if request.auth.token.permissions.MANAGE_BOOKS;
+        allow delete: if request.auth.token.role >= 1000;
+      }
+
+      match /books/{book}/copies/{copy} {
+        allow read: if request.auth.token.permissions.VIEW_BOOKS;
+        allow create, update: if request.auth.token.permissions.MANAGE_BOOKS;
+        allow delete: if request.auth.token.role >= 1000;
+      }
+
+      match /users/{user} {
+        allow get: if request.auth.token.permissions.MANAGE_USERS || request.auth.uid == user;
+        allow list: if (request.auth.token.permissions.MANAGE_USERS);
+        allow create: if false;
+        allow update: if (request.auth.token.permissions.MANAGE_USERS) && (user != request.auth.uid || request.auth.token.role >= 1000);
+        allow delete: if false;
       }
     }
   }

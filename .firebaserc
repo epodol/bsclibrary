@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "basis-scottsdale-library"
+  },
+  "targets": {
+    "basis-scottsdale-library": {
+      "hosting": {
+        "preview": [
+          "bsclibrary-preview"
+        ],
+        "prod": [
+          "basis-scottsdale-library"
+        ]
+      }
+    }
   }
 }
