@@ -15,7 +15,4 @@ exports.setBookQueryData = setBookQueryData.setBookQueryData;
 exports.setBookCopiesData = setBookCopiesData.setBookCopiesData;
 
 exports.updateUser = updateUser.updateUser;
-exports.setRole = setRole.setRole;
 exports.addNewUser = addNewUser.addNewUser;
-
-exports.setGenesisUser = setGenesisUser.setGenesisUser;
