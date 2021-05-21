@@ -47,7 +47,7 @@ const Book = () => {
               <MDBContainer>
                 <MDBRow>
                   <MDBCol size="2">
-                    {firebaseContext.isAdmin && (
+                    {firebaseContext.claims.role >= 1000 && (
                       <MDBTooltip placement="bottom">
                         <MDBBtn
                           outline

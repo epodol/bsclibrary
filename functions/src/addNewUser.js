@@ -19,8 +19,7 @@ exports.addNewUser = functions.https.onCall(async (data, context) => {
   if (
     (context.auth.token.role <= data.role &&
       context.auth.token.role !== 1000) ||
-    data.role > 1000 ||
-    context.auth.token.role < 700
+    data.role > 1000
   ) {
     throw new functions.https.HttpsError(
       'permission-denied',
@@ -28,15 +27,23 @@ exports.addNewUser = functions.https.onCall(async (data, context) => {
     );
   }
 
+  if (!context.auth.token.permissions.MANAGE_USERS) {
+    throw new functions.https.HttpsError(
+      'permission-denied',
+      "The user calling the function must have the 'MANAGE_USERS' permission."
+    );
+  }
+
   if (
     typeof data.email !== 'string' ||
     typeof data.first_name !== 'string' ||
     typeof data.last_name !== 'string' ||
-    typeof data.role !== 'number'
+    typeof data.role !== 'number' ||
+    typeof data.permissions !== 'object'
   ) {
     throw new functions.https.HttpsError(
       'invalid-argument',
-      'The function must be called with an email and role'
+      'The function must be called with an email, first name, last name, role, and permissions'
     );
   }
 
@@ -47,7 +54,6 @@ exports.addNewUser = functions.https.onCall(async (data, context) => {
       emailVerified: false,
       displayName: `${data.first_name} ${data.last_name}`,
       disabled: false,
-      role: data.role,
     })
     .catch(() => {
       throw new functions.https.HttpsError(
@@ -58,19 +64,64 @@ exports.addNewUser = functions.https.onCall(async (data, context) => {
 
   await admin
     .auth()
-    .setCustomUserClaims(newUser.uid, { role: data.role })
+    .setCustomUserClaims(newUser.uid, {
+      role: data.role,
+      firstName: data.first_name,
+      lastName: data.last_name,
+      permissions: data.permissions,
+      createdBy: context.auth.uid,
+      createdTime: admin.firestore.Timestamp.fromMillis(
+        Date.parse(newUser.metadata.creationTime)
+      ),
+      editedBy: context.auth.uid,
+      editedTime: admin.firestore.Timestamp.fromMillis(
+        Date.parse(newUser.metadata.creationTime)
+      ),
+    })
     .catch((error) => {
       throw new functions.https.HttpsError('internal', error);
     });
 
+  const {
+    uid,
+    email,
+    displayName,
+    photoURL,
+    phoneNumber,
+    disabled,
+    metadata: { creationTime },
+  } = newUser;
+  await admin
+    .firestore()
+    .collection('users')
+    .doc(newUser.uid)
+    .set({
+      userInfo: {
+        uid,
+        email,
+        queryEmail: email.toLowerCase(),
+        displayName,
+        firstName: data.first_name || null,
+        lastName: data.last_name || null,
+        queryFirstName: data.first_name ? data.first_name.toLowerCase() : null,
+        queryLastName: data.last_name ? data.last_name.toLowerCase() : null,
+        photoURL: photoURL || null,
+        phoneNumber: phoneNumber || null,
+        disabled,
+        createdBy: context.auth.uid,
+        createdTime: admin.firestore.Timestamp.fromMillis(
+          Date.parse(creationTime)
+        ),
+        editedBy: context.auth.uid,
+        editedTime: admin.firestore.Timestamp.fromMillis(
+          Date.parse(creationTime)
+        ),
+        role: data.role,
+        permissions: data.permissions,
+      },
+    });
+
   return {
     uid: newUser.uid,
-    email: newUser.email,
-    emailVerified: newUser.emailVerified,
-    displayName: newUser.displayName,
-    photoURL: newUser.photoURL,
-    phoneNumber: newUser.phoneNumber,
-    disabled: newUser.disabled,
-    role: data.role,
   };
 });

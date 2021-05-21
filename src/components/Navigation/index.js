@@ -13,6 +13,8 @@ import {
   MDBDropdownItem,
   MDBIcon,
 } from 'mdbreact';
+import Avatar from '@material-ui/core/Avatar';
+
 import { AuthCheck, useAuth } from 'reactfire';
 
 import { NavLink, useLocation } from 'react-router-dom';
@@ -37,38 +39,38 @@ const NavBarItems = () => {
             Contribute
           </MDBNavLink>
         </MDBNavItem>
-        {firebaseContext.claims?.role >= 100 && (
+        {firebaseContext.claims?.permissions?.VIEW_BOOKS && (
           <MDBNavItem active={location.pathname.startsWith('/books')}>
             <MDBNavLink as={NavLink} to="/books">
               Books
             </MDBNavLink>
           </MDBNavItem>
         )}
-        {firebaseContext.claims?.role >= 300 && (
-          <>
-            <MDBNavItem active={location.pathname === '/checkout'}>
-              <MDBNavLink as={NavLink} to="/checkout">
-                Check Out
-              </MDBNavLink>
-            </MDBNavItem>
-            <MDBNavItem active={location.pathname === '/checkin'}>
-              <MDBNavLink as={NavLink} to="/checkin">
-                Check In
-              </MDBNavLink>
-            </MDBNavItem>
-          </>
+        {firebaseContext.claims?.permissions?.CHECK_OUT && (
+          <MDBNavItem active={location.pathname === '/checkout'}>
+            <MDBNavLink as={NavLink} to="/checkout">
+              Check Out
+            </MDBNavLink>
+          </MDBNavItem>
         )}
-        {firebaseContext.claims?.role >= 500 && (
-          <MDBNavItem active={location.pathname === '/checkouts'}>
+        {firebaseContext.claims?.permissions?.CHECK_IN && (
+          <MDBNavItem active={location.pathname === '/checkin'}>
+            <MDBNavLink as={NavLink} to="/checkin">
+              Check In
+            </MDBNavLink>
+          </MDBNavItem>
+        )}
+        {firebaseContext.claims?.permissions?.MANAGE_CHECKOUTS && (
+          <MDBNavItem active={location.pathname.startsWith('/checkouts')}>
             <MDBNavLink as={NavLink} to="/checkouts">
               Checkouts
             </MDBNavLink>
           </MDBNavItem>
         )}
-        {firebaseContext.claims?.role >= 1000 && (
-          <MDBNavItem active={location.pathname === '/admin'}>
-            <MDBNavLink as={NavLink} to="/admin">
-              Admin
+        {firebaseContext.claims?.permissions?.MANAGE_USERS && (
+          <MDBNavItem active={location.pathname.startsWith('/users')}>
+            <MDBNavLink as={NavLink} to="/users">
+              Users
             </MDBNavLink>
           </MDBNavItem>
         )}
@@ -78,14 +80,18 @@ const NavBarItems = () => {
           <MDBNavbarNav right>
             <MDBNavItem>
               <MDBDropdown>
-                <MDBDropdownToggle nav caret className="py-0 pt-3">
-                  <MDBIcon
-                    icon="user"
-                    // size="2x"
-                    className="rounded-circle z-depth-0 mr-2"
-                    style={{ height: '35px', padding: 0, color: 'white' }}
-                  />
-                  {firebaseContext?.claims?.name || ''}
+                <MDBDropdownToggle nav className="">
+                  <Avatar
+                    alt={`${firebaseContext?.claims?.firstName || ''} ${
+                      firebaseContext?.claims?.lastName || ''
+                    }`}
+                    src={firebaseContext?.claims?.picture}
+                  >
+                    {`${firebaseContext?.claims?.firstName?.slice(
+                      0,
+                      1
+                    )}${firebaseContext?.claims?.lastName?.slice(0, 1)}`}
+                  </Avatar>
                 </MDBDropdownToggle>
                 <MDBDropdownMenu className="dropdown-default" right>
                   <MDBDropdownItem>
@@ -121,11 +127,11 @@ const Navigation = () => {
       <MDBNavLink as={NavLink} to="/">
         <MDBNavbarBrand>
           <img
-            src="https://cdn.discordapp.com/attachments/743524646497943702/760190005074591804/BS_Bulldogs_OL.svg"
-            height="30"
-            alt="BASIS Scottsdale Library"
+            src={`${process.env.PUBLIC_URL}/assets/logos/BASIS Scottsdale Library Logo - v0.1.1.svg`}
+            height="50"
+            alt="BASIS Scottsdale Library Logo"
           />
-          <strong className="white-text"> BASIS Scottsdale Library </strong>
+          <strong className="white-text"> BASIS Scottsdale Library</strong>
         </MDBNavbarBrand>
       </MDBNavLink>
       <MDBNavbarToggler onClick={() => setIsOpen(!isOpen)} />

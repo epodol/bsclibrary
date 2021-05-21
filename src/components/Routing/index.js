@@ -16,7 +16,8 @@ import About from '../About';
 import Navigation from '../Navigation';
 import Home from '../Home';
 import Account from '../Account';
-import Admin from '../Admin';
+import Users from '../Users';
+import DisplayUser from '../Users/DisplayUser';
 import Books from '../Books';
 import DisplayBook from '../Books/DisplayBook';
 import CheckOut from '../CheckOut';
@@ -29,9 +30,9 @@ import './routing.css';
 const Routing = () => {
   const user = useUser().data;
 
-  const ProtectedRoute = ({ Component, minRole }) => {
+  const ProtectedRoute = ({ Component, permission }) => {
     const claims = useIdTokenResult(user, true);
-    return claims.data.claims.role >= minRole ? (
+    return claims.data.claims.permissions[permission] === true ? (
       <Component />
     ) : (
       <Redirect to="/" />
@@ -61,32 +62,52 @@ const Routing = () => {
               <Switch>
                 <Route path="/books" exact>
                   <Suspense fallback={<Loading />}>
-                    <ProtectedRoute Component={Books} minRole="100" />
+                    <ProtectedRoute Component={Books} permission="VIEW_BOOKS" />
                   </Suspense>
                 </Route>
                 <Route path="/books/:id">
                   <Suspense fallback={<Loading />}>
-                    <ProtectedRoute Component={DisplayBook} minRole="100" />
+                    <ProtectedRoute
+                      Component={DisplayBook}
+                      permission="VIEW_BOOKS"
+                    />
                   </Suspense>
                 </Route>
                 <Route path="/checkout">
                   <Suspense fallback={<Loading />}>
-                    <ProtectedRoute Component={CheckOut} minRole="300" />
+                    <ProtectedRoute
+                      Component={CheckOut}
+                      permission="CHECK_OUT"
+                    />
                   </Suspense>
                 </Route>
                 <Route path="/checkin">
                   <Suspense fallback={<Loading />}>
-                    <ProtectedRoute Component={CheckIn} minRole="300" />
+                    <ProtectedRoute Component={CheckIn} permission="CHECK_IN" />
                   </Suspense>
                 </Route>
                 <Route path="/checkouts">
                   <Suspense fallback={<Loading />}>
-                    <ProtectedRoute Component={CheckOuts} minRole="500" />
+                    <ProtectedRoute
+                      Component={CheckOuts}
+                      permission="MANAGE_CHECKOUTS"
+                    />
                   </Suspense>
                 </Route>
-                <Route path="/admin">
+                <Route path="/users" exact>
                   <Suspense fallback={<Loading />}>
-                    <ProtectedRoute Component={Admin} minRole="1000" />
+                    <ProtectedRoute
+                      Component={Users}
+                      permission="MANAGE_USERS"
+                    />
+                  </Suspense>
+                </Route>
+                <Route path="/users/:id">
+                  <Suspense fallback={<Loading />}>
+                    <ProtectedRoute
+                      Component={DisplayUser}
+                      permission="MANAGE_USERS"
+                    />
                   </Suspense>
                 </Route>
                 <Redirect to="/" exact />

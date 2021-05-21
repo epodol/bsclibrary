@@ -1,13 +1,16 @@
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { FirebaseAppProvider } from 'reactfire';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { ThemeProvider } from '@material-ui/core/styles';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'bootstrap-css-only/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
 import './index.css';
 import App from './App';
 import Loading from './components/Loading';
-// import * as serviceWorker from './serviceWorker';
+import theme from './theme';
+import * as serviceWorker from './serviceWorker';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -24,11 +27,14 @@ ReactDOM.render(
   <React.StrictMode>
     <Suspense fallback={<Loading />}>
       <FirebaseAppProvider firebaseConfig={firebaseConfig} suspense>
-        <App />
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <App />
+        </ThemeProvider>
       </FirebaseAppProvider>
     </Suspense>
   </React.StrictMode>,
   document.getElementById('root')
 );
 
-// serviceWorker.register();
+serviceWorker.register();

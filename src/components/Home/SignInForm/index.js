@@ -99,24 +99,26 @@ const SignInForm = ({ setShowResetPasswordForm }) => {
                 {errors.password}
               </div>
             ) : null}
-            <p
-              className="btn-link font-small ml-1 font-weight-bold d-flex justify-content-end"
-              aria-hidden="true"
-              style={{ cursor: 'pointer' }}
-              onClick={() => {
-                setShowResetPasswordForm(true);
-              }}
-            >
-              Reset password
-            </p>
-            <div className="text-center mt-4 black-text">
+            <div className="d-flex justify-content-end">
+              <MDBBtn
+                className="text-dark"
+                size="sm"
+                color="light"
+                onClick={() => {
+                  setShowResetPasswordForm(true);
+                }}
+              >
+                Reset password
+              </MDBBtn>
+            </div>
+            <div className="text-center mt-4">
               <MDBBtn
                 size="lg"
                 color="orange"
                 type="submit"
                 disabled={isSubmitting}
               >
-                {!isSubmitting && <>Sign In</>}
+                {!isSubmitting && <p className="white-text m-0">Sign In</p>}
                 {isSubmitting && (
                   <div className="spinner-border" role="status">
                     <span className="sr-only">Loading...</span>
