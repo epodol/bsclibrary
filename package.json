@@ -19,7 +19,7 @@
     "@testing-library/jest-dom": "^5.13.0",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^13.1.9",
-    "firebase": "^8.6.4",
+    "firebase": "^8.6.5",
     "formik": "^2.2.9",
     "mdbreact": "^5.0.2",
     "prop-types": "^15.7.2",
