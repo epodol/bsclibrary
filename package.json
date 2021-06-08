@@ -28,7 +28,7 @@
     "react-phone-number-input": "^3.1.23",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.3",
-    "react-spring": "^9.2.1",
+    "react-spring": "^9.2.2",
     "reactfire": "^3.0.0-rc.0",
     "yup": "^0.32.9"
   },
