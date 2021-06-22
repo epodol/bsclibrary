@@ -1,8 +1,13 @@
 {
   "name": "bsclibrary",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "The BASIS Scottsdale Library Website",
-  "keywords": [],
+  "keywords": [
+    "BASIS",
+    "Scottsdale",
+    "BASIS Scottsdale",
+    "BASIS Scottsdale Library"
+  ],
   "homepage": "https://bsclibrary.net",
   "bugs": {
     "url": "https://github.com/epodol/bsclibrary/issues"
@@ -16,19 +21,20 @@
   "dependencies": {
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
-    "@testing-library/jest-dom": "^5.12.0",
+    "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^13.1.9",
-    "firebase": "^8.6.2",
-    "formik": "^2.2.8",
-    "mdbreact": "^5.0.2",
+    "algoliasearch": "^4.9.3",
+    "bootstrap-css-only": "^4.4.1",
+    "firebase": "^8.6.8",
+    "formik": "^2.2.9",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-phone-number-input": "^3.1.22",
+    "react-material-ui-carousel": "^2.2.6",
+    "react-phone-number-input": "^3.1.23",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.3",
-    "react-spring": "^9.1.2",
     "reactfire": "^3.0.0-rc.0",
     "yup": "^0.32.9"
   },
@@ -62,16 +68,16 @@
     ]
   },
   "devDependencies": {
-    "eslint": "^7.27.0",
+    "eslint": "^7.29.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.23.3",
+    "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-jest": "^24.3.6",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-prettier": "^3.4.0",
-    "eslint-plugin-react": "^7.23.2",
+    "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "firebase-tools": "^9.11.0",
-    "prettier": "^2.3.0"
+    "firebase-tools": "^9.14.0",
+    "prettier": "^2.3.1"
   }
 }

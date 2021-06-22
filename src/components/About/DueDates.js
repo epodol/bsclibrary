@@ -1,8 +1,8 @@
 import React from 'react';
-import { MDBContainer } from 'mdbreact';
+import { Container } from '@material-ui/core';
 
 const DueDates = () => (
-  <MDBContainer>
+  <Container>
     <h1 className="flex-center m-4">Due Dates Policy</h1>
     <div className="mx-5">
       <li>
@@ -42,8 +42,19 @@ const DueDates = () => (
           </li>
         </ul>
       </li>
+      <li>
+        Up to <b className="font-weight-bold">three books</b> may be checked out
+        at any given time.
+        <ul>
+          <li>
+            Example: A book was checked out on Monday, 12/11/2021. It will
+            normally be due on 12/25/2021, however, due to the break, it will be
+            due on 01/03/2022, the first day back.
+          </li>
+        </ul>
+      </li>
     </div>
-  </MDBContainer>
+  </Container>
 );
 
 export default DueDates;

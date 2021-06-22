@@ -1,8 +1,9 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
-exports.updateUser = functions.firestore
-  .document('users/{docId}')
+exports.updateUser = functions
+  .region('us-west2')
+  .firestore.document('users/{docId}')
   .onUpdate(async ({ after, before }) => {
     const {
       email,

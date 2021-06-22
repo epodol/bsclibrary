@@ -1,10 +1,21 @@
 import React from 'react';
+import { Backdrop, CircularProgress } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
-const Loading = () => (
-  <div className="mx-auto text-center m-5 p-5">
-    <div className="spinner-border text-primary" role="status">
-      <span className="sr-only">Loading...</span>
-    </div>
-  </div>
-);
+const useStyles = makeStyles((theme) => ({
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+  },
+}));
+
+const Loading = () => {
+  const classes = useStyles();
+
+  return (
+    <Backdrop className={classes.backdrop} open>
+      <CircularProgress color="primary" />
+    </Backdrop>
+  );
+};
+
 export default Loading;

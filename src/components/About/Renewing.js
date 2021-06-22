@@ -1,8 +1,8 @@
 import React from 'react';
-import { MDBContainer } from 'mdbreact';
+import { Container } from '@material-ui/core';
 
 const Renewing = () => (
-  <MDBContainer>
+  <Container>
     <h1 className="flex-center m-4">Renewing Policy</h1>
     <div className="mx-5">
       <li>
@@ -25,7 +25,7 @@ const Renewing = () => (
         </ul>
       </li>
     </div>
-  </MDBContainer>
+  </Container>
 );
 
 export default Renewing;

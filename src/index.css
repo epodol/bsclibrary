@@ -9,3 +9,17 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.white-text {
+  color: #fff !important;
+}
+a {
+  color: #007bff;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.lead {
+  font-size: 1.25rem;
+  font-weight: 300;
+}

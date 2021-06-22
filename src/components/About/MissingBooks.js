@@ -1,8 +1,8 @@
-import { MDBContainer } from 'mdbreact';
 import React from 'react';
+import { Container } from '@material-ui/core';
 
 const MissingBooks = () => (
-  <MDBContainer>
+  <Container>
     <h1 className="flex-center m-4">Missing Books Policy</h1>
     <div className="mx-5">
       <li>
@@ -37,7 +37,7 @@ const MissingBooks = () => (
         </ul>
       </li>
     </div>
-  </MDBContainer>
+  </Container>
 );
 
 export default MissingBooks;

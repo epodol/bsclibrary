@@ -7,16 +7,16 @@ import { Link } from 'react-router-dom';
 import { useParams } from 'react-router';
 import PhoneInput from 'react-phone-number-input/input';
 
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Grid from '@material-ui/core/Grid';
-import VpnKeyIcon from '@material-ui/icons/VpnKey';
-import LockIcon from '@material-ui/icons/Lock';
-import LockOpenIcon from '@material-ui/icons/LockOpen';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import {
+  TextField,
+  Button,
+  ButtonGroup,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  CircularProgress,
+} from '@material-ui/core';
+import { VpnKey, Lock, LockOpen } from '@material-ui/icons';
 
 import FirebaseContext from '../../../Firebase';
 
@@ -59,11 +59,11 @@ const UserInfo = ({ user }) => {
             size="small"
             variant="outlined"
             color="primary"
-            startIcon={<VpnKeyIcon />}
+            startIcon={<VpnKey />}
             disabled={user.userInfo.disabled}
             onClick={() => {
               const actionCodeSettings = {
-                url: window.location.host,
+                url: window.location.origin,
                 handleCodeInApp: true,
               };
               auth
@@ -91,7 +91,7 @@ const UserInfo = ({ user }) => {
             variant={user.userInfo.disabled ? 'contained' : 'outlined'}
             color="primary"
             disabled={currentUser.uid === user.userInfo.uid}
-            startIcon={user.userInfo.disabled ? <LockOpenIcon /> : <LockIcon />}
+            startIcon={user.userInfo.disabled ? <LockOpen /> : <Lock />}
             style={{ float: 'right' }}
             onClick={() => {
               userDocRef.set(

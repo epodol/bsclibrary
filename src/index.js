@@ -3,9 +3,7 @@ import ReactDOM from 'react-dom';
 import { FirebaseAppProvider } from 'reactfire';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
-import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'bootstrap-css-only/css/bootstrap.min.css';
-import 'mdbreact/dist/css/mdb.css';
 import './index.css';
 import App from './App';
 import Loading from './components/Loading';
@@ -24,16 +22,16 @@ const firebaseConfig = {
 };
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Suspense fallback={<Loading />}>
-      <FirebaseAppProvider firebaseConfig={firebaseConfig} suspense>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <App />
-        </ThemeProvider>
-      </FirebaseAppProvider>
-    </Suspense>
-  </React.StrictMode>,
+  // <React.StrictMode>
+  <Suspense fallback={<Loading />}>
+    <FirebaseAppProvider firebaseConfig={firebaseConfig} suspense>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <App />
+      </ThemeProvider>
+    </FirebaseAppProvider>
+  </Suspense>,
+  // </React.StrictMode>,
   document.getElementById('root')
 );
 
