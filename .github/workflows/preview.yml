@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: Build
-    if: github.repository_owner == 'epodol' && !contains(github.event.pull_request.labels.*.name, 'dependencies') && github.event.pull_request.user.login != 'dependabot[bot]'
+    if: github.repository_owner == 'epodol' && github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
