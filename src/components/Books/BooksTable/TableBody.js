@@ -44,37 +44,36 @@ const TableBody = () => {
     history.replace(location.pathname);
 
     if (!isDev) {
-      (async () => {
-        // ONLY EXECUTED IN PRODUCTION
-        const res = await algoliasearch(
-          process.env.REACT_APP_ALGOLIA_APP_ID,
-          process.env.REACT_APP_ALGOLIA_API_KEY
-        )
-          .initIndex('books')
-          .search(query.search, { hitsPerPage: query.limit });
-        setBooks(res.hits);
-      })();
+      // ONLY EXECUTED IN PRODUCTION
+      algoliasearch(
+        process.env.REACT_APP_ALGOLIA_APP_ID,
+        process.env.REACT_APP_ALGOLIA_API_KEY
+      )
+        .initIndex('books')
+        .search(query.search, { hitsPerPage: query.limit })
+        .then((res) => setBooks(res.hits));
+    } else {
+      // ONLY EXECUTED IN A DEVELOPMENT ENVIRONMENT
+      const booksRef = firebase.firestore().collection('books');
+
+      const ref =
+        query.search !== ''
+          ? booksRef
+              .where('volumeInfo.title', '>=', query.search)
+              .where('volumeInfo.title', '<=', `${query.search}~`)
+          : booksRef;
+
+      const booksArray = [];
+      ref
+        .limit(query.limit)
+        .get()
+        .then((res) => {
+          res.docs.forEach((doc) =>
+            booksArray.push({ ...doc.data(), objectID: doc.id })
+          );
+          setBooks(booksArray);
+        });
     }
-    // ONLY EXECUTED IN A DEVELOPMENT ENVIRONMENT
-    const booksRef = firebase.firestore().collection('books');
-
-    const ref =
-      query.search !== ''
-        ? booksRef
-            .where('volumeInfo.title', '>=', query.search)
-            .where('volumeInfo.title', '<=', `${query.search}~`)
-        : booksRef;
-
-    const booksArray = [];
-    ref
-      .limit(query.limit)
-      .get()
-      .then((res) => {
-        res.docs.forEach((doc) =>
-          booksArray.push({ ...doc.data(), objectID: doc.id })
-        );
-        setBooks(booksArray);
-      });
   }, [history, location.pathname, query]);
 
   const searchRef = useRef(search);
@@ -128,7 +127,7 @@ const TableBody = () => {
               fullWidth
               InputProps={{
                 startAdornment: (
-                  <Tooltip title="Search our book collection by entering any part of the book's title, subtitle, author, genre, description, or ISBN.">
+                  <Tooltip title="Search our book collection by entering any part of the book's title, subtitle, author, genre, description, or ISBN. Search results powered by Algolia.">
                     <HelpOutline style={{ marginRight: 10 }} />
                   </Tooltip>
                 ),
