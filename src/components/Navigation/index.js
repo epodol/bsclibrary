@@ -23,16 +23,27 @@ const NavBarItems = () => {
   return (
     <div style={{ marginLeft: 5 }}>
       <Link to="/about">
-        <Button disabled={location.pathname.startsWith('/about')}>About</Button>
+        <Button
+          className="white-text"
+          disabled={location.pathname.startsWith('/about')}
+        >
+          About
+        </Button>
       </Link>
       <Link to="/contribute">
-        <Button disabled={location.pathname.startsWith('/contribute')}>
+        <Button
+          className="white-text"
+          disabled={location.pathname.startsWith('/contribute')}
+        >
           Contribute
         </Button>
       </Link>
       {firebaseContext.claims?.permissions?.VIEW_BOOKS && (
-        <Link to="/books">
-          <Button disabled={location.pathname.startsWith('/books')}>
+        <Link to="/books" className="white-text">
+          <Button
+            color="inherit"
+            disabled={location.pathname.startsWith('/books')}
+          >
             Books
           </Button>
         </Link>
@@ -40,28 +51,40 @@ const NavBarItems = () => {
       {firebaseContext.claims?.permissions?.CHECK_OUT && (
         <Link to="/checkout">
           {/* '/checkouts' would trigger this if it was .startsWith */}
-          <Button disabled={location.pathname === '/checkout'}>
+          <Button
+            className="white-text"
+            disabled={location.pathname === '/checkout'}
+          >
             Check Out
           </Button>
         </Link>
       )}
       {firebaseContext.claims?.permissions?.CHECK_IN && (
         <Link to="/checkin">
-          <Button disabled={location.pathname.startsWith('/checkin')}>
+          <Button
+            className="white-text"
+            disabled={location.pathname.startsWith('/checkin')}
+          >
             Check In
           </Button>
         </Link>
       )}
       {firebaseContext.claims?.permissions?.MANAGE_CHECKOUTS && (
         <Link to="/checkouts">
-          <Button disabled={location.pathname.startsWith('/checkouts')}>
+          <Button
+            className="white-text"
+            disabled={location.pathname.startsWith('/checkouts')}
+          >
             Checkouts
           </Button>
         </Link>
       )}
       {firebaseContext.claims?.permissions?.MANAGE_USERS && (
         <Link to="/users">
-          <Button disabled={location.pathname.startsWith('/users')}>
+          <Button
+            className="white-text"
+            disabled={location.pathname.startsWith('/users')}
+          >
             users
           </Button>
         </Link>
