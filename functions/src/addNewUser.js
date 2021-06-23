@@ -1,9 +1,18 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
+const isDev = process.env.NODE_ENV !== 'production';
+
 exports.addNewUser = functions
-  .region('us-west2')
+  .region(!isDev ? 'us-west2' : 'us-central1')
   .https.onCall(async (data, context) => {
+    if (!context.app && process.env.NODE_ENV === 'production') {
+      throw new functions.https.HttpsError(
+        'failed-precondition',
+        'The function must be called from an App Check verified app.'
+      );
+    }
+
     if (!context.auth) {
       throw new functions.https.HttpsError(
         'unauthenticated',

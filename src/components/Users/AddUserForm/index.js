@@ -120,7 +120,7 @@ const AddUserForm = () => {
             .catch((err) => {
               console.log(err);
               if (err.code === 'unauthenticated') {
-                actions.setFieldError('role', 'Permission denied.');
+                actions.setFieldError('email', 'Permission denied.');
               } else if (err.code === 'permission-denied') {
                 actions.setFieldError(
                   'email',

@@ -11,7 +11,7 @@ import {
 
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
-import { useAuth } from 'reactfire';
+import { analytics, useAuth } from 'reactfire';
 
 const SignIn = () => {
   const SignInSchema = yup.object().shape({
@@ -62,6 +62,9 @@ const SignIn = () => {
             actions.setSubmitting(true);
             await auth
               .signInWithEmailAndPassword(values.email, values.password)
+              .then(() => {
+                analytics().logEvent('login', { method: 'Email' });
+              })
               .catch((err) => {
                 if (err.code === 'auth/wrong-password') {
                   actions.setFieldError('password', 'Wrong Password');

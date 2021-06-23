@@ -45,7 +45,9 @@ const preloadSDKs = (firebaseApp) => {
     preloadFunctions({
       firebaseApp,
       setup(functions) {
-        return isDev ? functions().useEmulator('localhost', 5001) : null;
+        return isDev
+          ? functions().useEmulator('localhost', 5001)
+          : functions('us-west2');
       },
       suspense: true,
     }),
@@ -61,15 +63,31 @@ const preloadSDKs = (firebaseApp) => {
             minimumFetchIntervalMillis: 10000,
             fetchTimeoutMillis: 10000,
           };
-          return remoteConfig().fetchAndActivate();
+          remoteConfig().fetchAndActivate();
         },
         suspense: true,
       })
     );
 
-    preloads.push(preloadAnalytics({ firebaseApp, suspense: true }));
+    preloads.push(
+      preloadAnalytics({
+        firebaseApp,
+        setup(analytics) {
+          analytics();
+        },
+        suspense: true,
+      })
+    );
 
-    preloads.push(preloadPerformance({ firebaseApp, suspense: true }));
+    preloads.push(
+      preloadPerformance({
+        firebaseApp,
+        setup(performance) {
+          performance();
+        },
+        suspense: true,
+      })
+    );
   }
 
   return Promise.all(preloads);
@@ -83,11 +101,10 @@ const App = () => {
     auth.useEmulator('http://localhost:9099/');
   }
 
-  // const appCheck = firebaseApp.appCheck();
+  const appCheck = !isDev ? firebaseApp.appCheck() : null;
 
   useEffect(() => {
-    // appCheck.activate('6LcS7NwaAAAAAP3RJKNPoCgHiF9CjfJC6dWr7D9d');
-    // appcheck
+    if (!isDev) appCheck.activate('6LcS7NwaAAAAAP3RJKNPoCgHiF9CjfJC6dWr7D9d');
   });
 
   preloadSDKs(firebaseApp);
