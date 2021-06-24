@@ -2,16 +2,16 @@ import React, { useContext, useState, Suspense } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { useFirestoreDocData, useFirestore } from 'reactfire';
 import {
-  MDBContainer,
-  MDBRow,
-  MDBCol,
-  MDBBtn,
-  MDBIcon,
-  MDBCard,
-  MDBCardHeader,
-  MDBTooltip,
-  MDBCollapse,
-} from 'mdbreact';
+  Container,
+  Grid,
+  Button,
+  Tooltip,
+  Paper,
+  AppBar,
+  Collapse,
+} from '@material-ui/core';
+import { Delete, Edit, Star, StarBorder } from '@material-ui/icons';
+
 import FirebaseContext from '../../Firebase';
 import ViewBook from './ViewBook';
 import EditBook from './EditBook';
@@ -39,112 +39,92 @@ const Book = () => {
   }
 
   return (
-    <MDBContainer className="my-5">
-      <MDBRow>
-        <MDBCol>
-          <MDBCard>
-            <MDBCardHeader className="rgba-green-strong text-white m-4">
-              <MDBContainer>
-                <MDBRow>
-                  <MDBCol size="2">
-                    {firebaseContext.claims.role >= 1000 && (
-                      <MDBTooltip placement="bottom">
-                        <MDBBtn
-                          outline
-                          className="px-3"
-                          color="danger"
-                          onClick={() => {
-                            ref.delete();
-                            history.push({
-                              pathname: '/books',
-                            });
-                          }}
-                        >
-                          <MDBIcon icon="trash" />
-                        </MDBBtn>
-                        <div>
-                          Delete Book <br />
-                          (This option will not be available in a future
-                          release.)
-                        </div>
-                      </MDBTooltip>
-                    )}
-                  </MDBCol>
-                  <MDBCol className="text-center" size="8">
-                    {typeof volumeInfo.title !== 'undefined' && (
-                      <h1 className="hr-bold font-italic">
-                        {volumeInfo.title}
-                      </h1>
-                    )}
-                  </MDBCol>
-                  <MDBCol className="text-right" size="2">
-                    {(data.featured ||
-                      firebaseContext?.claims?.role >= 500) && (
-                      <MDBTooltip placement="bottom">
-                        <MDBBtn
-                          color="yellow"
-                          className="px-3"
-                          disabled={!(firebaseContext?.claims?.role >= 500)}
-                          onClick={() => {
-                            ref.update({
-                              featured: !featured,
-                            });
-                          }}
-                        >
-                          <MDBIcon fas={featured} far={!featured} icon="star" />
-                        </MDBBtn>
-                        <div>Featured Book</div>
-                      </MDBTooltip>
-                    )}
-                    {firebaseContext?.claims?.role >= 500 && (
-                      <MDBTooltip placement="bottom">
-                        <MDBBtn
-                          outline
-                          color="white"
-                          className="px-3"
-                          onClick={() => {
-                            setEditing(!editing);
-                          }}
-                        >
-                          <MDBIcon icon="edit" />
-                        </MDBBtn>
-                        <div>Edit Book</div>
-                      </MDBTooltip>
-                    )}
-                  </MDBCol>
-                </MDBRow>
-              </MDBContainer>
-            </MDBCardHeader>
-            {!editing && <ViewBook volumeInfo={volumeInfo} />}
-            {editing && (
-              <EditBook
-                volumeInfo={volumeInfo}
+    <Container className="my-5">
+      <Paper className="p-3 my-4 mx-5 mb-5">
+        <AppBar position="static" className="text-white">
+          <Grid container>
+            <Grid item xs={2}>
+              {firebaseContext?.claims?.role >= 1000 && (
+                <Tooltip title="Delete Book (This option will not be available in a future release.">
+                  <Button
+                    className="m-2"
+                    onClick={() => {
+                      ref.delete();
+                      history.push({
+                        pathname: '/books',
+                      });
+                    }}
+                  >
+                    <Delete />
+                  </Button>
+                </Tooltip>
+              )}
+            </Grid>
+            <Grid className="text-center" item xs={8}>
+              {typeof volumeInfo.title !== 'undefined' && (
+                <h1 className="hr-bold font-italic">{volumeInfo.title}</h1>
+              )}
+            </Grid>
+            <Grid className="text-right" item xs={2}>
+              {(data.featured || firebaseContext?.claims?.role >= 500) && (
+                <Tooltip placement="bottom" title="Featured Book">
+                  <Button
+                    className="m-2"
+                    disabled={!(firebaseContext?.claims?.role >= 500)}
+                    onClick={() => {
+                      ref.update({
+                        featured: !featured,
+                      });
+                    }}
+                  >
+                    {featured && <Star />}
+                    {!featured && <StarBorder />}
+                  </Button>
+                </Tooltip>
+              )}
+              {firebaseContext?.claims?.role >= 500 && (
+                <Tooltip placement="bottom" title="Edit Book">
+                  <Button
+                    className="m-2"
+                    onClick={() => {
+                      setEditing(!editing);
+                    }}
+                  >
+                    <Edit />
+                  </Button>
+                </Tooltip>
+              )}
+            </Grid>
+          </Grid>
+        </AppBar>
+        {!editing && <ViewBook volumeInfo={volumeInfo} />}
+        {editing && (
+          <EditBook
+            volumeInfo={volumeInfo}
+            bookID={id}
+            setEditing={setEditing}
+          />
+        )}
+        <div className="text-center mx-auto mb-5">
+          <Button onClick={() => setViewCopies(!viewCopies)}>
+            {!viewCopies && 'View Copies'}
+            {viewCopies && 'Hide Copies'}
+          </Button>
+        </div>
+
+        <Collapse in={viewCopies}>
+          {viewCopies && (
+            <Suspense fallback={<Loading />}>
+              <CopiesTable
                 bookID={id}
+                editing={editing}
                 setEditing={setEditing}
               />
-            )}
-            <MDBBtn
-              className="text-center mx-auto mb-5"
-              onClick={() => setViewCopies(!viewCopies)}
-            >
-              {!viewCopies && 'View Copies'}
-              {viewCopies && 'Hide Copies'}
-            </MDBBtn>
-            <MDBCollapse isOpen={viewCopies}>
-              {viewCopies && (
-                <Suspense fallback={<Loading />}>
-                  <CopiesTable
-                    bookID={id}
-                    editing={editing}
-                    setEditing={setEditing}
-                  />
-                </Suspense>
-              )}
-            </MDBCollapse>
-          </MDBCard>
-        </MDBCol>
-      </MDBRow>
-    </MDBContainer>
+            </Suspense>
+          )}
+        </Collapse>
+      </Paper>
+    </Container>
   );
 };
 

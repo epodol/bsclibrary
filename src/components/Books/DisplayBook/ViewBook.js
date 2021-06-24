@@ -1,5 +1,6 @@
 import React from 'react';
-import { MDBBadge, MDBRow, MDBTypography, MDBBox } from 'mdbreact';
+import { Chip } from '@material-ui/core';
+
 import { useHistory } from 'react-router-dom';
 
 const ViewBook = ({ volumeInfo }) => {
@@ -7,7 +8,7 @@ const ViewBook = ({ volumeInfo }) => {
 
   return (
     <>
-      <div className="pb-5 px-5">
+      <div style={{ padding: 20 }}>
         {volumeInfo.image && (
           <div className="mb-3">
             <img
@@ -23,24 +24,22 @@ const ViewBook = ({ volumeInfo }) => {
             <p className="lead">{volumeInfo.subtitle}</p>
           </div>
         )}
+
+        <br />
         {typeof volumeInfo.description !== 'undefined' && (
-          <MDBTypography blockquote className="text-center">
-            <MDBBox tag="p" mb={0}>
-              {volumeInfo.description}
-            </MDBBox>
-          </MDBTypography>
+          <div style={{ whiteSpace: 'pre-line' }}>{volumeInfo.description}</div>
         )}
+        <br />
+
         {volumeInfo?.authors?.length !== 0 &&
           typeof volumeInfo.authors !== 'undefined' && (
             <h3>
               Authors:
               {volumeInfo.authors.map((author) => (
-                <MDBBadge
+                <Chip
                   key={author.toString()}
-                  color="light"
-                  pill
-                  style={{ cursor: 'pointer' }}
-                  className="mx-1"
+                  style={{ cursor: 'pointer', marginLeft: 3, marginRight: 3 }}
+                  label={author}
                   onClick={() =>
                     history.push({
                       pathname: '/books',
@@ -52,9 +51,7 @@ const ViewBook = ({ volumeInfo }) => {
                       },
                     })
                   }
-                >
-                  {author}
-                </MDBBadge>
+                />
               ))}
             </h3>
           )}
@@ -63,12 +60,10 @@ const ViewBook = ({ volumeInfo }) => {
             <h3>
               Genres:
               {volumeInfo.genres.map((genre) => (
-                <MDBBadge
+                <Chip
                   key={genre.toString()}
-                  color="light"
-                  pill
-                  style={{ cursor: 'pointer' }}
-                  className="mx-1"
+                  style={{ cursor: 'pointer', marginLeft: 3, marginRight: 3 }}
+                  label={genre}
                   onClick={() =>
                     history.push({
                       pathname: '/books',
@@ -80,110 +75,48 @@ const ViewBook = ({ volumeInfo }) => {
                       },
                     })
                   }
-                >
-                  {genre}
-                </MDBBadge>
+                />
               ))}
             </h3>
           )}
-        <MDBRow>
+        <h3>
           {typeof volumeInfo.isbn10 !== 'undefined' &&
             volumeInfo?.isbn10?.length > 0 && (
-              <h3 className="mx-3">
-                ISBN-10:
-                <MDBBadge color="light" pill className="mx-1">
-                  {volumeInfo.isbn10}
-                </MDBBadge>
-              </h3>
+              <>
+                <>ISBN-10:</>
+                <Chip className="mx-1" label={volumeInfo.isbn10} />
+              </>
             )}
           {typeof volumeInfo.isbn13 !== 'undefined' &&
             volumeInfo?.isbn13?.length > 0 && (
-              <h3>
-                ISBN-13:
-                <MDBBadge color="light" pill className="mx-1">
-                  {volumeInfo.isbn13}
-                </MDBBadge>
-              </h3>
+              <>
+                <>ISBN-13:</>
+                <Chip className="mx-1" label={volumeInfo.isbn13} />
+              </>
             )}
-        </MDBRow>
+        </h3>
 
-        <MDBRow>
-          <h3 className="ml-3">
+        <>
+          <h3>
             {!Object.keys(volumeInfo.grades).every(
               (k) => !volumeInfo.grades[k]
             ) && <>Grades:</>}
-            {volumeInfo.grades.grade0 && (
-              <MDBBadge color="light" pill className="mx-1">
-                {'<1'}
-              </MDBBadge>
-            )}
-            {volumeInfo.grades.grade1 && (
-              <MDBBadge color="light" pill className="mx-1">
-                1
-              </MDBBadge>
-            )}
-            {volumeInfo.grades.grade2 && (
-              <MDBBadge color="light" pill className="mx-1">
-                2
-              </MDBBadge>
-            )}
-            {volumeInfo.grades.grade3 && (
-              <MDBBadge color="light" pill className="mx-1">
-                3
-              </MDBBadge>
-            )}
-            {volumeInfo.grades.grade4 && (
-              <MDBBadge color="light" pill className="mx-1">
-                4
-              </MDBBadge>
-            )}
-            {volumeInfo.grades.grade5 && (
-              <MDBBadge color="light" pill className="mx-1">
-                5
-              </MDBBadge>
-            )}
-            {volumeInfo.grades.grade6 && (
-              <MDBBadge color="light" pill className="mx-1">
-                6
-              </MDBBadge>
-            )}
-            {volumeInfo.grades.grade7 && (
-              <MDBBadge color="light" pill className="mx-1">
-                7
-              </MDBBadge>
-            )}
-            {volumeInfo.grades.grade8 && (
-              <MDBBadge color="light" pill className="mx-1">
-                8
-              </MDBBadge>
-            )}
-            {volumeInfo.grades.grade9 && (
-              <MDBBadge color="light" pill className="mx-1">
-                9
-              </MDBBadge>
-            )}
-            {volumeInfo.grades.grade10 && (
-              <MDBBadge color="light" pill className="mx-1">
-                10
-              </MDBBadge>
-            )}
-            {volumeInfo.grades.grade11 && (
-              <MDBBadge color="light" pill className="mx-1">
-                11
-              </MDBBadge>
-            )}
-            {volumeInfo.grades.grade12 && (
-              <MDBBadge color="light" pill className="mx-1">
-                12
-              </MDBBadge>
-            )}
-            {volumeInfo.grades.grade13 && (
-              <MDBBadge color="light" pill className="mx-1">
-                12+
-              </MDBBadge>
-            )}
+            {volumeInfo.grades.grade0 && <Chip className="mx-1" label="<1" />}
+            {volumeInfo.grades.grade1 && <Chip className="mx-1" label="1" />}
+            {volumeInfo.grades.grade2 && <Chip className="mx-1" label="2" />}
+            {volumeInfo.grades.grade3 && <Chip className="mx-1" label="3" />}
+            {volumeInfo.grades.grade4 && <Chip className="mx-1" label="4" />}
+            {volumeInfo.grades.grade5 && <Chip className="mx-1" label="5" />}
+            {volumeInfo.grades.grade6 && <Chip className="mx-1" label="6" />}
+            {volumeInfo.grades.grade7 && <Chip className="mx-1" label="7" />}
+            {volumeInfo.grades.grade8 && <Chip className="mx-1" label="8" />}
+            {volumeInfo.grades.grade9 && <Chip className="mx-1" label="9" />}
+            {volumeInfo.grades.grade10 && <Chip className="mx-1" label="10" />}
+            {volumeInfo.grades.grade11 && <Chip className="mx-1" label="11" />}
+            {volumeInfo.grades.grade12 && <Chip className="mx-1" label="12" />}
+            {volumeInfo.grades.grade13 && <Chip className="mx-1" label="12+" />}
           </h3>
-        </MDBRow>
+        </>
       </div>
     </>
   );

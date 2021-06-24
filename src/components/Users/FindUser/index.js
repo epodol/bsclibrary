@@ -1,30 +1,33 @@
-/* eslint-disable no-nested-ternary */
 import React, { useState, Suspense } from 'react';
 import { useFirestore, useFirestoreCollectionData } from 'reactfire';
 import { useHistory } from 'react-router';
 
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import {
+  FormControl,
+  Select,
+  MenuItem,
+  TextField,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from '@material-ui/core';
 
 import Loading from '../../Loading';
 
+function determineSearchField(searchField) {
+  let res = 'userInfo.queryFirstName';
+  if (searchField === 1) res = 'userInfo.queryFirstName';
+  if (searchField === 2) res = 'userInfo.queryLastName';
+  if (searchField === 3) res = 'userInfo.queryEmail';
+
+  return res;
+}
+
 const FindUserTable = ({ searchField, searchTerm }) => {
-  const textSearchField =
-    searchField === 1
-      ? 'userInfo.queryFirstName'
-      : searchField === 2
-      ? 'userInfo.queryLastName'
-      : searchField === 3
-      ? 'userInfo.queryEmail'
-      : 'userInfo.queryFirstName';
+  const textSearchField = determineSearchField(searchField);
 
   const userQueryRef = useFirestore()
     .collection('users')

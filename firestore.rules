@@ -23,6 +23,13 @@ service cloud.firestore {
         allow update: if (request.auth.token.permissions.MANAGE_USERS) && (user != request.auth.uid || request.auth.token.role >= 1000);
         allow delete: if false;
       }
+
+      match /book_requests/{book_request} {
+        allow get, list: if request.auth.token.permissions.MANAGE_BOOKS;
+        allow create: if request.auth.token.permissions.VIEW_BOOKS;
+        allow update: if false;
+        allow delete: if false;
+      }
     }
   }
 }

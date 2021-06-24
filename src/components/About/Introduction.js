@@ -1,9 +1,9 @@
 import React from 'react';
-import { MDBContainer } from 'mdbreact';
+import { Container } from '@material-ui/core';
 
 const Introduction = () => (
-  <MDBContainer>
-    <h1 className="flex-center m-4">Introduction</h1>
+  <Container>
+    <h1 className="flex-center">Introduction</h1>
     <p>
       Our goal is to gather books and create an area where all BASIS Scottsdale
       students can come check out books for their enjoyment. This will also
@@ -13,7 +13,7 @@ const Introduction = () => (
       books they take out while making it fair to others. Everyone will be
       welcome!
     </p>
-  </MDBContainer>
+  </Container>
 );
 
 export default Introduction;

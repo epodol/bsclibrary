@@ -12,7 +12,7 @@ updates:
   - package-ecosystem: 'npm'
     directory: '/functions'
     schedule:
-      time: '09:00'
+      time: '06:00'
       timezone: 'America/Phoenix'
       interval: 'daily'
     reviewers:

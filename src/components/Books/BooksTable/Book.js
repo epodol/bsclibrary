@@ -1,5 +1,19 @@
-import React from 'react';
-import { MDBBadge, MDBIcon } from 'mdbreact';
+import React, { useState } from 'react';
+import {
+  Chip,
+  TableCell,
+  TableRow,
+  IconButton,
+  Collapse,
+  Button,
+  Grid,
+} from '@material-ui/core';
+import {
+  CheckCircleOutlined,
+  HighlightOff,
+  KeyboardArrowUp,
+  KeyboardArrowDown,
+} from '@material-ui/icons';
 import { useHistory } from 'react-router-dom';
 
 const Book = ({
@@ -8,85 +22,144 @@ const Book = ({
   subtitle,
   authors,
   genres,
+  query,
   setQuery,
   setSearch,
   copiesCount,
   copiesAvailable,
+  description,
+  isbn10,
+  isbn13,
+  image,
 }) => {
   const history = useHistory();
+  const [open, setOpen] = useState(false);
+
   return (
-    <tr
-      key={id}
-      style={{ cursor: 'pointer' }}
-      className="font-weight-bold"
-      onClick={() => history.push(`/books/${id}`)}
-    >
-      <td>
-        <span className="font-weight-bold pr-2">{title || ''}</span>
-        <span className="font-weight-light">{subtitle || ''}</span>
-      </td>
-      <td className="font-weight-bold h6">
-        {Array.isArray(authors)
-          ? authors.map((author) => (
-              <MDBBadge
-                key={author.toString()}
-                color="light"
-                className="mx-1"
-                pill
-                style={{ cursor: 'pointer' }}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  setQuery({
-                    field: 'authors',
-                    search: author,
-                  });
-                  setSearch({
-                    field: 'authors',
-                    search: author,
-                  });
-                }}
-              >
-                {author}
-              </MDBBadge>
-            ))
-          : null}
-      </td>
-      <td className="font-weight-bold h6">
-        {Array.isArray(genres)
-          ? genres.map((genre) => (
-              <MDBBadge
-                key={genre.toString()}
-                color="light"
-                className="mx-1"
-                pill
-                style={{ cursor: 'pointer' }}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  setQuery({
-                    field: 'genres',
-                    search: genre,
-                  });
-                  setSearch({
-                    field: 'genres',
-                    search: genre,
-                  });
-                }}
-              >
-                {genre}
-              </MDBBadge>
-            ))
-          : null}
-      </td>
-      <td>
-        {copiesAvailable > 0 && (
-          <MDBIcon icon="check-circle" size="lg" className="green-text mr-2" />
-        )}
-        {copiesAvailable === 0 && (
-          <MDBIcon icon="times-circle" size="lg" className="red-text mr-2" />
-        )}
-        {copiesAvailable}/{copiesCount}
-      </td>
-    </tr>
+    <>
+      <TableRow
+        key={id}
+        style={{
+          '& > *': {
+            borderBottom: 'unset',
+          },
+        }}
+        className="font-weight-bold"
+      >
+        <TableCell padding="none">
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            onClick={(event) => {
+              event.stopPropagation();
+              setOpen(!open);
+            }}
+          >
+            {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+          </IconButton>
+        </TableCell>
+        <TableCell component="th" scope="row">
+          <span className="font-weight-bold pr-2">{title || ''}</span>
+          <span className="font-weight-light">{subtitle || ''}</span>
+        </TableCell>
+        <TableCell className="font-weight-bold h6">
+          {Array.isArray(authors)
+            ? authors.map((author) => (
+                <Chip
+                  label={author}
+                  key={author.toString()}
+                  color="default"
+                  className="m-1"
+                  style={{ cursor: 'pointer' }}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setSearch(author);
+                    setQuery({
+                      search: author,
+                      limit: query.limit,
+                    });
+                  }}
+                />
+              ))
+            : null}
+        </TableCell>
+        <TableCell className="font-weight-bold h6">
+          {Array.isArray(genres)
+            ? genres.map((genre) => (
+                <Chip
+                  label={genre}
+                  key={genre.toString()}
+                  color="default"
+                  className="m-1"
+                  style={{ cursor: 'pointer' }}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setSearch(genre);
+                    setQuery({
+                      search: genre,
+                      limit: query.limit,
+                    });
+                  }}
+                />
+              ))
+            : null}
+        </TableCell>
+        <TableCell>
+          {copiesAvailable > 0 && (
+            <CheckCircleOutlined
+              icon="check-circle"
+              size="lg"
+              className="green-text mr-2"
+            />
+          )}
+          {copiesAvailable === 0 && (
+            <HighlightOff
+              icon="times-circle"
+              size="lg"
+              className="red-text mr-2"
+            />
+          )}
+          {copiesAvailable}/{copiesCount}
+        </TableCell>
+        <TableCell padding="none">
+          <Button
+            size="small"
+            variant="text"
+            onClick={() => history.push(`/books/${id}`)}
+          >
+            View Book
+          </Button>
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Grid container spacing={2}>
+              {image !== '' && (
+                <Grid item xs={1}>
+                  <img
+                    src={image}
+                    alt="Book cover"
+                    style={{
+                      maxHeight: '100%',
+                      maxWidth: '100%',
+                    }}
+                  />
+                </Grid>
+              )}
+              <Grid item xs={image !== '' ? 8 : 9}>
+                <div style={{ whiteSpace: 'pre-line' }}>{description}</div>
+              </Grid>
+              <Grid item xs={3}>
+                ISBN-10: {isbn10}
+                <br />
+                ISBN-13: {isbn13}
+              </Grid>
+            </Grid>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </>
   );
 };
 

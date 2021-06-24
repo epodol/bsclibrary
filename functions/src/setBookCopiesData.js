@@ -1,8 +1,9 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
-exports.setBookCopiesData = functions.firestore
-  .document('books/{bookId}/copies/{copyID}')
+exports.setBookCopiesData = functions
+  .region('us-west2')
+  .firestore.document('books/{bookId}/copies/{copyID}')
   .onWrite(({ before, after }) => {
     const increment = (val) => admin.firestore.FieldValue.increment(val);
     const newVal = {};

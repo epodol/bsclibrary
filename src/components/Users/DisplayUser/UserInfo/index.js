@@ -7,16 +7,16 @@ import { Link } from 'react-router-dom';
 import { useParams } from 'react-router';
 import PhoneInput from 'react-phone-number-input/input';
 
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Grid from '@material-ui/core/Grid';
-import VpnKeyIcon from '@material-ui/icons/VpnKey';
-import LockIcon from '@material-ui/icons/Lock';
-import LockOpenIcon from '@material-ui/icons/LockOpen';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import {
+  TextField,
+  Button,
+  ButtonGroup,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  CircularProgress,
+} from '@material-ui/core';
+import { VpnKey, Lock, LockOpen } from '@material-ui/icons';
 
 import FirebaseContext from '../../../Firebase';
 
@@ -59,11 +59,11 @@ const UserInfo = ({ user }) => {
             size="small"
             variant="outlined"
             color="primary"
-            startIcon={<VpnKeyIcon />}
+            startIcon={<VpnKey />}
             disabled={user.userInfo.disabled}
             onClick={() => {
               const actionCodeSettings = {
-                url: window.location.host,
+                url: window.location.origin,
                 handleCodeInApp: true,
               };
               auth
@@ -91,7 +91,7 @@ const UserInfo = ({ user }) => {
             variant={user.userInfo.disabled ? 'contained' : 'outlined'}
             color="primary"
             disabled={currentUser.uid === user.userInfo.uid}
-            startIcon={user.userInfo.disabled ? <LockOpenIcon /> : <LockIcon />}
+            startIcon={user.userInfo.disabled ? <LockOpen /> : <Lock />}
             style={{ float: 'right' }}
             onClick={() => {
               userDocRef.set(
@@ -290,7 +290,7 @@ const UserInfo = ({ user }) => {
             <br />
             <h4>Permissions</h4>
             <div>
-              Default Permissions:
+              Role:
               <ButtonGroup
                 variant="text"
                 color="primary"
@@ -313,6 +313,7 @@ const UserInfo = ({ user }) => {
                     setFieldValue('MANAGE_USERS', false, true);
                     setFieldValue('role', 100, true);
                   }}
+                  disabled={values.role === 100}
                 >
                   Student
                 </Button>
@@ -327,6 +328,7 @@ const UserInfo = ({ user }) => {
                     setFieldValue('MANAGE_USERS', false, true);
                     setFieldValue('role', 200, true);
                   }}
+                  disabled={values.role === 200}
                 >
                   Parent
                 </Button>
@@ -341,6 +343,7 @@ const UserInfo = ({ user }) => {
                     setFieldValue('MANAGE_USERS', false, true);
                     setFieldValue('role', 300, true);
                   }}
+                  disabled={values.role === 300}
                 >
                   Teacher
                 </Button>
@@ -355,6 +358,7 @@ const UserInfo = ({ user }) => {
                     setFieldValue('MANAGE_USERS', false, true);
                     setFieldValue('role', 400, true);
                   }}
+                  disabled={values.role === 400}
                 >
                   School Staff
                 </Button>
@@ -369,6 +373,7 @@ const UserInfo = ({ user }) => {
                     setFieldValue('MANAGE_USERS', false, true);
                     setFieldValue('role', 500, true);
                   }}
+                  disabled={values.role === 500}
                 >
                   Library Committee Member
                 </Button>
@@ -383,6 +388,7 @@ const UserInfo = ({ user }) => {
                     setFieldValue('MANAGE_USERS', false, true);
                     setFieldValue('role', 600, true);
                   }}
+                  disabled={values.role === 600}
                 >
                   Junior Librarian
                 </Button>
@@ -397,6 +403,7 @@ const UserInfo = ({ user }) => {
                     setFieldValue('MANAGE_USERS', false, true);
                     setFieldValue('role', 700, true);
                   }}
+                  disabled={values.role === 700}
                 >
                   Librarian
                 </Button>
@@ -411,6 +418,7 @@ const UserInfo = ({ user }) => {
                     setFieldValue('MANAGE_USERS', true, true);
                     setFieldValue('role', 800, true);
                   }}
+                  disabled={values.role === 800}
                 >
                   Senior Librarian
                 </Button>
@@ -425,6 +433,7 @@ const UserInfo = ({ user }) => {
                     setFieldValue('MANAGE_USERS', true, true);
                     setFieldValue('role', 900, true);
                   }}
+                  disabled={values.role === 900}
                 >
                   School Administrator
                 </Button>
@@ -439,6 +448,7 @@ const UserInfo = ({ user }) => {
                     setFieldValue('MANAGE_USERS', true, true);
                     setFieldValue('role', 1000, true);
                   }}
+                  disabled={values.role === 1000}
                 >
                   Administrator
                 </Button>
@@ -591,16 +601,16 @@ const UserInfo = ({ user }) => {
                 labelPlacement="end"
               />
             </div>
-            <TextField
-              value={values.role}
-              onChange={handleChange}
-              id="role"
-              label="Role"
-              disabled={
-                currentUser.uid === user.userInfo.uid &&
-                firebaseContext.claims.role < 1000
-              }
-            />
+            {/* <TextField */}
+            {/*  value={values.role} */}
+            {/*  onChange={handleChange} */}
+            {/*  id="role" */}
+            {/*  label="Role" */}
+            {/*  disabled={ */}
+            {/*    currentUser.uid === user.userInfo.uid && */}
+            {/*    firebaseContext.claims.role < 1000 */}
+            {/*  } */}
+            {/* /> */}
             <br />
             <div className="text-center">
               <div>

@@ -1,8 +1,13 @@
 {
   "name": "bsclibrary",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "The BASIS Scottsdale Library Website",
-  "keywords": [],
+  "keywords": [
+    "BASIS",
+    "Scottsdale",
+    "BASIS Scottsdale",
+    "BASIS Scottsdale Library"
+  ],
   "homepage": "https://bsclibrary.net",
   "bugs": {
     "url": "https://github.com/epodol/bsclibrary/issues"
@@ -19,16 +24,17 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^13.1.9",
+    "algoliasearch": "^4.9.3",
+    "bootstrap-css-only": "^4.4.1",
     "firebase": "^8.6.8",
     "formik": "^2.2.9",
-    "mdbreact": "^5.0.2",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-material-ui-carousel": "^2.2.6",
     "react-phone-number-input": "^3.1.23",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.3",
-    "react-spring": "^9.2.3",
     "reactfire": "^3.0.0-rc.0",
     "yup": "^0.32.9"
   },

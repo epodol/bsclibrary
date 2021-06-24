@@ -1,13 +1,15 @@
 import React, { Suspense, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
-  MDBBtn,
-  MDBCard,
-  MDBCardHeader,
-  MDBCol,
-  MDBContainer,
-  MDBRow,
-} from 'mdbreact';
+  AppBar,
+  IconButton,
+  Grid,
+  Paper,
+  Toolbar,
+  Container,
+} from '@material-ui/core';
+import { Add } from '@material-ui/icons';
+
 import { useFirestore, useUser } from 'reactfire';
 import TableBody from './TableBody';
 import Loading from '../../Loading';
@@ -23,22 +25,22 @@ const BooksTable = () => {
   const history = useHistory();
 
   return (
-    <>
-      <MDBCard className="py-2 my-4 mx-5 mb-5">
-        <MDBCardHeader className="rgba-green-strong m-4">
-          <MDBContainer>
-            <MDBRow>
-              <MDBCol size="2" />
-              <MDBCol size="8" className="flex-center">
+    <Paper className="p-3 my-4 mx-5 mb-5">
+      <AppBar position="static">
+        <Toolbar>
+          <Container>
+            <Grid container spacing={3}>
+              <Grid item xs={1}>
+                {' '}
+              </Grid>
+              <Grid item xs={10} className="text-center">
                 <h2 className="white-text">Books</h2>
-              </MDBCol>
-              <MDBCol size="2" className="text-right">
+              </Grid>
+              <Grid item xs={1} className="text-right">
                 {firebaseContext?.claims?.permissions?.MANAGE_BOOKS && (
-                  <MDBBtn
-                    outline
-                    rounded
-                    color="white"
-                    className="px-3"
+                  <IconButton
+                    className="px-3 white-text"
+                    color="inherit"
                     onClick={() => {
                       firestore
                         .collection('books')
@@ -78,18 +80,18 @@ const BooksTable = () => {
                         });
                     }}
                   >
-                    <i className="fas fa-plus mt-0" />
-                  </MDBBtn>
+                    <Add />
+                  </IconButton>
                 )}
-              </MDBCol>
-            </MDBRow>
-          </MDBContainer>
-        </MDBCardHeader>
-        <Suspense fallback={<Loading />}>
-          <TableBody />
-        </Suspense>
-      </MDBCard>
-    </>
+              </Grid>
+            </Grid>
+          </Container>
+        </Toolbar>
+      </AppBar>
+      <Suspense fallback={<Loading />}>
+        <TableBody />
+      </Suspense>
+    </Paper>
   );
 };
 export default BooksTable;

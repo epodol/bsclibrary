@@ -1,16 +1,22 @@
-import React, { useState } from 'react';
-import {
-  MDBTable,
-  MDBTableHead,
-  MDBTableBody,
-  MDBIcon,
-  MDBBtn,
-  MDBBtnGroup,
-  MDBTooltip,
-  MDBInput,
-  MDBBadge,
-} from 'mdbreact';
+import React, { useEffect, useState } from 'react';
 import { useFirestore, useFirestoreCollectionData, useUser } from 'reactfire';
+import {
+  Button,
+  ButtonGroup,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TextField,
+  Tooltip,
+} from '@material-ui/core';
+import {
+  Add,
+  CheckCircleOutlined,
+  Delete,
+  HighlightOff,
+} from '@material-ui/icons';
 
 function determineStatus(status) {
   switch (status) {
@@ -27,6 +33,23 @@ function determineStatus(status) {
     default:
       return 'Unknown Status';
   }
+}
+
+function isCopySame(
+  barcode,
+  status,
+  condition,
+  notes,
+  barcodeValue,
+  statusValue,
+  conditionValue,
+  notesValue
+) {
+  if (barcode !== barcodeValue) return false;
+  if (status !== statusValue) return false;
+  if (condition !== conditionValue) return false;
+  if (notes !== notesValue) return false;
+  return true;
 }
 
 const CopiesTable = ({ bookID, editing }) => {
@@ -49,31 +72,36 @@ const CopiesTable = ({ bookID, editing }) => {
 
   return (
     <div className="mx-5">
-      {(copies.length !== 0 || editing) && (
-        <MDBTable btn striped hover responsive>
-          <MDBTableHead>
-            <tr>
-              <th className="h4" style={{ width: 1 }}>
-                <></>
-              </th>
-              <th
+      {(copies.lengTableCell !== 0 || editing) && (
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell />
+              <TableCell
                 className={editing ? 'h4 text-center' : 'h4'}
-                style={editing ? { width: 1 } : {}}
+                style={editing ? { widTableCell: 1 } : {}}
               >
                 Barcode
-              </th>
-              <th className={editing ? 'h4 text-center' : 'h4'}>Status</th>
+              </TableCell>
+              <TableCell className={editing ? 'h4 text-center' : 'h4'}>
+                Status
+              </TableCell>
               {editing && (
-                <th className="h4 text-center" style={{ width: 1 }}>
+                <TableCell
+                  className="h4 text-center"
+                  style={{ widTableCell: 1 }}
+                >
                   Condition
-                </th>
+                </TableCell>
               )}
-              {editing && <th className="h4">Notes</th>}
+              {editing && <TableCell className="h4">Notes</TableCell>}
               {editing && (
-                <th className="h4" style={editing ? { width: 1 } : {}}>
+                <TableCell
+                  className="h4"
+                  style={editing ? { widTableCell: 1 } : {}}
+                >
                   Actions
-                  <MDBBtn
-                    rounded
+                  <Button
                     className="px-3"
                     onClick={() => {
                       firestore
@@ -90,13 +118,13 @@ const CopiesTable = ({ bookID, editing }) => {
                         });
                     }}
                   >
-                    <i className="fas fa-plus mt-0" />
-                  </MDBBtn>
-                </th>
+                    <Add className="mt-0" />
+                  </Button>
+                </TableCell>
               )}
-            </tr>
-          </MDBTableHead>
-          <MDBTableBody>
+            </TableRow>
+          </TableHead>
+          <TableBody>
             {copies.map(({ id, barcode, status, condition, notes }) =>
               editing ? (
                 <EditCopy
@@ -114,12 +142,12 @@ const CopiesTable = ({ bookID, editing }) => {
                 )
               )
             )}
-          </MDBTableBody>
-        </MDBTable>
+          </TableBody>
+        </Table>
       )}
-      {copies.length === 0 && !editing && (
+      {copies.lengTableCell === 0 && !editing && (
         <h2 className="text-center mb-5">
-          Sorry, we don&apos;t currently have any copies of this book.
+          Sorry, we don&apos;t currently have any copies of TableCellis book.
         </h2>
       )}
     </div>
@@ -128,20 +156,24 @@ const CopiesTable = ({ bookID, editing }) => {
 
 const Copy = ({ id, barcode, status }) => (
   <tr key={id} className="font-weight-bold">
-    <td className="text-center">
+    <TableCell className="text-center">
       {(status === 0 || status === 1) && (
-        <MDBIcon icon="check-circle" size="2x" className="green-text mr-2" />
+        <CheckCircleOutlined
+          icon="check-circle"
+          size="lg"
+          className="green-text mr-2"
+        />
       )}
       {!(status === 0 || status === 1) && (
-        <MDBIcon icon="times-circle" size="2x" className="red-text mr-2" />
+        <HighlightOff icon="times-circle" size="lg" className="red-text mr-2" />
       )}
-    </td>
-    <td className="h4">
-      <MDBBadge color="light" pill className="mx-1 h3">
-        {barcode}
-      </MDBBadge>
-    </td>
-    <td>{determineStatus(status)}</td>
+    </TableCell>
+    <TableCell>
+      <h5>{barcode}</h5>
+    </TableCell>
+    <TableCell>
+      <h5>{determineStatus(status)}</h5>
+    </TableCell>
   </tr>
 );
 
@@ -157,145 +189,178 @@ const EditCopy = ({ id, bookID, barcode, status, condition, notes }) => {
   const fieldValue = useFirestore.FieldValue;
   const user = useUser().data;
 
+  let activeTimer = null;
+
+  useEffect(() => {
+    return () => {
+      if (activeTimer) clearTimeout(activeTimer);
+    };
+  });
+
   return (
-    <tr key={id} className="font-weight-bold">
-      <td className="text-center">
+    <TableRow key={id} className="font-weight-bold">
+      <TableCell className="text-center">
         {(statusValue === 0 || statusValue === 1) && (
-          <MDBIcon icon="check-circle" size="2x" className="green-text mr-2" />
-        )}
-        {!(statusValue === 0 || statusValue === 1) && (
-          <MDBIcon
-            icon="times-circle"
-            size="2x"
-            className={statusValue === 4 ? 'grey-text mr-2' : 'red-text mr-2'}
+          <CheckCircleOutlined
+            icon="check-circle"
+            size="lg"
+            className="green-text mr-2"
           />
         )}
-      </td>
-      <td>
-        <MDBInput
+        {!(statusValue === 0 || statusValue === 1) && (
+          <HighlightOff
+            icon="times-circle"
+            size="lg"
+            className="red-text mr-2"
+          />
+        )}
+      </TableCell>
+      <TableCell>
+        <TextField
           label="Barcode"
           value={barcodeValue}
           onChange={(event) => setBarcodeValue(event.target.value)}
         />
-      </td>
-      <td className="text-center">
-        <MDBBtnGroup size="sm">
-          <MDBBtn
-            color="green"
-            active={statusValue === 0}
+      </TableCell>
+      <TableCell className="text-center">
+        <ButtonGroup size="small">
+          <Button
+            color="default"
+            disabled={statusValue === 0}
             className="px-2"
             onClick={() => setStatusValue(0)}
+            variant="contained"
           >
             {determineStatus(0)}
-          </MDBBtn>
-          <MDBBtn
-            color="green"
-            active={statusValue === 1}
+          </Button>
+          <Button
+            color="default"
+            disabled={statusValue === 1}
             className="px-2"
             onClick={() => setStatusValue(1)}
+            variant="contained"
           >
             {determineStatus(1)}
-          </MDBBtn>
-        </MDBBtnGroup>
+          </Button>
+        </ButtonGroup>
         <br />
-        <MDBBtnGroup size="sm">
-          <MDBTooltip placement="bottom">
-            <MDBBtn
-              color="green"
-              active={statusValue === 2}
+        <ButtonGroup size="small">
+          <Tooltip
+            placement="bottom"
+            title="To set a copy's status to {determineStatus(2)}, please use
+              TableCelle appropriate tool."
+          >
+            <Button
+              color="default"
+              disabled={statusValue === 2}
               className="px-2"
               //   onClick={() => setStatusValue(2)}
+              variant="contained"
             >
               {determineStatus(2)}
-            </MDBBtn>
-            <div>
-              To set a copy&apos;s status to {determineStatus(2)}, please use
-              the appropriate tool.
-            </div>
-          </MDBTooltip>
-          <MDBBtn
-            color="green"
-            active={statusValue === 3}
+            </Button>
+          </Tooltip>
+          <Button
+            color="default"
+            disabled={statusValue === 3}
             className="px-2"
             onClick={() => setStatusValue(3)}
+            variant="contained"
           >
             {determineStatus(3)}
-          </MDBBtn>
-        </MDBBtnGroup>
+          </Button>
+        </ButtonGroup>
         <br />
-        <MDBBtn
-          color="green"
-          size="sm"
-          active={statusValue === 4}
+        <Button
+          color="default"
+          size="small"
+          disabled={statusValue === 4}
           className="px-2"
           onClick={() => setStatusValue(4)}
+          variant="contained"
         >
           {determineStatus(4)}
-        </MDBBtn>
-      </td>
-      <td className="text-center">
-        <MDBBtnGroup size="sm">
-          <MDBBtn
-            color="green"
-            active={conditionValue === 1}
+        </Button>
+      </TableCell>
+      <TableCell className="text-center">
+        <ButtonGroup size="small">
+          <Button
+            color="default"
+            disabled={conditionValue === 1}
             className="px-2"
             onClick={() => setConditionValue(1)}
+            variant="contained"
           >
             New
-          </MDBBtn>
-          <MDBBtn
-            color="green"
-            active={conditionValue === 2}
+          </Button>
+          <Button
+            color="default"
+            disabled={conditionValue === 2}
             className="px-2"
             onClick={() => setConditionValue(2)}
+            variant="contained"
           >
             Good
-          </MDBBtn>
-        </MDBBtnGroup>
+          </Button>
+        </ButtonGroup>
         <br />
-        <MDBBtn
-          color="green"
-          size="sm"
-          active={conditionValue === 3}
+        <Button
+          color="default"
+          size="small"
+          disabled={conditionValue === 3}
           className="px-2"
           onClick={() => setConditionValue(3)}
+          variant="contained"
         >
           Fair
-        </MDBBtn>
+        </Button>
         <br />
-        <MDBBtnGroup size="sm">
-          <MDBBtn
-            color="green"
-            active={conditionValue === 4}
+        <ButtonGroup size="small">
+          <Button
+            color="default"
+            disabled={conditionValue === 4}
             className="px-2"
             onClick={() => setConditionValue(4)}
+            variant="contained"
           >
             Poor
-          </MDBBtn>
-          <MDBBtn
-            color="green"
-            active={conditionValue === 5}
+          </Button>
+          <Button
+            color="default"
+            disabled={conditionValue === 5}
             className="px-2"
             onClick={() => setConditionValue(5)}
+            variant="contained"
           >
             Bad
-          </MDBBtn>
-        </MDBBtnGroup>
-      </td>
-      <td>
-        <MDBInput
+          </Button>
+        </ButtonGroup>
+      </TableCell>
+      <TableCell>
+        <TextField
           label="Notes"
-          type="textarea"
+          multiline
           rows="3"
           value={notesValue}
           onChange={(event) => setNotesValue(event.target.value)}
         />
-      </td>
-      <td>
-        <MDBBtnGroup>
-          <MDBBtn
-            color="orange"
+      </TableCell>
+      <TableCell>
+        <ButtonGroup>
+          <Button
+            disabled={isCopySame(
+              barcode,
+              status,
+              condition,
+              notes,
+              barcodeValue,
+              statusValue,
+              conditionValue,
+              notesValue
+            )}
+            color="primary"
             className="px-4"
+            variant="contained"
             onClick={async () => {
               await firestore
                 .collection('books')
@@ -311,16 +376,18 @@ const EditCopy = ({ id, bookID, barcode, status, condition, notes }) => {
                   lastEdited: fieldValue.serverTimestamp(),
                 });
               setSubmitSuccess(true);
-              setTimeout(async () => {
-                setSubmitSuccess(false);
-              }, 4000);
+              const timer = () =>
+                setTimeout(async () => {
+                  setSubmitSuccess(false);
+                }, 5000);
+              activeTimer = timer();
             }}
           >
             {!submitSuccess && 'Save'}
-            {submitSuccess && <MDBIcon icon="check" />}
-          </MDBBtn>
-          <MDBBtn
-            color="red"
+            {submitSuccess && <CheckCircleOutlined />}
+          </Button>
+          <Button
+            color="secondary"
             className="px-3"
             onClick={() => {
               firestore
@@ -331,11 +398,11 @@ const EditCopy = ({ id, bookID, barcode, status, condition, notes }) => {
                 .delete();
             }}
           >
-            <MDBIcon icon="trash" />
-          </MDBBtn>
-        </MDBBtnGroup>
-      </td>
-    </tr>
+            <Delete />
+          </Button>
+        </ButtonGroup>
+      </TableCell>
+    </TableRow>
   );
 };
 

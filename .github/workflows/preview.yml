@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: Build
-    if: github.repository_owner == 'epodol' && !contains(github.event.pull_request.labels.*.name, 'dependencies') && github.event.pull_request.user.login != 'dependabot[bot]'
+    if: github.repository_owner == 'epodol' && github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -47,6 +47,8 @@ jobs:
           REACT_APP_FIREBASE_PROJECT_ID: basis-scottsdale-library
           REACT_APP_FIREBASE_STORAGE_BUCKET: basis-scottsdale-library.appspot.com
           REACT_APP_FIREBASE_APP_ID: 1:547349848920:web:05b2531ebd920c8716bb2d
+          REACT_APP_ALGOLIA_APP_ID: RR5FNWYO7I
+          REACT_APP_ALGOLIA_API_KEY: 76905f67632a6ef53e305db4fe106dfe
 
       - name: Deploy to Preview Channel
         uses: FirebaseExtended/action-hosting-deploy@v0
