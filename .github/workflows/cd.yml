@@ -2,12 +2,11 @@ name: CD
 
 on:
   release:
-    types:
-      - created
+    types: [published]
 
 jobs:
   deploy:
-    name: Deploy to Firebase
+    name: Upload Build and Deploy to Firebase
     if: github.repository_owner == 'epodol'
     runs-on: ubuntu-latest
     steps:
@@ -48,6 +47,31 @@ jobs:
           REACT_APP_FIREBASE_APP_ID: 1:547349848920:web:05b2531ebd920c8716bb2d
           REACT_APP_ALGOLIA_APP_ID: RR5FNWYO7I
           REACT_APP_ALGOLIA_API_KEY: 76905f67632a6ef53e305db4fe106dfe
+
+      - name: Create Build Assets
+        run: |
+          zip -r build.zip build
+          tar -czf build.tar.gz build
+
+      - name: Upload .zip Build Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./build.zip
+          asset_name: build.zip
+          asset_content_type: application/zip
+
+      - name: Upload .tar.gz Build Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./build.tar.gz
+          asset_name: build.tar.gz
+          asset_content_type: application/gzip
 
       - name: Deploy to Firebase
         if: 'github.event.release.prerelease'
