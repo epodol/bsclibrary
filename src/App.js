@@ -25,8 +25,7 @@ const preloadSDKs = (firebaseApp) => {
       firebaseApp,
       setup(firestore) {
         if (isDev) firestore().useEmulator('localhost', 8080);
-        return null;
-        // return firestore().enablePersistence({ synchronizeTabs: true });
+        return firestore().enablePersistence({ synchronizeTabs: true });
       },
       suspense: true,
     }),
@@ -45,9 +44,8 @@ const preloadSDKs = (firebaseApp) => {
     preloadFunctions({
       firebaseApp,
       setup(functions) {
-        return isDev
-          ? functions().useEmulator('localhost', 5001)
-          : functions('us-west2');
+        if (isDev) return functions('us-west2').useEmulator('localhost', 5001);
+        return functions('us-west2');
       },
       suspense: true,
     }),
@@ -104,7 +102,7 @@ const App = () => {
   const appCheck = !isDev ? firebaseApp.appCheck() : null;
 
   useEffect(() => {
-    if (!isDev) appCheck.activate('6LcS7NwaAAAAAP3RJKNPoCgHiF9CjfJC6dWr7D9d');
+    if (!isDev) appCheck.activate(process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY);
   });
 
   preloadSDKs(firebaseApp);

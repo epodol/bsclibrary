@@ -12,9 +12,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: View PR author
-        run: echo "This PR is opened by ${{ github.event.pull_request.user.login }} ."
-
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
@@ -41,14 +38,15 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          REACT_APP_FIREBASE_API_KEY: AIzaSyDcJMYRqjq9HVPN5651DUQJ5LtudV4VOro
-          REACT_APP_FIREBASE_AUTH_DOMAIN: basis-scottsdale-library.firebaseapp.com
-          REACT_APP_FIREBASE_DATABASE_URL: https://basis-scottsdale-library.firebaseio.com
-          REACT_APP_FIREBASE_PROJECT_ID: basis-scottsdale-library
-          REACT_APP_FIREBASE_STORAGE_BUCKET: basis-scottsdale-library.appspot.com
-          REACT_APP_FIREBASE_APP_ID: 1:547349848920:web:05b2531ebd920c8716bb2d
-          REACT_APP_ALGOLIA_APP_ID: RR5FNWYO7I
-          REACT_APP_ALGOLIA_API_KEY: 76905f67632a6ef53e305db4fe106dfe
+          REACT_APP_FIREBASE_API_KEY: ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
+          REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.REACT_APP_FIREBASE_AUTH_DOMAIN }}
+          REACT_APP_FIREBASE_DATABASE_URL: ${{ secrets.REACT_APP_FIREBASE_DATABASE_URL }}
+          REACT_APP_FIREBASE_PROJECT_ID: ${{ secrets.REACT_APP_FIREBASE_PROJECT_ID }}
+          REACT_APP_FIREBASE_STORAGE_BUCKET: ${{ secrets.REACT_APP_FIREBASE_STORAGE_BUCKET }}
+          REACT_APP_FIREBASE_APP_ID: ${{ secrets.REACT_APP_FIREBASE_APP_ID }}
+          REACT_APP_ALGOLIA_APP_ID: ${{ secrets.REACT_APP_ALGOLIA_APP_ID }}
+          REACT_APP_ALGOLIA_API_KEY: ${{ secrets.REACT_APP_ALGOLIA_API_KEY }}
+          REACT_APP_RECAPTCHA_PUBLIC_KEY: ${{ secrets.REACT_APP_RECAPTCHA_PUBLIC_KEY }}
 
       - name: Deploy to Preview Channel
         uses: FirebaseExtended/action-hosting-deploy@v0
