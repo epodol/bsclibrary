@@ -1,15 +1,10 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
-const isDev = process.env.NODE_ENV !== 'production';
-
 exports.addNewUser = functions
-  .region(!isDev ? 'us-west2' : 'us-central1')
+  .region('us-west2')
   .https.onCall(async (data, context) => {
-    functions.logger.log('CONTEXT.APP', context.app);
-    functions.logger.log('CONTEXT.AUTH', context.auth);
-    functions.logger.log('process.env.NODE_ENV', process.env.NODE_ENV);
-
+    // App Check Verification
     if (!context.app && process.env.NODE_ENV === 'production') {
       throw new functions.https.HttpsError(
         'failed-precondition',
@@ -17,6 +12,7 @@ exports.addNewUser = functions
       );
     }
 
+    // Auth Verification
     if (!context.auth) {
       throw new functions.https.HttpsError(
         'unauthenticated',

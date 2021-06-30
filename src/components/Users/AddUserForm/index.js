@@ -10,11 +10,12 @@ import {
 } from '@material-ui/core';
 import { Form, Formik } from 'formik';
 import * as yup from 'yup';
-import { useAuth, useFunctions } from 'reactfire';
+import { useAuth, useFirebaseApp } from 'reactfire';
 import { useHistory } from 'react-router';
 
 const AddUserForm = () => {
-  const functions = useFunctions();
+  const functions = useFirebaseApp().functions('us-west2');
+
   const auth = useAuth();
 
   const history = useHistory();
