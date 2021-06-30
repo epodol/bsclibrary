@@ -110,7 +110,7 @@ const FindUser = () => {
 
   return (
     <div>
-      <h2 className="flex-center">Search Users</h2>
+      <h2 className="flex-center text-center">Search Users</h2>
       <form
         onSubmit={(e) => e.preventDefault()}
         className="text-center mx-auto"

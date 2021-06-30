@@ -16,6 +16,11 @@ service cloud.firestore {
         allow delete: if request.auth.token.role >= 1000 && request.auth.token.permissions.MANAGE_BOOKS;
       }
 
+      match /books/{book}/reviews/{review} {
+        allow read: if request.auth.token.permissions.VIEW_BOOKS;
+        allow write: if request.auth.token.role >= 1000 && request.auth.token.permissions.MANAGE_BOOKS;
+      }
+
       match /users/{user} {
         allow get: if request.auth.token.permissions.MANAGE_USERS || request.auth.uid == user;
         allow list: if (request.auth.token.permissions.MANAGE_USERS);

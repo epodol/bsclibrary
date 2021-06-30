@@ -18,7 +18,6 @@ import { ArrowLeft, ArrowRight } from '@material-ui/icons';
 
 const FeaturedBooks = () => {
   const history = useHistory();
-  // const featuredBooksRef = useFirestore().collection('summaries').doc('books');
   const featuredBooksRef = useFirestore()
     .collection('books')
     .where('featured', '==', true);
