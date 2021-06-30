@@ -78,7 +78,7 @@ jobs:
         if: 'github.event.release.prerelease'
         uses: w9jds/firebase-action@master
         with:
-          args: firebase deploy --only hosting:preview
+          args: deploy --only hosting:preview
         env:
           FIREBASE_TOKEN: '${{ secrets.FIREBASE_TOKEN }}'
 
