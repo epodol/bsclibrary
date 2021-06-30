@@ -4,29 +4,51 @@
     <meta charset="utf-8" />
     <link
       rel="icon"
-      href="%PUBLIC_URL%/assets/logos/BASIS Scottsdale Library Logo - v0.1.1.ico"
+      href="/assets/logos/BASIS Scottsdale Library Logo - v0.1.1.ico"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#6DB058" />
+
+    <!-- HTML Meta Tags -->
+    <title>BASIS Scottsdale Library</title>
     <meta name="description" content="The BASIS Scottsdale Library" />
 
-    <meta property="og:title" content="BASIS Scottsdale Library" />
+    <!-- Google / Search Engine Tags -->
+    <meta itemprop="name" content="BASIS Scottsdale Library" />
+    <meta itemprop="description" content="The BASIS Scottsdale Library" />
+    <meta
+      itemprop="image"
+      content="https://bsclibrary.net/assets/logos/BASIS Scottsdale Library Logo - v0.1.1 - 4x.png"
+    />
+
+    <!-- Facebook Meta Tags -->
+    <meta property="og:url" content="https://bsclibrary.net" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="%PUBLIC_URL%" />
+    <meta property="og:title" content="BASIS Scottsdale Library" />
+    <meta property="og:description" content="The BASIS Scottsdale Library" />
     <meta
       property="og:image"
-      content="%PUBLIC_URL%/assets/logos/BASIS Scottsdale Library Logo - v0.1.1 - 4x.png"
+      content="https://bsclibrary.net/assets/logos/BASIS Scottsdale Library Logo - v0.1.1 - 4x.png"
     />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="8000" />
     <meta property="og:image:height" content="8000" />
-    <meta property="og:image:alt" content="BASIS Scottsdale Library Logo" />
+    <meta property="og:image:alt" content="BASIS Scottsdale Library" />
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="BASIS Scottsdale Library" />
+    <meta name="twitter:description" content="The BASIS Scottsdale Library" />
+    <meta
+      name="twitter:image"
+      content="https://bsclibrary.net/assets/logos/BASIS Scottsdale Library Logo - v0.1.1 - 4x.png"
+    />
 
     <link
       rel="apple-touch-icon"
-      href="%PUBLIC_URL%/assets/logos/BASIS Scottsdale Library Logo - v0.1.1.svg"
+      href="/assets/logos/BASIS Scottsdale Library Logo - v0.1.1.svg"
     />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="manifest" href="/manifest.json" />
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
@@ -35,7 +57,9 @@
     <style>
       @font-face {
         font-family: 'century-gothic';
-        src: url('/assets/fonts/GOTHIC.TTF');
+        src: local('Century Gothic'), local('century-gothic'),
+          url('/assets/fonts/GOTHIC.TTF');
+        font-display: swap;
       }
     </style>
   </head>

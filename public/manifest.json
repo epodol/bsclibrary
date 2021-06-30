@@ -1,6 +1,7 @@
 {
   "short_name": "BASIS Scottsdale Library",
   "name": "BASIS Scottsdale Library",
+  "description": "The BASIS Scottsdale Library Website",
   "icons": [
     {
       "src": "./assets/logos/BASIS Scottsdale Library Logo - v0.1.1.ico",
@@ -38,6 +39,7 @@
       "sizes": "8000x8000"
     }
   ],
+  "orientation": "landscape",
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#6DB058",

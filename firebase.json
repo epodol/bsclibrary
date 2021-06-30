@@ -34,19 +34,19 @@
     "rules": "storage.rules"
   },
   "emulators": {
-    "firestore": {
-      "port": "8080"
-    },
     "ui": {
       "enabled": true,
       "host": "localhost",
       "port": 4000
     },
+    "firestore": {
+      "port": 8080
+    },
     "auth": {
-      "port": "9099"
+      "port": 9099
     },
     "functions": {
-      "port": "5001"
+      "port": 5001
     },
     "hosting": {
       "port": 5000

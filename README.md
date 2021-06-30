@@ -1,6 +1,8 @@
 # BASIS Scottsdale Library Website
 
-## Setting up your workspace
+## Contributing
+
+### Setting up your workspace
 
 1. Clone the repo
    ```

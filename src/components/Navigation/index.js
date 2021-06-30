@@ -12,7 +12,7 @@ import { ExitToApp, Home } from '@material-ui/icons';
 
 import { AuthCheck, useAuth } from 'reactfire';
 
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 
 import FirebaseContext from '../Firebase';
 import SignIn from './SignIn';
@@ -96,6 +96,7 @@ const NavBarItems = () => {
 const Navigation = () => {
   const firebaseContext = useContext(FirebaseContext);
   const auth = useAuth();
+  const history = useHistory();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -115,6 +116,7 @@ const Navigation = () => {
             <img
               src={`${process.env.PUBLIC_URL}/assets/logos/BASIS Scottsdale Library Logo - v0.1.1.svg`}
               height="50"
+              width="50"
               alt="BASIS Scottsdale Library Logo"
             />
             <strong className="white-text"> BASIS Scottsdale Library</strong>
@@ -163,7 +165,10 @@ const Navigation = () => {
                     <MenuItem
                       onClick={() => {
                         setAnchorEl(null);
-                        auth.signOut();
+                        auth.signOut().then(() => {
+                          history.push('.');
+                          window.location.reload();
+                        });
                       }}
                     >
                       <ExitToApp /> Sign out
