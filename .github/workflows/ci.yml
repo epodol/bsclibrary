@@ -96,7 +96,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cache/firebase/emulators
-          key: ${{ runner.os }}-firebase-emulators-${{ hashFiles('~/.cache/firebase/emulators/**') }}
+          key: ${{ runner.os }}-firebase-emulators
         continue-on-error: true
 
       - name: Install Dependencies
