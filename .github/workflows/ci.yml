@@ -8,10 +8,11 @@ on:
 
 jobs:
   prettier:
-    name: Prettier Tests
+    name: Prettier
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
       - name: Setup Node
         uses: actions/setup-node@v2
@@ -31,19 +32,17 @@ jobs:
             ${{ runner.os }}-
 
       - name: Install Dependencies
-        run: |
-          npm ci --prefer-offline --no-audit --no-optional
-          cd functions
-          npm ci --prefer-offline --no-audit --no-optional
+        run: npm ci --prefer-offline --no-audit --no-optional
 
-      - name: Run Prettier Tests
+      - name: Run Prettier
         run: npm run prettier
 
   eslint:
-    name: ESLint Tests
+    name: ESLint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
       - name: Setup Node
         uses: actions/setup-node@v2
@@ -63,20 +62,18 @@ jobs:
             ${{ runner.os }}-
 
       - name: Install Dependencies
-        run: |
-          npm ci --prefer-offline --no-audit --no-optional
-          cd functions
-          npm ci --prefer-offline --no-audit --no-optional
+        run: npm ci --prefer-offline --no-audit --no-optional
 
-      - name: Run ESLint Tests
+      - name: Run ESLint
         run: npm run eslint
 
   test:
-    name: React Tests
+    name: Tests
     if: github.repository_owner == 'epodol'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
       - name: Setup Node
         uses: actions/setup-node@v2
@@ -96,20 +93,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Install Dependencies
-        run: |
-          npm ci --prefer-offline --no-audit --no-optional
-          cd functions
-          npm ci --prefer-offline --no-audit --no-optional
+        run: npm ci --prefer-offline --no-audit --no-optional
 
-      - name: Run react-scripts Tests
+      - name: Run Tests
         run: npm run test
-        env:
-          REACT_APP_FIREBASE_API_KEY: ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
-          REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.REACT_APP_FIREBASE_AUTH_DOMAIN }}
-          REACT_APP_FIREBASE_DATABASE_URL: ${{ secrets.REACT_APP_FIREBASE_DATABASE_URL }}
-          REACT_APP_FIREBASE_PROJECT_ID: ${{ secrets.REACT_APP_FIREBASE_PROJECT_ID }}
-          REACT_APP_FIREBASE_STORAGE_BUCKET: ${{ secrets.REACT_APP_FIREBASE_STORAGE_BUCKET }}
-          REACT_APP_FIREBASE_APP_ID: ${{ secrets.REACT_APP_FIREBASE_APP_ID }}
-          REACT_APP_ALGOLIA_APP_ID: ${{ secrets.REACT_APP_ALGOLIA_APP_ID }}
-          REACT_APP_ALGOLIA_API_KEY: ${{ secrets.REACT_APP_ALGOLIA_API_KEY }}
-          REACT_APP_RECAPTCHA_PUBLIC_KEY: ${{ secrets.REACT_APP_RECAPTCHA_PUBLIC_KEY }}

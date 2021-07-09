@@ -1,11 +1,8 @@
 {
   "name": "bsclibrary",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "The BASIS Scottsdale Library Website",
   "keywords": [
-    "BASIS",
-    "Scottsdale",
-    "BASIS Scottsdale",
     "BASIS Scottsdale Library"
   ],
   "homepage": "https://bsclibrary.net",
@@ -16,36 +13,35 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/epodol/bsclibrary.git"
-  },
-  "dependencies": {
-    "@material-ui/core": "^4.11.4",
-    "@material-ui/icons": "^4.11.2",
-    "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^12.0.0",
-    "@testing-library/user-event": "^13.1.9",
-    "algoliasearch": "^4.10.2",
-    "bootstrap-css-only": "^4.4.1",
-    "firebase": "^8.6.8",
-    "formik": "^2.2.9",
-    "prop-types": "^15.7.2",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-material-ui-carousel": "^2.2.6",
-    "react-phone-number-input": "^3.1.23",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "^4.0.3",
-    "reactfire": "^3.0.0-rc.0",
-    "yup": "^0.32.9"
+    "url": "git+https://github.com/epodol/bsclibrary.git"
   },
   "scripts": {
-    "postinstall": "cd functions && npm ci",
-    "start": "react-scripts start",
-    "emulators": "firebase emulators:start --import=./emulator-data",
-    "emulators:export": "firebase emulators:start --import=./emulator-data --export-on-exit",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "npm-run-all --parallel dev:emulators dev:react tsc:watch",
+    "dev:react": "cd react && npm run start",
+    "dev:emulators": "firebase emulators:start --import=./emulator-data",
+    "dev:emulators:export": "firebase emulators:start --import=./emulator-data --export-on-exit",
+    "tsc": "npm-run-all --parallel tsc:discord tsc:functions tsc:common",
+    "tsc:discord": "tsc --project ./discord/tsconfig.json",
+    "tsc:functions": "tsc --project ./functions/tsconfig.json",
+    "tsc:common": "tsc --project ./common/tsconfig.json",
+    "tsc:watch": "npm-run-all --parallel tsc:watch:discord tsc:watch:functions tsc:watch:common",
+    "tsc:watch:discord": "tsc --watch --project ./discord/tsconfig.json",
+    "tsc:watch:functions": "tsc --watch --project ./functions/tsconfig.json",
+    "tsc:watch:common": "tsc --watch --project ./common/tsconfig.json",
+    "postinstall": "if test \"$CI\" = true ; then npm-run-all --parallel ci:discord ci:functions ci:react ci:common; else npm-run-all --parallel install:discord install:functions install:react install:common; fi",
+    "ci:discord": "cd discord && npm ci",
+    "ci:functions": "cd functions && npm ci",
+    "ci:react": "cd react && npm ci",
+    "ci:common": "cd common && npm ci",
+    "install:discord": "cd discord && npm install",
+    "install:functions": "cd functions && npm install",
+    "install:react": "cd react && npm install",
+    "install:common": "cd common && npm install",
+    "build": "cd react && npm run build",
+    "test": "npm-run-all --parallel test:react",
+    "test:react": "npm run test --prefix ./react",
+    "test:noemulators": "npm-run-all --parallel test:noemulators:react",
+    "test:noemulators:react": "npm run test:noemulators --prefix ./react",
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "eslint": "eslint .",
@@ -55,29 +51,23 @@
     "deploy:firestore": "firebase depoloy --only firestore",
     "deploy:functions": "firebase deploy --only functions"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
   "devDependencies": {
-    "eslint": "^7.29.0",
+    "@typescript-eslint/eslint-plugin": "^4.28.1",
+    "@typescript-eslint/parser": "^4.28.1",
+    "eslint": "^7.30.0",
     "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-airbnb-typescript": "^12.3.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-jest": "^24.3.6",
+    "eslint-plugin-jest-dom": "^3.9.0",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "firebase-tools": "^9.14.0",
-    "prettier": "^2.3.2"
+    "firebase-tools": "^9.16.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.3.2",
+    "typescript": "^4.3.5"
   }
 }

@@ -1,0 +1,40 @@
+body {
+  margin: 0;
+  font-family: 'century-gothic', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  position: relative;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.white-text {
+  color: #fff !important;
+}
+a {
+  color: #007bff;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.lead {
+  font-size: 1.25rem;
+  font-weight: 300;
+}
+
+.content {
+  display: block;
+  position: relative;
+  /* padding-bottom: 100px; */
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+.page {
+  min-height: calc(100vh - 128px);
+}

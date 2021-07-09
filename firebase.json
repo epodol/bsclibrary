@@ -4,12 +4,13 @@
     "indexes": "firestore.indexes.json"
   },
   "functions": {
-    "source": "functions"
+    "source": "functions",
+    "predeploy": "npm --prefix ./functions run build"
   },
   "hosting": [
     {
       "target": "prod",
-      "public": "build",
+      "public": "react/build",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
         {
@@ -20,7 +21,7 @@
     },
     {
       "target": "preview",
-      "public": "build",
+      "public": "react/build",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
         {
