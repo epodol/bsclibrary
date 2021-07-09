@@ -20,7 +20,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "firebase emulators:exec --import=../emulator-data \"react-scripts test\" --debug",
+    "test": "firebase emulators:exec --import=../emulator-data \"react-scripts test\"",
     "test:noemulators": "react-scripts test",
     "eject": "react-scripts eject"
   },
