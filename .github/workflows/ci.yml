@@ -104,3 +104,9 @@ jobs:
 
       - name: Run Tests
         run: npm run test
+
+      - name: Print Logs if Failure
+        if: ${{ failure() }}
+        run: |
+          cat react/firestore-debug.log
+          cat react/pubsub-debug.log
