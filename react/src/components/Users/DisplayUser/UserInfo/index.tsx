@@ -5,7 +5,8 @@ import * as yup from 'yup';
 import { Formik, Form } from 'formik';
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router';
-import PhoneInput from 'react-phone-number-input';
+// @ts-ignore
+import PhoneInput from 'react-phone-number-input/input';
 
 import {
   TextField,

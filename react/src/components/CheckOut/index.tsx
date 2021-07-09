@@ -10,16 +10,22 @@ import {
   TableHead,
   TableBody,
   Button,
+  Paper,
+  TableContainer,
 } from '@material-ui/core';
 import * as yup from 'yup';
 import { Formik, Form } from 'formik';
+import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 import { useFirebaseApp } from 'reactfire';
+import User from '@common/types/User';
 import Copy, {
   status as statusType,
   condition as conditionType,
 } from '@common/types/Copy';
-import User from '@common/types/User';
+import checkoutBookData, {
+  checkoutBookDataBooks,
+} from '@common/functions/checkoutBook';
 
 interface checkoutData {
   user: User | null;
@@ -28,7 +34,7 @@ interface checkoutData {
 
 interface checkoutDataBook {
   data: Copy;
-  exists: boolean;
+  dueDate: firebase.default.firestore.Timestamp;
   id: string;
   parent: any;
   parentData: any;
@@ -99,14 +105,14 @@ const EnterUser = ({
               .get();
 
           if (!userDoc.exists) {
-            actions.setFieldError('userID', "This User doesn't exits");
+            actions.setFieldError('userID', "This User doesn't exist");
             return actions.setSubmitting(false);
           }
 
           const user = userDoc.data();
 
           if (!user) {
-            actions.setFieldError('userID', "This User doesn't exits");
+            actions.setFieldError('userID', "This User doesn't exist");
             return actions.setSubmitting(false);
           }
 
@@ -155,7 +161,7 @@ const ScanBooks = ({
   checkoutData: checkoutData;
   setCheckoutData: React.Dispatch<React.SetStateAction<checkoutData>>;
 }) => {
-  const bookInput = useRef();
+  const bookInput: any = useRef();
   const firebaseApp = useFirebaseApp();
   return (
     <div>
@@ -171,51 +177,74 @@ const ScanBooks = ({
             .where('barcode', '==', values.book)
             .get();
 
-          if (bookResults.empty)
-            return actions.setFieldError('book', "This book doesn't exits");
-
-          if (bookResults.size !== 1)
-            return actions.setFieldError(
+          if (bookResults.empty) {
+            actions.setFieldError('book', "This book doesn't exist");
+            actions.setSubmitting(false);
+            return bookInput?.current?.focus() || null;
+          }
+          if (bookResults.size !== 1) {
+            actions.setFieldError(
               'book',
               'I found more than one book with this barcode.'
             );
+            actions.setSubmitting(false);
+            return bookInput?.current?.focus() || null;
+          }
 
-          const { exists, id, ref } = bookResults.docs[0];
-          const data = bookResults.docs[0].data();
+          const { id, ref } = bookResults.docs[0];
+          const data = bookResults.docs[0].data() as Copy;
 
           if (
             checkoutData.books.some((book) => book.data.barcode === values.book)
-          )
-            return actions.setFieldError(
+          ) {
+            actions.setFieldError(
               'book',
               'This book has already been scanned.'
             );
+            actions.setSubmitting(false);
+            return bookInput?.current?.focus() || null;
+          }
 
-          if (data.status !== 0 && data.status !== 1)
-            return actions.setFieldError(
+          if (data.status !== 0 && data.status !== 1) {
+            actions.setFieldError(
               'book',
               'This book is not marked as available.'
             );
+            actions.setSubmitting(false);
+            return bookInput?.current?.focus() || null;
+          }
 
           const { parent } = ref.parent;
-          if (parent === null)
-            return actions.setFieldError(
+          if (parent === null) {
+            actions.setFieldError(
               'book',
               'This copy does not belong to any book (Internal Error)'
             );
+            actions.setSubmitting(false);
+            return bookInput?.current?.focus() || null;
+          }
 
           const parentData = await (await parent.get()).data();
+
+          data.condition = data.condition ?? 3;
 
           setCheckoutData({
             books: [
               ...checkoutData.books,
-              { data, exists, id, parent, parentData },
+              {
+                data,
+                id,
+                parent: parent.id,
+                parentData,
+                dueDate: firebase.default.firestore.Timestamp.fromMillis(
+                  Date.now()
+                ),
+              },
             ],
             user: checkoutData.user,
           });
           actions.setSubmitting(false);
           actions.resetForm();
-          // @ts-ignore
           return bookInput?.current?.focus() || null;
         }}
       >
@@ -237,51 +266,43 @@ const ScanBooks = ({
           </Form>
         )}
       </Formik>
-      <Table
-        aria-label="copy table"
-        style={{ marginLeft: 10, marginRight: 10 }}
-      >
-        <TableHead>
-          <TableRow>
-            <TableCell>Barcode</TableCell>
-            <TableCell>Title</TableCell>
-            <TableCell>Copy Condition</TableCell>
-            <TableCell>Copy Status</TableCell>
-            <TableCell>Copy Notes</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {checkoutData.books.map(
-            ({
-              data: { barcode, condition, notes, status },
-              id,
-              parentData,
-            }) => (
-              <TableRow
-                key={id}
-                style={{ cursor: 'pointer' }}
-                hover
-                // onClick={() => {
-                //   console.log(id);
-                // }}
-              >
-                <TableCell component="th" scope="row">
-                  {barcode}
-                </TableCell>
-                <TableCell>
-                  {parentData?.volumeInfo?.title || ''}{' '}
-                  {parentData?.volumeInfo?.subtitle || ''}
-                </TableCell>
-                <TableCell>
-                  {condition ? determineCondition(condition) : ''}
-                </TableCell>
-                <TableCell>{status ? determineStatus(status) : ''}</TableCell>
-                <TableCell>{notes === '' ? <i>None</i> : notes}</TableCell>
-              </TableRow>
-            )
-          )}
-        </TableBody>
-      </Table>
+      <TableContainer component={Paper} style={{ margin: 10, padding: 25 }}>
+        <Table aria-label="copy table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Barcode</TableCell>
+              <TableCell>Title</TableCell>
+              <TableCell>Copy Condition</TableCell>
+              <TableCell>Copy Status</TableCell>
+              <TableCell>Copy Notes</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {checkoutData.books.map(
+              ({
+                data: { barcode, condition, notes, status },
+                id,
+                parentData,
+              }) => (
+                <TableRow key={id}>
+                  <TableCell component="th" scope="row">
+                    {barcode}
+                  </TableCell>
+                  <TableCell>
+                    {parentData?.volumeInfo?.title || ''}{' '}
+                    {parentData?.volumeInfo?.subtitle || ''}
+                  </TableCell>
+                  <TableCell>
+                    {condition ? determineCondition(condition) : ''}
+                  </TableCell>
+                  <TableCell>{status ? determineStatus(status) : ''}</TableCell>
+                  <TableCell>{notes === '' ? <i>None</i> : notes}</TableCell>
+                </TableRow>
+              )
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
       <Button
         variant="contained"
         color="primary"
@@ -293,6 +314,65 @@ const ScanBooks = ({
       </Button>
     </div>
   );
+};
+
+const Submit = ({
+  // setActiveState,
+  checkoutData,
+}: // setCheckoutData,
+{
+  // setActiveState: React.Dispatch<React.SetStateAction<number>>;
+  checkoutData: checkoutData;
+  // setCheckoutData: React.Dispatch<React.SetStateAction<checkoutData>>;
+}) => {
+  const functions = useFirebaseApp();
+
+  async function submit() {
+    console.log('1');
+    const books: checkoutBookDataBooks[] = [];
+    checkoutData.books.forEach((book) => {
+      books.push({
+        bookID: book.parent,
+        condition: book.data.condition ?? 3,
+        copyID: book.id,
+        dueDate: book.dueDate,
+      });
+    });
+    console.log('2');
+
+    if (!checkoutData.user?.userInfo?.uid) {
+      throw new Error('This user does not have a UID');
+    }
+    console.log('3');
+
+    const checkoutBookFunctionData: checkoutBookData = {
+      books,
+      userID: checkoutData.user?.userInfo?.uid,
+    };
+    console.log(checkoutBookFunctionData);
+
+    await functions
+      .functions('us-west2')
+      .httpsCallable('addNewUser')(checkoutBookFunctionData)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+
+    // await functions
+    //   .httpsCallable('checkoutBook')(checkoutBookFunctionData)
+    //   .then((res) => {
+    //     console.log('5');
+
+    //     console.log(res);
+    //     // setCheckoutData({ user: null, books: [] });
+    //     // setActiveState(0);
+    //   })
+    //   .catch((err) => console.warn(err));
+  }
+  return <Button onClick={() => submit()}>Submit</Button>;
 };
 
 const CheckOut = () => {
@@ -332,13 +412,13 @@ const CheckOut = () => {
             setCheckoutData={setCheckoutData}
           />
         )}
-        {/* {activeState === 2 && (
+        {activeState === 2 && (
           <Submit
-            setActiveState={setActiveState}
+            // setActiveState={setActiveState}
             checkoutData={checkoutData}
-            setCheckoutData={setCheckoutData}
+            // setCheckoutData={setCheckoutData}
           />
-        )} */}
+        )}
       </div>
     </div>
   );

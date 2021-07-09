@@ -1,10 +1,12 @@
 import { firestore } from 'firebase-admin';
 
+/**
+ * Firestore Location: `/users/{User}`
+ */
 export default interface User {
   userInfo?: userInfo;
   checkoutInfo?: checkoutInfo;
 }
-
 export interface userInfo {
   createdBy?: string;
   createdTime?: firestore.Timestamp | null;
@@ -25,29 +27,35 @@ export interface userInfo {
   uid?: string;
 }
 
-/**
- * VIEW_BOOKS: View the Book Catalog. Can not make changes.
- *
- * REVIEW_BOOKS: Add public reviews to books.
- *
- * CHECK_IN: Check in books returned to the library. This includes all books checked out by anyone.
- *
- * CHECK_OUT: Check out books from the library. This includes all books checked out by anyone.
- *
- * MANAGE_BOOKS: Change details about a book and its copies. Manage Reviews of a book.
- *
- * MANAGE_CHECKOUTS: View all current and past checkouts. Override checkout details.
- *
- * MANAGE_USERS: Add, edit, and disable users.
- */
 export interface permissions {
-  CHECK_IN?: boolean;
-  CHECK_OUT?: boolean;
-  MANAGE_BOOKS?: boolean;
-  MANAGE_CHECKOUTS?: boolean;
-  MANAGE_USERS?: boolean;
-  REVIEW_BOOKS?: boolean;
-  VIEW_BOOKS?: boolean;
+  /**
+   * View the Book Catalog. Can not make changes.
+   */
+  VIEW_BOOKS: boolean;
+  /**
+   * Add public reviews to books.
+   */
+  REVIEW_BOOKS: boolean;
+  /**
+   * Check in books returned to the library. This includes all books checked out by anyone.
+   */
+  CHECK_IN: boolean;
+  /**
+   * Check out books from the library. This includes all books checked out by anyone.
+   */
+  CHECK_OUT: boolean;
+  /**
+   * Change details about a book and its copies. Manage Reviews of a book.
+   */
+  MANAGE_BOOKS: boolean;
+  /**
+   * View all current and past checkouts. Override checkout details.
+   */
+  MANAGE_CHECKOUTS: boolean;
+  /**
+   * Add, edit, and disable users.
+   */
+  MANAGE_USERS: boolean;
 }
 
 /**
@@ -71,10 +79,35 @@ export interface permissions {
  *
  * 100 Student: VIEW_BOOKS, REVIEW_BOOKS
  */
-export type role = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 100;
+
+export enum role {
+  STUDENT = 100,
+  PARENT = 200,
+  TEACHER = 300,
+  SCHOOL_STAFF = 400,
+  LIBRARY_COMMITTEE_MEMBER = 500,
+  JUNIOR_LIBRARIAN = 600,
+  LIBRARIAN = 700,
+  SENIOR_LIBRARIAN = 800,
+  SCHOOL_ADMINISTRATOR = 900,
+  ADMINISTRATOR = 1000,
+}
 
 export interface checkoutInfo {
+  /**
+   * An array of active checkout IDs
+   */
   activeCheckouts?: string[] | firestore.FieldValue;
+  /**
+   * The maximum number of checkouts for this user.
+   *
+   * This number is a recommendation, and can be exceeded.
+   */
   maxCheckouts?: number;
+  /**
+   * The maximum number of times this user can renew this book.
+   *
+   * This number is a limit for the user, but can be exceeded by a librarian.
+   */
   maxRenews?: number;
 }
