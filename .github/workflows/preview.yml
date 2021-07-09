@@ -46,5 +46,6 @@ jobs:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BASIS_SCOTTSDALE_LIBRARY }}
           projectId: basis-scottsdale-library
+          target: bsclibrary-preview
         env:
           FIREBASE_CLI_PREVIEWS: hostingchannels
