@@ -1,19 +1,10 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
+import checkoutBookData from '@common/functions/checkoutBook';
+
 import Checkout from '@common/types/Checkout';
 import User, { checkoutInfo } from '@common/types/User';
-
-interface checkoutBookData {
-  user: string;
-  books: checkoutBookDataBooks[];
-}
-
-interface checkoutBookDataBooks {
-  book: string;
-  copy: string;
-  condition: 1 | 2 | 3 | 4 | 5;
-}
 
 const checkoutBook = functions
   .region('us-west2')
@@ -48,7 +39,7 @@ const checkoutBook = functions
       );
     }
 
-    if (typeof data.user !== 'string' || typeof data.books !== 'object') {
+    if (typeof data.userID !== 'string' || typeof data.books !== 'object') {
       throw new functions.https.HttpsError(
         'invalid-argument',
         'The function must be called with an email, first name, last name, role, and permissions'
@@ -57,7 +48,7 @@ const checkoutBook = functions
 
     await admin
       .auth()
-      .getUser(data.user)
+      .getUser(data.userID)
       .catch(() => {
         throw new functions.https.HttpsError(
           'invalid-argument',
@@ -66,7 +57,7 @@ const checkoutBook = functions
       });
 
     const userDocData = await (
-      await admin.firestore().collection('users').doc(data.user).get()
+      await admin.firestore().collection('users').doc(data.userID).get()
     ).data();
 
     const defaultUserCheckoutInfo: checkoutInfo = {
@@ -94,14 +85,18 @@ const checkoutBook = functions
       }
 
       const checkout: Checkout = {
-        book: book.book,
-        copy: book.copy,
-        user: data.user,
+        bookID: book.bookID,
+        copyID: book.copyID,
+        userID: data.userID,
         checkedOutBy: context.auth?.uid,
+        checkedInBy: null,
+        dueDate: book.dueDate,
         timeOut: admin.firestore.FieldValue.serverTimestamp(),
         timeIn: null,
         conditionOut: book.condition,
         conditionIn: null,
+        renewsUsed: 0,
+        checkoutStatus: 0,
       };
 
       const newCheckout = admin.firestore().collection('checkouts').doc();
@@ -117,7 +112,10 @@ const checkoutBook = functions
       const batch = admin.firestore().batch();
 
       batch.create(newCheckout, checkout);
-      batch.update(admin.firestore().collection('users').doc(data.user), user);
+      batch.update(
+        admin.firestore().collection('users').doc(data.userID),
+        user
+      );
     });
   });
 

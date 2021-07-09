@@ -9,5 +9,5 @@
     "strict": true,
     "moduleResolution": "node"
   },
-  "include": ["types"]
+  "include": ["types", "functions"]
 }
