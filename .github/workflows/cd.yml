@@ -31,28 +31,18 @@ jobs:
             ${{ runner.os }}-
 
       - name: Install Dependencies
-        run: |
-          npm ci --prefer-offline --no-audit --no-optional
-          cd functions
-          npm ci --prefer-offline --no-audit --no-optional
+        run: npm ci --prefer-offline --no-audit --no-optional
 
-      - name: Build
+      - name: TSC
+        run: npm run tsc
+
+      - name: Build React
         run: npm run build
-        env:
-          REACT_APP_FIREBASE_API_KEY: ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
-          REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.REACT_APP_FIREBASE_AUTH_DOMAIN }}
-          REACT_APP_FIREBASE_DATABASE_URL: ${{ secrets.REACT_APP_FIREBASE_DATABASE_URL }}
-          REACT_APP_FIREBASE_PROJECT_ID: ${{ secrets.REACT_APP_FIREBASE_PROJECT_ID }}
-          REACT_APP_FIREBASE_STORAGE_BUCKET: ${{ secrets.REACT_APP_FIREBASE_STORAGE_BUCKET }}
-          REACT_APP_FIREBASE_APP_ID: ${{ secrets.REACT_APP_FIREBASE_APP_ID }}
-          REACT_APP_ALGOLIA_APP_ID: ${{ secrets.REACT_APP_ALGOLIA_APP_ID }}
-          REACT_APP_ALGOLIA_API_KEY: ${{ secrets.REACT_APP_ALGOLIA_API_KEY }}
-          REACT_APP_RECAPTCHA_PUBLIC_KEY: ${{ secrets.REACT_APP_RECAPTCHA_PUBLIC_KEY }}
 
       - name: Create Build Assets
         run: |
-          zip -r build.zip build
-          tar -czf build.tar.gz build
+          zip -r build.zip react/build
+          tar -czf build.tar.gz react/build
 
       - name: Upload .zip Build Asset
         uses: actions/upload-release-asset@v1

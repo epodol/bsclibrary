@@ -1,0 +1,9 @@
+{
+  "name": "types",
+  "dependencies": {
+    "firebase-admin": "^9.10.0"
+  },
+  "devDependencies": {
+    "jest": "^27.0.6"
+  }
+}

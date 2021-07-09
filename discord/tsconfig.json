@@ -1,0 +1,19 @@
+{
+  "extends": "../tsconfig.paths.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "outDir": "lib",
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2017",
+    "baseUrl": "./src",
+  },
+  "compileOnSave": true,
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../common"
+    }
+  ]}

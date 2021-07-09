@@ -1,6 +1,10 @@
-# BASIS Scottsdale Library Website
+# The BASIS Scottsdale Library
+
+The Official GitHub Repository for the BASIS Scottsdale Library Website, Backend Functions, and Discord Bot.
 
 ## Contributing
+
+We would love for you to contribute to `bsclibrary`, pull requests are welcome! Please contact `support@bsclibrary.net` if you would like to become a contributor.
 
 ### Setting up your workspace
 
@@ -13,13 +17,7 @@
    ```
    > npm install
    ```
-1. Install **Firebase Tools** globally
-   ```
-   > npm install -g firebase-tools
-   ```
-1. Duplicate `.env.example` and rename it `.env`. If you have your own config, you can set it in `.env`
-1. Start the React development server and emulators.
+1. Start the React Development server, Typescript compiler, and Firebase Emulators.
    ```
    > npm run start
-   > npm run emulators
    ```

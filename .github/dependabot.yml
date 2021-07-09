@@ -10,7 +10,34 @@ updates:
       - 'epodol'
 
   - package-ecosystem: 'npm'
+    directory: '/common'
+    schedule:
+      time: '06:00'
+      timezone: 'America/Phoenix'
+      interval: 'daily'
+    reviewers:
+      - 'epodol'
+
+  - package-ecosystem: 'npm'
+    directory: '/discord'
+    schedule:
+      time: '06:00'
+      timezone: 'America/Phoenix'
+      interval: 'daily'
+    reviewers:
+      - 'epodol'
+
+  - package-ecosystem: 'npm'
     directory: '/functions'
+    schedule:
+      time: '06:00'
+      timezone: 'America/Phoenix'
+      interval: 'daily'
+    reviewers:
+      - 'epodol'
+
+  - package-ecosystem: 'npm'
+    directory: '/react'
     schedule:
       time: '06:00'
       timezone: 'America/Phoenix'
