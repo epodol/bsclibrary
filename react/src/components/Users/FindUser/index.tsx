@@ -44,7 +44,7 @@ const FindUserTable = ({
 
   const userData: User[] = useFirestoreCollectionData(userQueryRef, {
     idField: 'id',
-  }).data;
+  }).data as unknown as User[];
 
   const history = useHistory();
 

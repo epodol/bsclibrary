@@ -1,12 +1,12 @@
 import { firestore } from 'firebase-admin';
 
 export default interface Copy {
-  barcode?: string;
-  condition?: condition;
-  lastEdited?: firestore.Timestamp | null;
-  lastEditedBy?: string;
-  notes?: string;
-  status?: status;
+  barcode: string;
+  condition: condition;
+  lastEdited: firestore.Timestamp | null;
+  lastEditedBy: string;
+  notes: string;
+  status: status;
 }
 
 /**

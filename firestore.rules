@@ -21,18 +21,23 @@ service cloud.firestore {
       }
 
       match /users/{user} {
-        allow get: if request.auth.token.permissions.MANAGE_USERS || request.auth.uid == user;
+        allow get: if request.auth.token.permissions.MANAGE_USERS || request.auth.token.permissions.CHECK_OUT || request.auth.uid == user;
         allow list: if (request.auth.token.permissions.MANAGE_USERS);
-        allow create: if false;
+        allow create, delete: if false;
         allow update: if (request.auth.token.permissions.MANAGE_USERS) && (user != request.auth.uid || request.auth.token.role >= 1000);
-        allow delete: if false;
+  }
+
+      match /checkouts/{checkout} {
+        allow get: if request.auth.token.permissions.CHECK_OUT || request.auth.token.permissions.MANAGE_CHECKOUTS;
+        allow list: if request.auth.token.permissions.CHECK_OUT || request.auth.token.permissions.MANAGE_CHECKOUTS;
+        allow update: if request.auth.token.permissions.MANAGE_CHECKOUTS;
+        allow create, delete: if false;
       }
 
       match /book_requests/{book_request} {
         allow get, list: if request.auth.token.permissions.MANAGE_BOOKS;
         allow create: if request.auth.token.permissions.VIEW_BOOKS;
-        allow update: if false;
-        allow delete: if false;
-      }
+        allow update, delete: if false;
+    }
   }
 }

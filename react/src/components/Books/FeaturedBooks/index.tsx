@@ -29,7 +29,7 @@ const FeaturedBooks = () => {
     .where('featured', '==', true);
   const featured: BookWithID[] = useFirestoreCollectionData(featuredBooksRef, {
     idField: 'id',
-  }).data;
+  }).data as unknown as BookWithID[];
 
   if (!featured || featured.length < 1) return <></>;
 

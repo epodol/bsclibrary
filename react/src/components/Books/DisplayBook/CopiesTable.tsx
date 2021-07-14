@@ -86,7 +86,7 @@ const CopiesTable = ({
     {
       idField: 'id',
     }
-  ).data;
+  ).data as unknown as CopyInterfaceWithID[];
 
   return (
     <div className="mx-5">

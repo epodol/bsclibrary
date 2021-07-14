@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useContext, Suspense } from 'react';
 import {
   Stepper,
   Step,
@@ -12,20 +12,25 @@ import {
   Button,
   Paper,
   TableContainer,
+  MenuItem,
+  FormControl,
+  Select,
+  IconButton,
 } from '@material-ui/core';
+import { Delete } from '@material-ui/icons';
 import * as yup from 'yup';
 import { Formik, Form } from 'formik';
-import * as firebase from 'firebase/app';
-import 'firebase/firestore';
 import { useFirebaseApp } from 'reactfire';
+import 'firebase/firestore';
+import { Link } from 'react-router-dom';
 import User from '@common/types/User';
-import Copy, {
-  status as statusType,
-  condition as conditionType,
-} from '@common/types/Copy';
+import Copy, { condition as conditionType } from '@common/types/Copy';
 import checkoutBookData, {
   checkoutBookDataBooks,
 } from '@common/functions/checkoutBook';
+
+import FirebaseContext from 'src/contexts/FirebaseContext';
+import Loading from '../Loading';
 
 interface checkoutData {
   user: User | null;
@@ -34,27 +39,10 @@ interface checkoutData {
 
 interface checkoutDataBook {
   data: Copy;
-  dueDate: firebase.default.firestore.Timestamp;
+  dueDate: string;
   id: string;
   parent: any;
   parentData: any;
-}
-
-function determineStatus(status: statusType) {
-  switch (status) {
-    case 0:
-      return 'On Shelf';
-    case 1:
-      return 'In Storage';
-    case 2:
-      return 'Checked Out';
-    case 3:
-      return 'Missing';
-    case 4:
-      return 'Not Tracked';
-    default:
-      return 'Unknown Status';
-  }
 }
 
 function determineCondition(condition: conditionType) {
@@ -97,19 +85,18 @@ const EnterUser = ({
         validationSchema={EnterUserScheme}
         onSubmit={async (values, actions) => {
           actions.setSubmitting(true);
-          const userDoc: firebase.default.firestore.DocumentSnapshot<User> =
-            await firebaseApp
-              .firestore()
-              .collection('users')
-              .doc(values.userID)
-              .get();
+          const userDoc = await firebaseApp
+            .firestore()
+            .collection('users')
+            .doc(values.userID)
+            .get();
 
           if (!userDoc.exists) {
             actions.setFieldError('userID', "This User doesn't exist");
             return actions.setSubmitting(false);
           }
 
-          const user = userDoc.data();
+          const user = userDoc.data() as User;
 
           if (!user) {
             actions.setFieldError('userID', "This User doesn't exist");
@@ -236,9 +223,9 @@ const ScanBooks = ({
                 id,
                 parent: parent.id,
                 parentData,
-                dueDate: firebase.default.firestore.Timestamp.fromMillis(
-                  Date.now()
-                ),
+                dueDate: new Date(new Date().setDate(new Date().getDate() + 14))
+                  .toISOString()
+                  .split('T')[0],
               },
             ],
             user: checkoutData.user,
@@ -266,43 +253,108 @@ const ScanBooks = ({
           </Form>
         )}
       </Formik>
-      <TableContainer component={Paper} style={{ margin: 10, padding: 25 }}>
-        <Table aria-label="copy table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Barcode</TableCell>
-              <TableCell>Title</TableCell>
-              <TableCell>Copy Condition</TableCell>
-              <TableCell>Copy Status</TableCell>
-              <TableCell>Copy Notes</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {checkoutData.books.map(
-              ({
-                data: { barcode, condition, notes, status },
-                id,
-                parentData,
-              }) => (
-                <TableRow key={id}>
+      {(checkoutData.user?.checkoutInfo?.maxCheckouts ?? 0) -
+        ((checkoutData.user?.checkoutInfo?.activeCheckouts.length ?? 0) +
+          checkoutData.books.length) >=
+        1 && (
+        <p>
+          {checkoutData.user?.userInfo.firstName}{' '}
+          {checkoutData.user?.userInfo.lastName} is only allowed{' '}
+          {(checkoutData.user?.checkoutInfo?.maxCheckouts ?? 0) -
+            ((checkoutData.user?.checkoutInfo?.activeCheckouts.length ?? 0) +
+              checkoutData.books.length)}{' '}
+          more checkouts.
+        </p>
+      )}
+      {(checkoutData.user?.checkoutInfo?.maxCheckouts ?? 0) -
+        ((checkoutData.user?.checkoutInfo?.activeCheckouts.length ?? 0) +
+          checkoutData.books.length) <
+        1 && (
+        <h5>
+          <b>
+            {checkoutData.user?.userInfo.firstName}{' '}
+            {checkoutData.user?.userInfo.lastName} is not allowed any more
+            checkouts.{' '}
+          </b>
+          You can override this.
+        </h5>
+      )}
+
+      <div style={{ justifyContent: 'center', display: 'flex' }}>
+        <TableContainer
+          component={Paper}
+          style={{
+            margin: 10,
+            padding: 25,
+            maxWidth: '90%',
+          }}
+        >
+          <Table aria-label="copy table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Barcode</TableCell>
+                <TableCell>Title</TableCell>
+                <TableCell>Copy Condition</TableCell>
+                <TableCell>Copy Notes</TableCell>
+                <TableCell />
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {checkoutData.books.map((book, index) => (
+                <TableRow key={book.id}>
                   <TableCell component="th" scope="row">
-                    {barcode}
+                    {book.data.barcode}
                   </TableCell>
                   <TableCell>
-                    {parentData?.volumeInfo?.title || ''}{' '}
-                    {parentData?.volumeInfo?.subtitle || ''}
+                    <b>{book.parentData?.volumeInfo?.title || ''}</b>{' '}
+                    {book.parentData?.volumeInfo?.subtitle || ''}
                   </TableCell>
                   <TableCell>
-                    {condition ? determineCondition(condition) : ''}
+                    <FormControl>
+                      <Select
+                        value={book.data.condition}
+                        onChange={(event: any) => {
+                          const newBook = { ...book };
+                          newBook.data.condition = event.target.value;
+                          setCheckoutData({
+                            books: checkoutData.books.splice(index, 1, newBook),
+                            user: checkoutData.user,
+                          });
+                        }}
+                      >
+                        <MenuItem value={1}>{determineCondition(1)}</MenuItem>
+                        <MenuItem value={2}>{determineCondition(2)}</MenuItem>
+                        <MenuItem value={3}>{determineCondition(3)}</MenuItem>
+                        <MenuItem value={4}>{determineCondition(4)}</MenuItem>
+                        <MenuItem value={5}>{determineCondition(5)}</MenuItem>
+                      </Select>
+                    </FormControl>
                   </TableCell>
-                  <TableCell>{status ? determineStatus(status) : ''}</TableCell>
-                  <TableCell>{notes === '' ? <i>None</i> : notes}</TableCell>
+                  <TableCell>
+                    {book.data.notes === '' ? <i>None</i> : book.data.notes}
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      aria-label="delete"
+                      onClick={() => {
+                        const newBooks = [...checkoutData.books];
+                        newBooks.splice(index, 1);
+                        setCheckoutData({
+                          books: newBooks,
+                          user: checkoutData.user,
+                        });
+                        bookInput?.current?.focus();
+                      }}
+                    >
+                      <Delete />
+                    </IconButton>
+                  </TableCell>
                 </TableRow>
-              )
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
       <Button
         variant="contained"
         color="primary"
@@ -312,67 +364,140 @@ const ScanBooks = ({
       >
         Continue
       </Button>
+      <br />
+      <Button
+        color="primary"
+        style={{ marginTop: 25 }}
+        onClick={() => setActiveState(0)}
+      >
+        Go Back
+      </Button>
     </div>
   );
 };
 
 const Submit = ({
-  // setActiveState,
+  setActiveState,
   checkoutData,
-}: // setCheckoutData,
-{
-  // setActiveState: React.Dispatch<React.SetStateAction<number>>;
+  setCheckoutData,
+}: {
+  setActiveState: React.Dispatch<React.SetStateAction<number>>;
   checkoutData: checkoutData;
-  // setCheckoutData: React.Dispatch<React.SetStateAction<checkoutData>>;
+  setCheckoutData: React.Dispatch<React.SetStateAction<checkoutData>>;
 }) => {
   const functions = useFirebaseApp();
 
   async function submit() {
-    console.log('1');
     const books: checkoutBookDataBooks[] = [];
     checkoutData.books.forEach((book) => {
       books.push({
         bookID: book.parent,
         condition: book.data.condition ?? 3,
         copyID: book.id,
-        dueDate: book.dueDate,
+        dueDate: new Date(book.dueDate).setHours(41, 0, 0, 0),
       });
     });
-    console.log('2');
 
     if (!checkoutData.user?.userInfo?.uid) {
+      // Should never happen
       throw new Error('This user does not have a UID');
     }
-    console.log('3');
 
     const checkoutBookFunctionData: checkoutBookData = {
       books,
       userID: checkoutData.user?.userInfo?.uid,
     };
-    console.log(checkoutBookFunctionData);
+    console.log('Function Data', checkoutBookFunctionData);
 
     await functions
       .functions('us-west2')
-      .httpsCallable('addNewUser')(checkoutBookFunctionData)
+      .httpsCallable('checkoutBook')(checkoutBookFunctionData)
       .then((res) => {
-        console.log(res);
+        console.log('Function Response', res);
+        setCheckoutData({
+          user: null,
+          books: [],
+        });
+        setActiveState(0);
       })
       .catch((err) => {
         console.error(err);
       });
-
-    // await functions
-    //   .httpsCallable('checkoutBook')(checkoutBookFunctionData)
-    //   .then((res) => {
-    //     console.log('5');
-
-    //     console.log(res);
-    //     // setCheckoutData({ user: null, books: [] });
-    //     // setActiveState(0);
-    //   })
-    //   .catch((err) => console.warn(err));
   }
-  return <Button onClick={() => submit()}>Submit</Button>;
+  return (
+    <div>
+      <div style={{ justifyContent: 'center', display: 'flex' }}>
+        <TableContainer
+          component={Paper}
+          style={{
+            margin: 10,
+            padding: 25,
+            maxWidth: '90%',
+          }}
+        >
+          <Table aria-label="copy table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Barcode</TableCell>
+                <TableCell>Title</TableCell>
+                <TableCell>Due Date</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {checkoutData.books.map((book, index) => (
+                <TableRow key={book.id}>
+                  <TableCell component="th" scope="row">
+                    {book.data.barcode}
+                  </TableCell>
+                  <TableCell>
+                    <b>{book.parentData?.volumeInfo?.title || ''}</b>{' '}
+                    {book.parentData?.volumeInfo?.subtitle || ''}
+                  </TableCell>
+                  <TableCell>
+                    <TextField
+                      type="date"
+                      value={book.dueDate}
+                      onChange={(event: any) => {
+                        const newArray = checkoutData.books;
+                        const newBook = { ...book };
+                        newBook.dueDate = event.target.value;
+                        console.log(newBook);
+                        newArray.splice(index, 1, newBook);
+                        setCheckoutData({
+                          books: newArray,
+                          user: checkoutData.user,
+                        });
+                      }}
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
+      <Button
+        variant="contained"
+        color="primary"
+        size="large"
+        style={{ marginTop: 25 }}
+        onClick={() => submit()}
+      >
+        Submit
+      </Button>
+      <br />
+      <Button
+        color="primary"
+        style={{ marginTop: 25 }}
+        onClick={() => setActiveState(1)}
+      >
+        Go Back
+      </Button>
+    </div>
+  );
 };
 
 const CheckOut = () => {
@@ -381,10 +506,56 @@ const CheckOut = () => {
     user: null,
     books: [],
   });
+  const firebaseContext = useContext(FirebaseContext);
   return (
     <div>
       <div className="text-center lead m-5">
         <h1>Check Out</h1>
+        {checkoutData.user && (
+          <div>
+            <h4>
+              Checking out books for{' '}
+              <b>
+                {firebaseContext?.claims?.permissions?.MANAGE_USERS && (
+                  <Link to={`/users/${checkoutData.user.userInfo.uid}`}>
+                    {checkoutData.user.userInfo.firstName}{' '}
+                    {checkoutData.user.userInfo.lastName}
+                  </Link>
+                )}
+                {!firebaseContext?.claims?.permissions?.MANAGE_USERS && (
+                  <>
+                    {checkoutData.user.userInfo.firstName}{' '}
+                    {checkoutData.user.userInfo.lastName}
+                  </>
+                )}
+              </b>
+            </h4>
+            <ul style={{ listStylePosition: 'inside' }}>
+              <li>
+                <b>
+                  {checkoutData.user?.checkoutInfo?.activeCheckouts?.length ??
+                    0}
+                </b>{' '}
+                book
+                {(checkoutData.user?.checkoutInfo?.activeCheckouts?.length ??
+                  0) === 1
+                  ? ''
+                  : 's'}{' '}
+                currently checked out
+              </li>
+              <li>
+                Allowed{' '}
+                <b>{checkoutData.user?.checkoutInfo?.maxCheckouts ?? 0}</b>{' '}
+                checkout
+                {(checkoutData.user?.checkoutInfo?.maxCheckouts ?? 0) === 1
+                  ? ''
+                  : 's'}{' '}
+                at a time
+              </li>
+            </ul>
+          </div>
+        )}
+        {!checkoutData.user && <p>Select a user to get started.</p>}
       </div>
       <Stepper style={{ marginInline: 100 }}>
         <Step key={0} active={activeState === 0} completed={activeState > 0}>
@@ -398,27 +569,29 @@ const CheckOut = () => {
         </Step>
       </Stepper>
       <div className="text-center" style={{ marginTop: '1rem' }}>
-        {activeState === 0 && (
-          <EnterUser
-            setActiveState={setActiveState}
-            checkoutData={checkoutData}
-            setCheckoutData={setCheckoutData}
-          />
-        )}
-        {activeState === 1 && (
-          <ScanBooks
-            setActiveState={setActiveState}
-            checkoutData={checkoutData}
-            setCheckoutData={setCheckoutData}
-          />
-        )}
-        {activeState === 2 && (
-          <Submit
-            // setActiveState={setActiveState}
-            checkoutData={checkoutData}
-            // setCheckoutData={setCheckoutData}
-          />
-        )}
+        <Suspense fallback={<Loading />}>
+          {activeState === 0 && (
+            <EnterUser
+              setActiveState={setActiveState}
+              checkoutData={checkoutData}
+              setCheckoutData={setCheckoutData}
+            />
+          )}
+          {activeState === 1 && (
+            <ScanBooks
+              setActiveState={setActiveState}
+              checkoutData={checkoutData}
+              setCheckoutData={setCheckoutData}
+            />
+          )}
+          {activeState === 2 && (
+            <Submit
+              setActiveState={setActiveState}
+              checkoutData={checkoutData}
+              setCheckoutData={setCheckoutData}
+            />
+          )}
+        </Suspense>
       </div>
     </div>
   );

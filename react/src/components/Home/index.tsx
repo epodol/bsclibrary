@@ -26,11 +26,9 @@ const Home = () => {
     marginLeft: -12,
     whiteSpace: 'nowrap',
     textIndent: '.7rem',
+    fontSize: 28,
     [theme.breakpoints.up('md')]: {
       fontSize: 56,
-    },
-    [theme.breakpoints.only('xs')]: {
-      fontSize: 28,
     },
   }));
   const Logo = styled('img')(({ theme }) => ({
