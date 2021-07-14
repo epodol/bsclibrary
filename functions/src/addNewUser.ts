@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import User from '@common/types/User';
 
-// eslint-disable-next-line import/prefer-default-export
 const addNewUser = functions
   .region('us-west2')
   .https.onCall(async (data, context) => {
@@ -74,6 +74,19 @@ const addNewUser = functions
         );
       });
 
+    if (typeof newUser.email === 'undefined') {
+      functions.logger.error(
+        "The newUser's email was undefined",
+        context,
+        data,
+        newUser
+      );
+      throw new functions.https.HttpsError(
+        'internal',
+        "The newUser's email was undefined"
+      );
+    }
+
     await admin
       .auth()
       .setCustomUserClaims(newUser.uid, {
@@ -94,46 +107,43 @@ const addNewUser = functions
         throw new functions.https.HttpsError('internal', error);
       });
 
-    const {
-      uid,
-      email,
-      displayName,
-      photoURL,
-      phoneNumber,
-      disabled,
-      metadata: { creationTime },
-    } = newUser;
+    const newUserDoc: User = {
+      userInfo: {
+        uid: newUser.uid,
+        email: newUser.email,
+        queryEmail: newUser.email?.toLowerCase(),
+        displayName:
+          newUser.displayName ?? `${data.first_name} ${data.last_name}`,
+        firstName: data.first_name || null,
+        lastName: data.last_name || null,
+        queryFirstName: data.first_name ? data.first_name.toLowerCase() : null,
+        queryLastName: data.last_name ? data.last_name.toLowerCase() : null,
+        photoURL: newUser.photoURL || null,
+        phoneNumber: newUser.phoneNumber || null,
+        disabled: newUser.disabled,
+        createdBy: context.auth.uid,
+        createdTime: admin.firestore.Timestamp.fromMillis(
+          Date.parse(newUser.metadata.creationTime)
+        ),
+        editedBy: context.auth.uid,
+        editedTime: admin.firestore.Timestamp.fromMillis(
+          Date.parse(newUser.metadata.creationTime)
+        ),
+        role: data.role,
+        permissions: data.permissions,
+      },
+      checkoutInfo: {
+        activeCheckouts: [],
+        maxCheckouts: 3,
+        maxRenews: 2,
+      },
+    };
+
     await admin
       .firestore()
       .collection('users')
       .doc(newUser.uid)
-      .set({
-        userInfo: {
-          uid,
-          email,
-          queryEmail: email?.toLowerCase(),
-          displayName,
-          firstName: data.first_name || null,
-          lastName: data.last_name || null,
-          queryFirstName: data.first_name
-            ? data.first_name.toLowerCase()
-            : null,
-          queryLastName: data.last_name ? data.last_name.toLowerCase() : null,
-          photoURL: photoURL || null,
-          phoneNumber: phoneNumber || null,
-          disabled,
-          createdBy: context.auth.uid,
-          createdTime: admin.firestore.Timestamp.fromMillis(
-            Date.parse(creationTime)
-          ),
-          editedBy: context.auth.uid,
-          editedTime: admin.firestore.Timestamp.fromMillis(
-            Date.parse(creationTime)
-          ),
-          role: data.role,
-          permissions: data.permissions,
-        },
-      });
+      .set(newUserDoc);
 
     return {
       uid: newUser.uid,

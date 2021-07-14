@@ -1,14 +1,15 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import User from '@common/types/User';
+import RecursivePartial from '@common/types/RecursivePartial';
 
 const updateUser = functions
   .region('us-west2')
   .firestore.document('users/{docId}')
   .onUpdate(async ({ before, after }) => {
-    const afterData: User = after.data();
+    const afterData: User = after.data() as User;
 
-    const beforeUser: User = before.data().userInfo;
+    const beforeUser: User = before.data() as User;
 
     if (beforeUser?.userInfo?.email !== afterData.userInfo?.email)
       await admin
@@ -22,7 +23,7 @@ const updateUser = functions
             err.errorInfo.code === 'auth/email-already-exists' ||
             err.errorInfo.code === 'auth/invalid-email'
           ) {
-            const userDoc: User = {
+            const userDoc: RecursivePartial<User> = {
               userInfo: {
                 email: beforeUser?.userInfo?.email,
               },
@@ -51,7 +52,7 @@ const updateUser = functions
       disabled: afterData.userInfo?.disabled,
     });
 
-    const userDoc: User = {
+    const userDoc: RecursivePartial<User> = {
       userInfo: {
         queryEmail: afterData.userInfo?.email?.toLowerCase(),
         queryFirstName: afterData.userInfo?.firstName?.toLowerCase() ?? null,

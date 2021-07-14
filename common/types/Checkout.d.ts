@@ -5,51 +5,51 @@ export default interface Checkout {
   /**
    * The Firestore ID of the book being checked out
    */
-  bookID?: string | firestore.FieldValue;
+  bookID: string;
   /**
    * The Firestore ID of the copy being checked out
    */
-  copyID?: string | firestore.FieldValue;
+  copyID: string;
   /**
    * The Firestore ID of the user who owns this checkout.
    */
-  userID?: string | firestore.FieldValue;
+  userID: string;
   /**
    * The Firestore ID of the user who checked out this book.
    */
-  checkedOutBy?: string | firestore.FieldValue;
+  checkedOutBy: string;
   /**
    * The Firestore ID of the user who checked in this book.
    */
-  checkedInBy?: string | null | firestore.FieldValue;
+  checkedInBy: string | null;
   /**
    * A Firestore Timestamp of the date and time this book is due.
    */
-  dueDate?: firestore.Timestamp | firestore.FieldValue | null;
+  dueDate: firestore.Timestamp | null;
   /**
    * The Firestore ID of the actual time the book was checked out.
    */
-  timeOut?: firestore.Timestamp | firestore.FieldValue | null;
+  timeOut: firestore.Timestamp | null;
   /**
    * The Firestore ID of the actual time the book was checked in.
    */
-  timeIn?: firestore.Timestamp | firestore.FieldValue | null;
+  timeIn: firestore.Timestamp | null;
   /**
    * The condition of the copy when it was checked out.
    */
-  conditionOut?: condition | firestore.FieldValue;
+  conditionOut: condition;
   /**
    * The condition of the copy when it was checked in.
    */
-  conditionIn?: condition | firestore.FieldValue | null;
+  conditionIn: condition | null;
   /**
    * The number of times that this book has been renewed.
    */
-  renewsUsed?: number | firestore.FieldValue;
+  renewsUsed: number;
   /**
    * The current status of the checkout
    */
-  checkoutStatus?: checkoutStatus | firestore.FieldValue;
+  checkoutStatus: checkoutStatus;
 }
 
 /**

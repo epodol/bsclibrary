@@ -4,27 +4,27 @@ import { firestore } from 'firebase-admin';
  * Firestore Location: `/users/{User}`
  */
 export default interface User {
-  userInfo?: userInfo;
-  checkoutInfo?: checkoutInfo;
+  userInfo: userInfo;
+  checkoutInfo: checkoutInfo;
 }
 export interface userInfo {
-  createdBy?: string;
-  createdTime?: firestore.Timestamp | null;
-  disabled?: boolean;
-  displayName?: string;
-  editedBy?: string;
-  editedTime?: firestore.Timestamp | null;
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-  permissions?: permissions;
-  phoneNumber?: string;
-  photoURL?: string;
-  queryEmail?: string;
-  queryFirstName?: string | null;
-  queryLastName?: string | null;
-  role?: role;
-  uid?: string;
+  createdBy: string;
+  createdTime: firestore.Timestamp | null;
+  disabled: boolean;
+  displayName: string;
+  editedBy: string;
+  editedTime: firestore.Timestamp | null;
+  email: string;
+  firstName: string;
+  lastName: string;
+  permissions: permissions;
+  phoneNumber: string | null;
+  photoURL: string | null;
+  queryEmail: string;
+  queryFirstName: string | null;
+  queryLastName: string | null;
+  role: role;
+  uid: string;
 }
 
 export interface permissions {
@@ -80,34 +80,23 @@ export interface permissions {
  * 100 Student: VIEW_BOOKS, REVIEW_BOOKS
  */
 
-export enum role {
-  STUDENT = 100,
-  PARENT = 200,
-  TEACHER = 300,
-  SCHOOL_STAFF = 400,
-  LIBRARY_COMMITTEE_MEMBER = 500,
-  JUNIOR_LIBRARIAN = 600,
-  LIBRARIAN = 700,
-  SENIOR_LIBRARIAN = 800,
-  SCHOOL_ADMINISTRATOR = 900,
-  ADMINISTRATOR = 1000,
-}
+export type role = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 1000;
 
 export interface checkoutInfo {
   /**
    * An array of active checkout IDs
    */
-  activeCheckouts?: string[] | firestore.FieldValue;
+  activeCheckouts: string[];
   /**
    * The maximum number of checkouts for this user.
    *
    * This number is a recommendation, and can be exceeded.
    */
-  maxCheckouts?: number;
+  maxCheckouts: number;
   /**
    * The maximum number of times this user can renew this book.
    *
    * This number is a limit for the user, but can be exceeded by a librarian.
    */
-  maxRenews?: number;
+  maxRenews: number;
 }
