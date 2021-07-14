@@ -44,7 +44,7 @@
     "@types/node": "^16.3.1",
     "@types/react": "^17.0.14",
     "@types/react-dom": "^17.0.9",
-    "@types/react-phone-number-input": "^3.0.9",
+    "@types/react-phone-number-input": "^3.0.10",
     "@types/react-router": "^5.1.16",
     "@types/react-router-dom": "^5.1.8",
     "firebase-tools": "^9.16.0",
