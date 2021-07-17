@@ -249,7 +249,7 @@ const EditCopy = ({
         <ButtonGroup size="small">
           <Button
             color="default"
-            disabled={statusValue === 0}
+            disabled={statusValue === 0 || statusValue === 2}
             className="px-2"
             onClick={() => setStatusValue(0)}
             variant="contained"
@@ -258,7 +258,7 @@ const EditCopy = ({
           </Button>
           <Button
             color="default"
-            disabled={statusValue === 1}
+            disabled={statusValue === 1 || statusValue === 2}
             className="px-2"
             onClick={() => setStatusValue(1)}
             variant="contained"
@@ -270,11 +270,11 @@ const EditCopy = ({
         <ButtonGroup size="small">
           <Tooltip
             placement="bottom"
-            title="To set a copy's status to {determineStatus(2)}, please use
-              TableCelle appropriate tool."
+            title={`To set a copy's status to ${determineStatus(2)}, please use
+              the Check Out tool.`}
           >
             <Button
-              color="default"
+              color={statusValue === 2 ? 'primary' : 'default'}
               disabled={statusValue === 2}
               className="px-2"
               //   onClick={() => setStatusValue(2)}
@@ -285,7 +285,7 @@ const EditCopy = ({
           </Tooltip>
           <Button
             color="default"
-            disabled={statusValue === 3}
+            disabled={statusValue === 3 || statusValue === 2}
             className="px-2"
             onClick={() => setStatusValue(3)}
             variant="contained"
@@ -297,7 +297,7 @@ const EditCopy = ({
         <Button
           color="default"
           size="small"
-          disabled={statusValue === 4}
+          disabled={statusValue === 4 || statusValue === 2}
           className="px-2"
           onClick={() => setStatusValue(4)}
           variant="contained"
