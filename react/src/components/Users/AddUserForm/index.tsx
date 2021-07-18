@@ -7,11 +7,14 @@ import {
   Button,
   ButtonGroup,
   SnackbarContent,
+  Grid,
 } from '@material-ui/core';
 import { Form, Formik } from 'formik';
 import * as yup from 'yup';
 import { useAuth, useFirebaseApp } from 'reactfire';
 import { useHistory } from 'react-router';
+
+import { addNewUserResult } from '@common/functions/addNewUser';
 
 const AddUserForm = () => {
   const functions = useFirebaseApp().functions('us-west2');
@@ -39,6 +42,12 @@ const AddUserForm = () => {
     MANAGE_BOOKS: yup.boolean(),
     MANAGE_CHECKOUTS: yup.boolean(),
     MANAGE_USERS: yup.boolean(),
+    maxCheckouts: yup
+      .number()
+      .min(0, 'The max checkouts must be greater than or equal to 0'),
+    maxRenews: yup
+      .number()
+      .min(0, 'The max checkouts must be greater than or equal to 0'),
   });
   const [alert, setAlert] = useState({
     show: false,
@@ -78,6 +87,8 @@ const AddUserForm = () => {
           MANAGE_BOOKS: false,
           MANAGE_CHECKOUTS: false,
           MANAGE_USERS: false,
+          maxCheckouts: 3,
+          maxRenews: 2,
         }}
         validationSchema={SetRoleSchema}
         onSubmit={async (values, actions) => {
@@ -97,8 +108,11 @@ const AddUserForm = () => {
                 MANAGE_CHECKOUTS: values.MANAGE_CHECKOUTS,
                 MANAGE_USERS: values.MANAGE_USERS,
               },
+              maxCheckouts: values.maxCheckouts,
+              maxRenews: values.maxRenews,
             })
             .then((newUser) => {
+              const newUserData = newUser.data as unknown as addNewUserResult;
               const actionCodeSettings = {
                 url: window.location.origin,
                 handleCodeInApp: true,
@@ -115,7 +129,7 @@ const AddUserForm = () => {
                 user:
                   `${values.first_name} ${values.last_name}` || values.email,
                 email: values.email,
-                uid: newUser.data.uid,
+                uid: newUserData.uid,
               });
             })
             .catch((err) => {
@@ -465,6 +479,36 @@ const AddUserForm = () => {
                 label="Manage Users"
                 labelPlacement="end"
               />
+            </div>
+            <br />
+            <h4>Checkout Info</h4>
+            <div>
+              <Grid container>
+                <Grid item xs={6}>
+                  <TextField
+                    value={values.maxCheckouts}
+                    onChange={handleChange}
+                    id="maxCheckouts"
+                    label="Max Checkouts"
+                    type="number"
+                    fullWidth
+                    error={!!errors.maxCheckouts && submitCount > 0}
+                    helperText={submitCount > 0 ? errors.maxCheckouts : ''}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    value={values.maxRenews}
+                    onChange={handleChange}
+                    id="maxRenews"
+                    label="Max Renews"
+                    type="number"
+                    fullWidth
+                    error={!!errors.maxRenews && submitCount > 0}
+                    helperText={submitCount > 0 ? errors.maxRenews : ''}
+                  />
+                </Grid>
+              </Grid>
             </div>
             <br />
             <div className="text-center">

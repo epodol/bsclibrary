@@ -407,13 +407,11 @@ const Submit = ({
       books,
       userID: checkoutData.user?.userInfo?.uid,
     };
-    console.log('Function Data', checkoutBookFunctionData);
 
     await functions
       .functions('us-west2')
       .httpsCallable('checkoutBook')(checkoutBookFunctionData)
-      .then((res) => {
-        console.log('Function Response', res);
+      .then(() => {
         setCheckoutData({
           user: null,
           books: [],
@@ -461,7 +459,6 @@ const Submit = ({
                         const newArray = checkoutData.books;
                         const newBook = { ...book };
                         newBook.dueDate = event.target.value;
-                        console.log(newBook);
                         newArray.splice(index, 1, newBook);
                         setCheckoutData({
                           books: newArray,

@@ -38,18 +38,16 @@ const DisplayUser = () => {
         >
           <UserInfo userInfo={data.userInfo} />
         </div>
-      </Paper>
-      <br />
-      <Paper className="paper-margin">
         <div
-          className="paper-margin"
+          className=""
           style={{
+            paddingTop: 0,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          {data.checkoutInfo && <UserCheckouts checkouts={data.checkoutInfo} />}
+          <UserCheckouts checkouts={data.checkoutInfo} />
         </div>
       </Paper>
     </div>

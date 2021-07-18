@@ -93,9 +93,8 @@ const CheckIn = () => {
 
             await functions
               .httpsCallable('checkinBook')(checkinBookFunctionData)
-              .then((res) => {
+              .then(() => {
                 // Notify the user that the book was checked in
-                console.log(res);
                 actions.setSubmitting(false);
                 actions.resetForm();
               })

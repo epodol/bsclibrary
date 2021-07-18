@@ -199,7 +199,7 @@ const UserInfo = ({ userInfo }: { userInfo: userInfoInterface }) => {
         }) => (
           <Form
             noValidate
-            className="pb-5 px-5"
+            className="px-5"
             onKeyDown={(keyEvent: React.KeyboardEvent<HTMLFormElement>) => {
               const target = keyEvent.target as HTMLFormElement;
               if (
@@ -619,9 +619,10 @@ const UserInfo = ({ userInfo }: { userInfo: userInfoInterface }) => {
                   }
                 >
                   {isSubmitting && <CircularProgress size={24} />}
-                  {!isSubmitting && <>Submit</>}
+                  {!isSubmitting && <>Update User Info</>}
                 </Button>
               </div>
+              <hr />
             </div>
           </Form>
         )}
