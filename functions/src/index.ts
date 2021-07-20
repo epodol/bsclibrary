@@ -1,19 +1,11 @@
+/* eslint-disable import/prefer-default-export */
 import * as admin from 'firebase-admin';
 
-import addBookReview from './addBookReview';
-import setBookCopiesData from './setBookCopiesData';
-import checkoutBook from './checkoutBook';
-import checkinBook from './checkinBook';
-import updateUser from './updateUser';
-import addNewUser from './addNewUser';
+export { default as addBookReview } from './books/addBookReview';
+export { default as setBookCopiesData } from './books/setBookCopiesData';
+export { default as checkoutBook } from './checkouts/checkoutBook';
+export { default as checkinBook } from './checkouts/checkinBook';
+export { default as updateUser } from './users/updateUser';
+export { default as addNewUser } from './users/addNewUser';
 
 admin.initializeApp();
-
-export {
-  addBookReview,
-  setBookCopiesData,
-  checkoutBook,
-  checkinBook,
-  updateUser,
-  addNewUser,
-};

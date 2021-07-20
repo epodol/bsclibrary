@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useContext } from 'react';
 import {
   Container,
   TextField,
@@ -15,8 +15,11 @@ import { useAuth, useFirebaseApp } from 'reactfire';
 import { useHistory } from 'react-router';
 
 import { addNewUserResult } from '@common/functions/addNewUser';
+import NotificationContext from 'src/contexts/NotificationContext';
 
 const AddUserForm = () => {
+  const NotificationHandler = useContext(NotificationContext);
+
   const functions = useFirebaseApp().functions('us-west2');
 
   const auth = useAuth();
@@ -133,7 +136,6 @@ const AddUserForm = () => {
               });
             })
             .catch((err) => {
-              console.error(err);
               if (err.code === 'unauthenticated') {
                 actions.setFieldError('email', 'Permission denied.');
               } else if (err.code === 'permission-denied') {
@@ -147,6 +149,12 @@ const AddUserForm = () => {
                 actions.setFieldError('email', 'This user already exists.');
               } else {
                 actions.setFieldError('email', 'An internal error occurred.');
+                console.error(err);
+                NotificationHandler.addNotification({
+                  message: `An unexpected error occured.`,
+                  severity: 'error',
+                  timeout: 10000,
+                });
               }
             })
             .finally(() => {

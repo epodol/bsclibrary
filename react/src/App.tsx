@@ -20,7 +20,7 @@ import Routing from 'src/components/Routing';
 import Loading from 'src/components/Loading';
 
 import 'bootstrap-css-only/css/bootstrap.min.css';
-import './index.css';
+import 'src/index.css';
 
 const isDev = process.env.NODE_ENV !== 'production';
 

@@ -21,8 +21,11 @@ import { VpnKey, Lock, LockOpen } from '@material-ui/icons';
 
 import FirebaseContext from 'src/contexts/FirebaseContext';
 import { userInfo as userInfoInterface } from '@common/types/User';
+import NotificationContext from 'src/contexts/NotificationContext';
 
 const UserInfo = ({ userInfo }: { userInfo: userInfoInterface }) => {
+  const NotificationHandler = useContext(NotificationContext);
+
   const firestore = useFirestore;
   const { FieldValue } = firestore;
   const auth = useAuth();
@@ -76,6 +79,11 @@ const UserInfo = ({ userInfo }: { userInfo: userInfoInterface }) => {
                   })
                   .catch((err) => {
                     console.error(err);
+                    NotificationHandler.addNotification({
+                      message: `An unexpected error occured: ${err.code} ${err.message}`,
+                      severity: 'error',
+                      timeout: 10000,
+                    });
                   });
             }}
           >

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { Button, TextField, ButtonGroup, Paper } from '@material-ui/core';
 import * as yup from 'yup';
 import { Formik, Form } from 'formik';
@@ -7,12 +7,15 @@ import 'firebase/firestore';
 
 import Copy, { condition, status } from '@common/types/Copy';
 import checkinBookData from '@common/functions/checkinBook';
+import NotificationContext from 'src/contexts/NotificationContext';
 
 const ScanBooksScheme = yup.object().shape({
   book: yup.string().required('You need to enter the Barcode'),
 });
 
 const CheckIn = () => {
+  const NotificationHandler = useContext(NotificationContext);
+
   const firebaseApp = useFirebaseApp();
   const functions = firebaseApp.functions('us-west2');
   const bookInput: any = useRef();
@@ -94,12 +97,21 @@ const CheckIn = () => {
             await functions
               .httpsCallable('checkinBook')(checkinBookFunctionData)
               .then(() => {
-                // Notify the user that the book was checked in
+                NotificationHandler.addNotification({
+                  message: `Checked in 1 book (${values.book})`,
+                  severity: 'success',
+                });
                 actions.setSubmitting(false);
                 actions.resetForm();
               })
               .catch((err) => {
-                console.log(err);
+                console.table(err);
+                console.error(err);
+                NotificationHandler.addNotification({
+                  message: `An unexpected error occured: ${err.message} (${err.code})`,
+                  severity: 'error',
+                  timeout: 10000,
+                });
                 actions.setFieldError(
                   'book',
                   'There was an error checking in this book.'

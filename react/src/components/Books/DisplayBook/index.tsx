@@ -19,12 +19,15 @@ import CopiesTable from 'src/components/Books/DisplayBook/CopiesTable';
 import Loading from 'src/components/Loading';
 
 import BookInterface from '@common/types/Book';
+import NotificationContext from 'src/contexts/NotificationContext';
 
 interface BookInterfaceWithID extends BookInterface {
   id?: string;
 }
 
 const Book = () => {
+  const NotificationHandler = useContext(NotificationContext);
+
   const { id }: { id: string } = useParams();
   const location: { state: { editing?: boolean } } = useLocation();
   const history = useHistory();
@@ -78,9 +81,23 @@ const Book = () => {
                     className="m-2"
                     disabled={!(firebaseContext?.claims?.role >= 500)}
                     onClick={() => {
-                      ref.update({
-                        featured: !featured,
-                      });
+                      ref
+                        .update({
+                          featured: !featured,
+                        })
+                        .then(() => {
+                          NotificationHandler.addNotification({
+                            message: 'Toggled featured',
+                            severity: 'success',
+                          });
+                        })
+                        .catch((err) => {
+                          console.error(err);
+                          NotificationHandler.addNotification({
+                            message: `An unexpected error occured: ${err.message} (${err.code})`,
+                            severity: 'error',
+                          });
+                        });
                     }}
                   >
                     {featured && <Star />}

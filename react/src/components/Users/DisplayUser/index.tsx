@@ -3,7 +3,7 @@ import Paper from '@material-ui/core/Paper';
 import { useFirestore, useFirestoreDocData } from 'reactfire';
 import { useParams } from 'react-router';
 
-import '../users.css';
+import 'src/components/Users/users.css';
 import UserInfo from 'src/components/Users/DisplayUser/UserInfo';
 import UserCheckouts from 'src/components/Users/DisplayUser/UserCheckouts';
 

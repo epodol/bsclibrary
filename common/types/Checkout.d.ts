@@ -53,11 +53,11 @@ export default interface Checkout {
 }
 
 /**
- * 0: Active (Normal)
+ * 0: Active
  *
- * 1: Returned (Normal)
+ * 1: Returned
  *
- * 2: Overdue
+ * 2: Returned Overdue
  *
  * 3: Missing
  */

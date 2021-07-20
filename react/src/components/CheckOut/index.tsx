@@ -30,7 +30,8 @@ import checkoutBookData, {
 } from '@common/functions/checkoutBook';
 
 import FirebaseContext from 'src/contexts/FirebaseContext';
-import Loading from '../Loading';
+import Loading from 'src/components/Loading';
+import NotificationContext from 'src/contexts/NotificationContext';
 
 interface checkoutData {
   user: User | null;
@@ -386,6 +387,7 @@ const Submit = ({
   setCheckoutData: React.Dispatch<React.SetStateAction<checkoutData>>;
 }) => {
   const functions = useFirebaseApp();
+  const NotificationHandler = useContext(NotificationContext);
 
   async function submit() {
     const books: checkoutBookDataBooks[] = [];
@@ -420,6 +422,11 @@ const Submit = ({
       })
       .catch((err) => {
         console.error(err);
+        NotificationHandler.addNotification({
+          message: `An unexpected error occured: ${err.code} ${err.message}`,
+          severity: 'error',
+          timeout: 10000,
+        });
       });
   }
   return (

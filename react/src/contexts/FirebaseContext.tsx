@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect, createContext } from 'react';
+import React, { useState, useEffect, createContext } from 'react';
 import { useAuth } from 'reactfire';
 import 'firebase/app';
 import 'firebase/auth';
@@ -15,7 +15,7 @@ interface claims {
   [key: string]: any;
 }
 
-export const FirebaseProvider: FC = ({ children }) => {
+export const FirebaseProvider = ({ children }: any) => {
   const auth = useAuth();
 
   const [firebaseContextState, setFirebaseContextState] = useState<{
