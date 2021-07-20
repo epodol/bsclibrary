@@ -7,11 +7,11 @@ const Introduction = () => (
     <p>
       Our goal is to gather books and create an area where all BASIS Scottsdale
       students can come check out books for their enjoyment. This will also
-      serve as a resource center for students. A library is a peaceful area
-      where everyone can study. The library will be designed in a way where
-      everyone will be able access it easily and have enough time to read the
-      books they take out while making it fair to others. Everyone will be
-      welcome!
+      serve as a resource center for students to acquire more knowledge about
+      their fields of study. The library will be designed in a way where
+      everyone will be be able to check out books in a reasonable time frame to
+      ensure that all students have equal access to our catalogue! We hope to
+      see you there!
     </p>
   </Container>
 );
