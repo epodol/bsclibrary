@@ -23,10 +23,7 @@ import CopyInterface, {
   condition as conditionType,
 } from '@common/types/Copy';
 import NotificationContext from 'src/contexts/NotificationContext';
-
-interface CopyInterfaceWithID extends CopyInterface {
-  id?: string;
-}
+import WithID from '@common/types/WithID';
 
 function determineStatus(status: statusType | undefined) {
   switch (status) {
@@ -82,12 +79,12 @@ const CopiesTable = ({
     ? copiesInitRef
     : copiesInitRef.where('status', '!=', 4).orderBy('status');
 
-  const copies: CopyInterfaceWithID[] = useFirestoreCollectionData(
+  const copies: WithID<CopyInterface>[] = useFirestoreCollectionData(
     copiesRef.limit(25),
     {
-      idField: 'id',
+      idField: 'ID',
     }
-  ).data as unknown as CopyInterfaceWithID[];
+  ).data as unknown as WithID<CopyInterface>[];
 
   return (
     <div className="mx-5">
@@ -138,11 +135,11 @@ const CopiesTable = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {copies.map(({ id, barcode, status, condition, notes }) =>
+            {copies.map(({ ID, barcode, status, condition, notes }) =>
               editing ? (
                 <EditCopy
-                  key={id}
-                  id={id}
+                  key={ID}
+                  id={ID}
                   bookID={bookID}
                   barcode={barcode || ''}
                   status={status}
@@ -151,7 +148,7 @@ const CopiesTable = ({
                 />
               ) : (
                 status !== 4 && (
-                  <Copy key={id} id={id} barcode={barcode} status={status} />
+                  <Copy key={ID} id={ID} barcode={barcode} status={status} />
                 )
               )
             )}

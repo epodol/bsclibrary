@@ -97,7 +97,7 @@ const Routing = () => {
                         />
                       </Suspense>
                     </Route>
-                    <Route path="/checkouts">
+                    <Route path="/checkouts/:id?">
                       <Suspense fallback={<Loading />}>
                         <ProtectedRoute
                           Component={CheckOuts}

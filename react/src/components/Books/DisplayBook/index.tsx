@@ -54,7 +54,7 @@ const Book = () => {
           <Grid container>
             <Grid item xs={2}>
               {firebaseContext?.claims?.role >= 1000 && (
-                <Tooltip title="Delete Book (This option will not be available in a future release.">
+                <Tooltip title="Delete Book (This option will not be available in a future release.)">
                   <Button
                     className="m-2"
                     onClick={() => {
