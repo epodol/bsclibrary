@@ -47,6 +47,7 @@ const TableBody = () => {
 
   const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false);
   useEffect(() => {
+    let isSubscribed = true;
     history.replace(location.pathname);
 
     if (
@@ -81,9 +82,12 @@ const TableBody = () => {
           res.docs.forEach((doc) =>
             booksArray.push({ ...doc.data(), objectID: doc.id })
           );
-          setBooks(booksArray);
+          if (isSubscribed) setBooks(booksArray);
         });
     }
+    return () => {
+      isSubscribed = false;
+    };
   }, [history, location.pathname, query]);
 
   const searchRef = useRef(search);

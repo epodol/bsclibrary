@@ -56,7 +56,6 @@ const CheckOuts = () => {
     idField: 'ID',
   }).data as unknown as WithID<Checkout>[];
 
-  console.log(checkouts);
   return (
     <div className="text-center lead m-5">
       <h1>Check Outs</h1>
