@@ -315,10 +315,12 @@ const ScanBooks = ({
                       <Select
                         value={book.data.condition}
                         onChange={(event: any) => {
-                          const newBook = { ...book };
+                          const newBook = book;
                           newBook.data.condition = event.target.value;
+                          const newBooks = [...checkoutData.books];
+                          newBooks.splice(index, 1, newBook);
                           setCheckoutData({
-                            books: checkoutData.books.splice(index, 1, newBook),
+                            books: newBooks,
                             user: checkoutData.user,
                           });
                         }}
