@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 
 import { useUser, useFirestore, useAuth } from 'reactfire';
 import * as yup from 'yup';
@@ -34,9 +34,6 @@ const UserInfo = ({ userInfo }: { userInfo: userInfoInterface }) => {
 
   const currentUser = useUser().data;
   const firebaseContext = useContext(FirebaseContext);
-
-  const [sendResetPasswordSuccess, setSendResetPasswordSuccess] =
-    useState(false);
 
   const UserSchema = yup.object().shape({
     disabled: yup.boolean(),
@@ -75,7 +72,10 @@ const UserInfo = ({ userInfo }: { userInfo: userInfoInterface }) => {
                 auth
                   .sendPasswordResetEmail(userInfo.email, actionCodeSettings)
                   .then(() => {
-                    setSendResetPasswordSuccess(true);
+                    NotificationHandler.addNotification({
+                      message: `Reset Password Email Sent`,
+                      severity: 'success',
+                    });
                   })
                   .catch((err) => {
                     console.error(err);
@@ -87,8 +87,7 @@ const UserInfo = ({ userInfo }: { userInfo: userInfoInterface }) => {
                   });
             }}
           >
-            {sendResetPasswordSuccess && <>Success!</>}
-            {!sendResetPasswordSuccess && <>Reset Password</>}
+            Reset Password
           </Button>
         </Grid>
         <Grid item xs={6} className="text-center">
@@ -105,16 +104,33 @@ const UserInfo = ({ userInfo }: { userInfo: userInfoInterface }) => {
             startIcon={userInfo.disabled ? <LockOpen /> : <Lock />}
             style={{ float: 'right' }}
             onClick={() => {
-              userDocRef.set(
-                {
-                  userInfo: {
-                    editedBy: currentUser.uid,
-                    editedTime: FieldValue.serverTimestamp(),
-                    disabled: !userInfo.disabled,
+              userDocRef
+                .set(
+                  {
+                    userInfo: {
+                      editedBy: currentUser.uid,
+                      editedTime: FieldValue.serverTimestamp(),
+                      disabled: !userInfo.disabled,
+                    },
                   },
-                },
-                { merge: true }
-              );
+                  { merge: true }
+                )
+                .then(() => {
+                  NotificationHandler.addNotification({
+                    message: `Account ${
+                      userInfo.disabled ? 'enabled' : 'disabled'
+                    }.`,
+                    severity: 'success',
+                  });
+                })
+                .catch((err) => {
+                  console.error(err);
+                  NotificationHandler.addNotification({
+                    message: `An unexpected error occured: ${err.code} ${err.message}`,
+                    severity: 'error',
+                    timeout: 10000,
+                  });
+                });
             }}
           >
             {userInfo.disabled && <>Enable Account</>}
@@ -161,39 +177,55 @@ const UserInfo = ({ userInfo }: { userInfo: userInfoInterface }) => {
         validationSchema={UserSchema}
         onSubmit={(values, actions) => {
           actions.setSubmitting(true);
-          userDocRef.set(
-            {
-              userInfo: {
-                editedBy: currentUser.uid,
-                editedTime: FieldValue.serverTimestamp(),
-                displayName: `${values.firstName} ${values.lastName}`,
-                email: values.email,
-                firstName: values.firstName,
-                lastName: values.lastName,
-                phoneNumber:
-                  (values.phoneNumber || null) === ''
-                    ? null
-                    : values.phoneNumber || null,
-                photoURL:
-                  (values.photoURL || null) === ''
-                    ? null
-                    : values.photoURL || null,
-                role: values.role,
-                permissions: {
-                  VIEW_BOOKS: values.VIEW_BOOKS,
-                  REVIEW_BOOKS: values.REVIEW_BOOKS,
-                  CHECK_IN: values.CHECK_IN,
-                  CHECK_OUT: values.CHECK_OUT,
-                  MANAGE_BOOKS: values.MANAGE_BOOKS,
-                  MANAGE_CHECKOUTS: values.MANAGE_CHECKOUTS,
-                  MANAGE_USERS: values.MANAGE_USERS,
+          userDocRef
+            .set(
+              {
+                userInfo: {
+                  editedBy: currentUser.uid,
+                  editedTime: FieldValue.serverTimestamp(),
+                  displayName: `${values.firstName} ${values.lastName}`,
+                  email: values.email,
+                  firstName: values.firstName,
+                  lastName: values.lastName,
+                  phoneNumber:
+                    (values.phoneNumber || null) === ''
+                      ? null
+                      : values.phoneNumber || null,
+                  photoURL:
+                    (values.photoURL || null) === ''
+                      ? null
+                      : values.photoURL || null,
+                  role: values.role,
+                  permissions: {
+                    VIEW_BOOKS: values.VIEW_BOOKS,
+                    REVIEW_BOOKS: values.REVIEW_BOOKS,
+                    CHECK_IN: values.CHECK_IN,
+                    CHECK_OUT: values.CHECK_OUT,
+                    MANAGE_BOOKS: values.MANAGE_BOOKS,
+                    MANAGE_CHECKOUTS: values.MANAGE_CHECKOUTS,
+                    MANAGE_USERS: values.MANAGE_USERS,
+                  },
                 },
               },
-            },
-            { merge: true }
-          );
-
-          actions.setSubmitting(false);
+              { merge: true }
+            )
+            .then(() => {
+              NotificationHandler.addNotification({
+                message: `User info updated.`,
+                severity: 'success',
+              });
+            })
+            .catch((err) => {
+              console.error(err);
+              NotificationHandler.addNotification({
+                message: `An unexpected error occured: ${err.code} ${err.message}`,
+                severity: 'error',
+                timeout: 10000,
+              });
+            })
+            .finally(() => {
+              actions.setSubmitting(false);
+            });
         }}
       >
         {({

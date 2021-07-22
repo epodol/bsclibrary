@@ -9,6 +9,7 @@ import user, { checkoutInfo } from '@common/types/User';
 import RecursivePartial from '@common/types/RecursivePartial';
 
 import FirebaseContext from 'src/contexts/FirebaseContext';
+import NotificationContext from 'src/contexts/NotificationContext';
 
 const checkoutInfoSchema = yup.object().shape({
   activeCheckouts: yup.array().of(yup.string()),
@@ -17,6 +18,8 @@ const checkoutInfoSchema = yup.object().shape({
 });
 
 const UserCheckouts = ({ checkouts }: { checkouts: checkoutInfo }) => {
+  const NotificationHandler = useContext(NotificationContext);
+
   const firestore = useFirestore;
   const { FieldValue } = firestore;
   const currentUser = useUser().data;
@@ -50,7 +53,25 @@ const UserCheckouts = ({ checkouts }: { checkouts: checkoutInfo }) => {
               editedTime: FieldValue.serverTimestamp(),
             },
           };
-          userDocRef.set(newData, { merge: true });
+          userDocRef
+            .set(newData, { merge: true })
+            .then(() => {
+              NotificationHandler.addNotification({
+                message: `Checkout info updated.`,
+                severity: 'success',
+              });
+            })
+            .catch((err) => {
+              console.error(err);
+              NotificationHandler.addNotification({
+                message: `An unexpected error occured: ${err.code} ${err.message}`,
+                severity: 'error',
+                timeout: 10000,
+              });
+            })
+            .finally(() => {
+              actions.setSubmitting(false);
+            });
 
           actions.setSubmitting(false);
         }}

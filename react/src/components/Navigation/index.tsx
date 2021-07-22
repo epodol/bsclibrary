@@ -1,4 +1,4 @@
-import React, { useContext, Suspense } from 'react';
+import React, { useContext } from 'react';
 import {
   Button,
   AppBar,
@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import { ExitToApp, Home } from '@material-ui/icons';
 
-import { AuthCheck, useAuth } from 'reactfire';
+import { useAuth, useSigninCheck } from 'reactfire';
 
 import { Link, useHistory, useLocation } from 'react-router-dom';
 
@@ -22,17 +22,17 @@ const NavBarItems = () => {
   const location = useLocation();
   return (
     <div style={{ marginLeft: 5 }}>
-      <Link to="/about">
+      <Link to="/about" className="white-text">
         <Button
-          className="white-text"
+          color="inherit"
           disabled={location.pathname.startsWith('/about')}
         >
           About
         </Button>
       </Link>
-      <Link to="/contribute">
+      <Link to="/contribute" className="white-text">
         <Button
-          className="white-text"
+          color="inherit"
           disabled={location.pathname.startsWith('/contribute')}
         >
           Contribute
@@ -49,30 +49,29 @@ const NavBarItems = () => {
         </Link>
       )}
       {firebaseContext.claims?.permissions?.CHECK_OUT && (
-        <Link to="/checkout">
-          {/* '/checkouts' would trigger this if it was .startsWith */}
-          <Button
-            className="white-text"
-            disabled={location.pathname === '/checkout'}
-          >
+        <Link to="/checkout" className="white-text">
+          <Button color="inherit" disabled={location.pathname === '/checkout'}>
             Check Out
           </Button>
         </Link>
       )}
       {firebaseContext.claims?.permissions?.CHECK_IN && (
-        <Link to="/checkin">
+        <Link to="/checkin" className="white-text">
           <Button
-            className="white-text"
+            color="inherit"
             disabled={location.pathname.startsWith('/checkin')}
+            // variant={
+            //   location.pathname.startsWith('/checkin') ? 'contained' : 'text'
+            // }
           >
             Check In
           </Button>
         </Link>
       )}
       {firebaseContext.claims?.permissions?.MANAGE_CHECKOUTS && (
-        <Link to="/checkouts">
+        <Link to="/checkouts" className="white-text">
           <Button
-            className="white-text"
+            color="inherit"
             disabled={location.pathname.startsWith('/checkouts')}
           >
             Checkouts
@@ -80,12 +79,12 @@ const NavBarItems = () => {
         </Link>
       )}
       {firebaseContext.claims?.permissions?.MANAGE_USERS && (
-        <Link to="/users">
+        <Link to="/users" className="white-text">
           <Button
-            className="white-text"
+            color="inherit"
             disabled={location.pathname.startsWith('/users')}
           >
-            users
+            Users
           </Button>
         </Link>
       )}
@@ -97,6 +96,8 @@ const Navigation = () => {
   const firebaseContext = useContext(FirebaseContext);
   const auth = useAuth();
   const history = useHistory();
+
+  const signinCheck = useSigninCheck().data;
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -123,60 +124,64 @@ const Navigation = () => {
           </Link>
           <NavBarItems />
           <div style={{ marginLeft: 'auto', marginRight: 0 }}>
-            <Suspense fallback="loading...">
-              <AuthCheck fallback={<SignIn />}>
-                <div>
-                  <IconButton
-                    aria-label="account of current user"
-                    aria-controls="menu-appbar"
-                    aria-haspopup="true"
-                    onClick={handleMenu}
-                    color="inherit"
+            {signinCheck.signedIn && (
+              <div>
+                <IconButton
+                  aria-label="account of current user"
+                  aria-controls="menu-appbar"
+                  aria-haspopup="true"
+                  onClick={handleMenu}
+                  color="inherit"
+                >
+                  <Avatar
+                    alt={`${firebaseContext?.claims?.firstName || ''} ${
+                      firebaseContext?.claims?.lastName || ''
+                    }`}
+                    src={firebaseContext?.claims?.picture}
                   >
-                    <Avatar
-                      alt={`${firebaseContext?.claims?.firstName || ''} ${
-                        firebaseContext?.claims?.lastName || ''
-                      }`}
-                      src={firebaseContext?.claims?.picture}
-                    >
-                      {`${firebaseContext?.claims?.firstName?.slice(
-                        0,
-                        1
-                      )}${firebaseContext?.claims?.lastName?.slice(0, 1)}`}
-                    </Avatar>
-                  </IconButton>
-                  <Menu
-                    anchorEl={anchorEl}
-                    anchorOrigin={{
-                      vertical: 'top',
-                      horizontal: 'right',
+                    {`${firebaseContext?.claims?.firstName?.slice(
+                      0,
+                      1
+                    )}${firebaseContext?.claims?.lastName?.slice(0, 1)}`}
+                  </Avatar>
+                </IconButton>
+                <Menu
+                  anchorEl={anchorEl}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={open}
+                  onClose={handleClose}
+                >
+                  <MenuItem
+                    onClick={() => {
+                      history.push('/');
+                      setAnchorEl(null);
                     }}
-                    keepMounted
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'right',
-                    }}
-                    open={open}
-                    onClose={handleClose}
                   >
-                    <MenuItem onClick={handleClose}>
-                      <Home /> My Account
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => {
-                        setAnchorEl(null);
-                        auth.signOut().then(() => {
-                          history.push('.');
-                          window.location.reload();
-                        });
-                      }}
-                    >
-                      <ExitToApp /> Sign out
-                    </MenuItem>
-                  </Menu>
-                </div>
-              </AuthCheck>
-            </Suspense>
+                    <Home /> My Account
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      setAnchorEl(null);
+                      auth.signOut().then(() => {
+                        history.push('.');
+                        window.location.reload();
+                      });
+                    }}
+                  >
+                    <ExitToApp /> Sign out
+                  </MenuItem>
+                </Menu>
+              </div>
+            )}
+            {!signinCheck.signedIn && <SignIn />}
           </div>
         </Toolbar>
       </AppBar>

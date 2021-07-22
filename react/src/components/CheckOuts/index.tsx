@@ -68,7 +68,6 @@ const CheckOuts = () => {
               Status
             </InputLabel>
             <Select
-              disabled={query.showOverdue}
               labelId="demo-simple-select-placeholder-label-label"
               id="demo-simple-select-placeholder-label"
               value={query.checkoutStatus ?? ''}
@@ -93,6 +92,7 @@ const CheckOuts = () => {
             </Select>
             <FormHelperText>Show only</FormHelperText>
           </FormControl>
+          <br />
           <FormControlLabel
             control={
               <Checkbox
@@ -101,7 +101,6 @@ const CheckOuts = () => {
                 onChange={(e: any) => {
                   setQuery({
                     ...query,
-                    checkoutStatus: e.target.checked ? 0 : query.checkoutStatus,
                     showOverdue: e.target.checked as boolean,
                   });
                 }}

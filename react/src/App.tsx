@@ -15,6 +15,8 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
 
 import { FirebaseProvider } from 'src/contexts/FirebaseContext';
+import { NotificationProvider } from 'src/contexts/NotificationContext';
+
 import MUITheme from 'src/contexts/MUITheme';
 import Routing from 'src/components/Routing';
 import Loading from 'src/components/Loading';
@@ -126,11 +128,13 @@ const AppWithFirebase = () => {
   return (
     <ThemeProvider theme={MUITheme}>
       <CssBaseline />
-      <FirebaseProvider>
-        <Suspense fallback={<Loading />}>
-          <Routing />
-        </Suspense>
-      </FirebaseProvider>
+      <NotificationProvider>
+        <FirebaseProvider>
+          <Suspense fallback={<Loading />}>
+            <Routing />
+          </Suspense>
+        </FirebaseProvider>
+      </NotificationProvider>
     </ThemeProvider>
   );
 };

@@ -1,46 +1,86 @@
-import React, { Suspense } from 'react';
+import React, { lazy, Suspense, useContext, useEffect } from 'react';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Redirect,
 } from 'react-router-dom';
-import { AuthCheck, useIdTokenResult, useUser } from 'reactfire';
+import { useSigninCheck } from 'reactfire';
 
 import Loading from 'src/components/Loading';
-import Contribute from 'src/components/Contribute';
-import About from 'src/components/About';
 
 import Navigation from 'src/components/Navigation';
+import NotificationContext from 'src/contexts/NotificationContext';
+
+// Will always need to use these pages, so do not lazy load
 import Home from 'src/components/Home';
 import Account from 'src/components/Account';
-import Users from 'src/components/Users';
-import DisplayUser from 'src/components/Users/DisplayUser';
-import Books from 'src/components/Books';
-import DisplayBook from 'src/components/Books/DisplayBook';
-import CheckOut from 'src/components/CheckOut';
-import CheckIn from 'src/components/CheckIn';
-import CheckOuts from 'src/components/CheckOuts';
-import Footer from 'src/components/Footer';
 
-import { NotificationProvider } from 'src/contexts/NotificationContext';
+const Contribute = lazy(() => import('src/components/Contribute'));
+
+const About = lazy(() => import('src/components/About'));
+
+const Users = lazy(() => import('src/components/Users'));
+const DisplayUser = lazy(() => import('src/components/Users/DisplayUser'));
+const Books = lazy(() => import('src/components/Books'));
+const DisplayBook = lazy(() => import('src/components/Books/DisplayBook'));
+const CheckOut = lazy(() => import('src/components/CheckOut'));
+const CheckIn = lazy(() => import('src/components/CheckIn'));
+const CheckOuts = lazy(() => import('src/components/CheckOuts'));
+const Footer = lazy(() => import('src/components/Footer'));
+
+const ProtectedRoute = ({
+  Component,
+  permission,
+}: {
+  Component: any;
+  permission: string;
+}) => {
+  const NotificationHandler = useContext(NotificationContext);
+
+  const signInCheck = useSigninCheck({
+    suspense: true,
+    validateCustomClaims: (claims) => {
+      if (claims.data.claims.permissions[permission] !== true) {
+        NotificationHandler.addNotification({
+          message: 'You do not have permission to view this page.',
+          severity: 'warning',
+          timeout: 10000,
+          position: {
+            horizontal: 'center',
+            vertical: 'top',
+          },
+        });
+      }
+      return {
+        hasRequiredClaims: claims.data.claims.permissions[permission] === true,
+        errors: {},
+      };
+    },
+  }).data;
+
+  return signInCheck.hasRequiredClaims ? <Component /> : <Redirect to="/" />;
+};
 
 const Routing = () => {
-  const user = useUser().data;
+  const NotificationHandler = useContext(NotificationContext);
 
-  const ProtectedRoute = ({
-    Component,
-    permission,
-  }: {
-    Component: any;
-    permission: string;
-  }) => {
-    const claims = useIdTokenResult(user, true);
-    return claims.data.claims.permissions[permission] === true ? (
-      <Component />
-    ) : (
-      <Redirect to="/" />
-    );
+  const signinCheck = useSigninCheck().data;
+
+  const UnknownPage = () => {
+    useEffect(() => {
+      NotificationHandler.addNotification({
+        message: 'The page you are looking for does not exist.',
+        severity: 'warning',
+        timeout: 10000,
+        position: {
+          horizontal: 'center',
+          vertical: 'top',
+        },
+      });
+      console.warn('The page you are looking for does not exist.');
+    }, []);
+    return <Redirect to="/" exact />;
   };
 
   return (
@@ -50,20 +90,19 @@ const Routing = () => {
           <div className="content">
             <Navigation />
 
-            <Switch>
-              <Route exact path="/">
-                <AuthCheck fallback={<Home />}>
-                  <Account />
-                </AuthCheck>
-              </Route>
-              <Route exact path="/about">
-                <About />
-              </Route>
-              <Route exact path="/contribute">
-                <Contribute />
-              </Route>
-              <NotificationProvider>
-                <AuthCheck fallback={<Redirect to="/" exact />}>
+            <Suspense fallback={<Loading />}>
+              <Switch>
+                <Route exact path="/">
+                  {signinCheck.signedIn && <Account />}
+                  {!signinCheck.signedIn && <Home />}
+                </Route>
+                <Route exact path="/about">
+                  <About />
+                </Route>
+                <Route exact path="/contribute">
+                  <Contribute />
+                </Route>
+                {signinCheck.signedIn && (
                   <Switch>
                     <Route path="/books" exact>
                       <Suspense fallback={<Loading />}>
@@ -121,11 +160,12 @@ const Routing = () => {
                         />
                       </Suspense>
                     </Route>
-                    <Redirect to="/" exact />
+                    <UnknownPage />
                   </Switch>
-                </AuthCheck>
-              </NotificationProvider>
-            </Switch>
+                )}
+                {!signinCheck.signedIn && <UnknownPage />}
+              </Switch>
+            </Suspense>
           </div>
         </main>
         <div className="mt-auto py-3">
