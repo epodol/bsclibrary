@@ -74,6 +74,7 @@ const checkinBook = functions
       .collection('checkouts')
       .where('bookID', '==', data.bookID)
       .where('copyID', '==', data.copyID)
+      .where('checkoutStatus', '==', 0)
       .get();
 
     // Check if the checkout exists or there is more than one

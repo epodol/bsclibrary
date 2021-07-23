@@ -2,9 +2,11 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import User from '@common/types/User';
 
+import addNewUserData from '@common/functions/addNewUser';
+
 const addNewUser = functions
   .region('us-west2')
-  .https.onCall(async (data, context) => {
+  .https.onCall(async (data: addNewUserData, context) => {
     // App Check Verification
     if (!context.app && process.env.NODE_ENV === 'production') {
       throw new functions.https.HttpsError(
@@ -51,11 +53,13 @@ const addNewUser = functions
       typeof data.first_name !== 'string' ||
       typeof data.last_name !== 'string' ||
       typeof data.role !== 'number' ||
-      typeof data.permissions !== 'object'
+      typeof data.permissions !== 'object' ||
+      typeof data.maxCheckouts !== 'number' ||
+      typeof data.maxRenews !== 'number'
     ) {
       throw new functions.https.HttpsError(
         'invalid-argument',
-        'The function must be called with an email, first name, last name, role, and permissions'
+        'The function must be called with the appropriate arguments.'
       );
     }
 
@@ -94,14 +98,6 @@ const addNewUser = functions
         firstName: data.first_name,
         lastName: data.last_name,
         permissions: data.permissions,
-        createdBy: context.auth.uid,
-        createdTime: admin.firestore.Timestamp.fromMillis(
-          Date.parse(newUser.metadata.creationTime)
-        ),
-        editedBy: context.auth.uid,
-        editedTime: admin.firestore.Timestamp.fromMillis(
-          Date.parse(newUser.metadata.creationTime)
-        ),
       })
       .catch((error) => {
         throw new functions.https.HttpsError('internal', error);
@@ -114,12 +110,12 @@ const addNewUser = functions
         queryEmail: newUser.email?.toLowerCase(),
         displayName:
           newUser.displayName ?? `${data.first_name} ${data.last_name}`,
-        firstName: data.first_name || null,
-        lastName: data.last_name || null,
+        firstName: data.first_name ?? '',
+        lastName: data.last_name ?? '',
         queryFirstName: data.first_name ? data.first_name.toLowerCase() : null,
         queryLastName: data.last_name ? data.last_name.toLowerCase() : null,
-        photoURL: newUser.photoURL || null,
-        phoneNumber: newUser.phoneNumber || null,
+        photoURL: newUser.photoURL ?? null,
+        phoneNumber: newUser.phoneNumber ?? null,
         disabled: newUser.disabled,
         createdBy: context.auth.uid,
         createdTime: admin.firestore.Timestamp.fromMillis(
@@ -134,8 +130,8 @@ const addNewUser = functions
       },
       checkoutInfo: {
         activeCheckouts: [],
-        maxCheckouts: 3,
-        maxRenews: 2,
+        maxCheckouts: data.maxCheckouts,
+        maxRenews: data.maxRenews,
       },
     };
 
@@ -143,7 +139,10 @@ const addNewUser = functions
       .firestore()
       .collection('users')
       .doc(newUser.uid)
-      .set(newUserDoc);
+      .set(newUserDoc)
+      .catch((error) => {
+        throw new functions.https.HttpsError('internal', error);
+      });
 
     return {
       uid: newUser.uid,

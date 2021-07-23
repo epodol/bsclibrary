@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   Button,
   Dialog,
@@ -12,6 +12,8 @@ import {
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
 import { useAuth } from 'reactfire';
+
+import NotificationContext from 'src/contexts/NotificationContext';
 
 const SignIn = () => {
   const SignInSchema = yup.object().shape({
@@ -30,6 +32,8 @@ const SignIn = () => {
   });
 
   const auth = useAuth();
+
+  const NotificationHandler = useContext(NotificationContext);
 
   const [displaySignInForm, setDisplaySignInForm] = useState(false);
   const [displayResetPasswordForm, setDisplayResetPasswordForm] =
@@ -170,6 +174,10 @@ const SignIn = () => {
             await auth
               .sendPasswordResetEmail(values.email, actionCodeSettings)
               .then(() => {
+                NotificationHandler.addNotification({
+                  message: 'Reset Password Email Sent!',
+                  severity: 'success',
+                });
                 setDisplayResetPasswordForm(false);
               })
               .catch((err) => {
@@ -181,8 +189,15 @@ const SignIn = () => {
                   actions.setFieldError('email', 'This user has been disabled');
                 } else if (err.code === 'auth/invalid-email') {
                   actions.setFieldError('email', 'Please enter a valid email');
-                } else
+                } else {
+                  console.error(err);
                   actions.setFieldError('email', `Internal error: ${err.code}`);
+                  NotificationHandler.addNotification({
+                    message: `An unexpected error occured: ${err.code} ${err.message}`,
+                    severity: 'error',
+                    timeout: 10000,
+                  });
+                }
               })
               .finally(() => {
                 actions.setSubmitting(false);

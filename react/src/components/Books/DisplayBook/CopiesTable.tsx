@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useFirestore, useFirestoreCollectionData, useUser } from 'reactfire';
 import {
   Button,
@@ -22,10 +22,8 @@ import CopyInterface, {
   status as statusType,
   condition as conditionType,
 } from '@common/types/Copy';
-
-interface CopyInterfaceWithID extends CopyInterface {
-  id?: string;
-}
+import NotificationContext from 'src/contexts/NotificationContext';
+import WithID from '@common/types/WithID';
 
 function determineStatus(status: statusType | undefined) {
   switch (status) {
@@ -81,12 +79,12 @@ const CopiesTable = ({
     ? copiesInitRef
     : copiesInitRef.where('status', '!=', 4).orderBy('status');
 
-  const copies: CopyInterfaceWithID[] = useFirestoreCollectionData(
+  const copies: WithID<CopyInterface>[] = useFirestoreCollectionData(
     copiesRef.limit(25),
     {
-      idField: 'id',
+      idField: 'ID',
     }
-  ).data as unknown as CopyInterfaceWithID[];
+  ).data as unknown as WithID<CopyInterface>[];
 
   return (
     <div className="mx-5">
@@ -137,11 +135,11 @@ const CopiesTable = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {copies.map(({ id, barcode, status, condition, notes }) =>
+            {copies.map(({ ID, barcode, status, condition, notes }) =>
               editing ? (
                 <EditCopy
-                  key={id}
-                  id={id}
+                  key={ID}
+                  id={ID}
                   bookID={bookID}
                   barcode={barcode || ''}
                   status={status}
@@ -150,7 +148,7 @@ const CopiesTable = ({
                 />
               ) : (
                 status !== 4 && (
-                  <Copy key={id} id={id} barcode={barcode} status={status} />
+                  <Copy key={ID} id={ID} barcode={barcode} status={status} />
                 )
               )
             )}
@@ -208,6 +206,8 @@ const EditCopy = ({
   condition: conditionType | undefined;
   notes: string | undefined;
 }) => {
+  const NotificationHandler = useContext(NotificationContext);
+
   const [barcodeValue, setBarcodeValue] = useState(barcode || '');
   const [statusValue, setStatusValue] = useState(status);
   const [conditionValue, setConditionValue] = useState(condition || 3);
@@ -277,7 +277,6 @@ const EditCopy = ({
               color={statusValue === 2 ? 'primary' : 'default'}
               disabled={statusValue === 2}
               className="px-2"
-              //   onClick={() => setStatusValue(2)}
               variant="contained"
             >
               {determineStatus(2)}
@@ -397,6 +396,19 @@ const EditCopy = ({
                   notes: notesValue,
                   lastEditedBy: user.uid,
                   lastEdited: fieldValue.serverTimestamp(),
+                })
+                .then(() => {
+                  NotificationHandler.addNotification({
+                    message: 'Copy updated.',
+                    severity: 'success',
+                  });
+                })
+                .catch((err) => {
+                  console.error(err);
+                  NotificationHandler.addNotification({
+                    message: `An unexpected error occured: ${err.message} (${err.code})`,
+                    severity: 'error',
+                  });
                 });
               setSubmitSuccess(true);
               const timer = () =>

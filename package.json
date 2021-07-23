@@ -17,6 +17,7 @@
   },
   "scripts": {
     "start": "npm-run-all --parallel dev:emulators dev:react tsc:watch",
+    "start:export": "npm-run-all --parallel dev:emulators:export dev:react tsc:watch",
     "dev:react": "cd react && npm run start",
     "dev:emulators": "firebase emulators:start --import=./emulator-data",
     "dev:emulators:export": "firebase emulators:start --import=./emulator-data --export-on-exit",
@@ -28,7 +29,9 @@
     "tsc:watch:discord": "tsc --watch --project ./discord/tsconfig.json",
     "tsc:watch:functions": "tsc --watch --project ./functions/tsconfig.json",
     "tsc:watch:common": "tsc --watch --project ./common/tsconfig.json",
-    "postinstall": "if test \"$CI\" = true ; then npm-run-all --parallel ci:discord ci:functions ci:react ci:common; else npm-run-all --parallel install:discord install:functions install:react install:common; fi",
+    "postinstall": "run-script-os",
+    "postinstall:linux": "if test \"$CI\" = true ; then npm-run-all --parallel ci:discord ci:functions ci:react ci:common; else npm-run-all --parallel install:discord install:functions install:react install:common; fi",
+    "postinstall:default": "npm-run-all --parallel ci:discord ci:functions ci:react ci:common",
     "ci:discord": "cd discord && npm ci",
     "ci:functions": "cd functions && npm ci",
     "ci:react": "cd react && npm ci",
@@ -68,6 +71,7 @@
     "firebase-tools": "^9.16.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.3.2",
+    "run-script-os": "^1.1.6",
     "typescript": "^4.3.5"
   }
 }

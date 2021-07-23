@@ -30,3 +30,12 @@ We would love for you to contribute to `bsclibrary`, pull requests are welcome! 
    > npm run start
    ```
 1. Open [http://localhost:3000](http://localhost:3000) (React development server) and [http://localhost:4000](http://localhost:4000) (Emulator UI) in your browser. It will automatically reload if you change any of the source files.
+
+### Emulator Data Export
+
+This project includes Firebase Emulator Data that is used for testing. This data is not available in a production environment, and is only used for testing. You can view this data in the [Emulator UI](http://localhost:4000).
+
+To get started quickly, you can log in using either of the following credentials:
+
+- Email: `admin@bsclibrary.net` Password: `bsclibrary`
+- Email: `student@bsclibrary.net` Password: `bsclibrary`
