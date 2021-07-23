@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 
-import { Button, Grid, Paper, Collapse } from '@material-ui/core';
+import { Button, Grid, Paper, Collapse, Chip } from '@material-ui/core';
 
 import FirebaseContext from 'src/contexts/FirebaseContext';
 import Checkouts from 'src/components/Account/Checkouts';
@@ -10,18 +10,39 @@ const Account = () => {
   const [viewCheckouts, setViewCheckouts] = useState(false);
 
   return (
-    <div className="text-center lead m-5">
-      <h1>Account</h1>
-      <p className="font-italic">This page is still a work in progress.</p>
+    <div className="lead m-5">
+      <h1 className="text-center">Account</h1>
+      <p className="text-center font-italic">
+        This page is still a work in progress.
+      </p>
       <Grid container spacing={3}>
-        <Grid item xs={3}>
-          <Paper style={{ padding: '5%' }}>
+        <Grid item xs={4}>
+          <Paper style={{ padding: '5%' }} className="text-center">
             Welcome,{' '}
             {`${firebaseContext?.claims?.firstName} ${firebaseContext?.claims?.lastName}`}
           </Paper>
+          <Paper style={{ padding: '5%', marginTop: '5%' }}>
+            <ul>
+              <li>
+                {firebaseContext?.user?.email ?? 'No email set.'}{' '}
+                {firebaseContext?.user?.emailVerified && (
+                  <Chip label="Verified" />
+                )}
+                {!firebaseContext?.user?.emailVerified && (
+                  <Chip label="Not Verified" color="secondary" />
+                )}
+              </li>
+              <li>
+                {firebaseContext?.user?.phoneNumber ?? 'No phone number set.'}
+              </li>
+            </ul>
+            <p className="text-center font-italic">
+              The ability to change this information will be available soon.
+            </p>
+          </Paper>
         </Grid>
-        <Grid item xs={9}>
-          <Paper style={{ padding: '5%' }}>
+        <Grid item xs={8}>
+          <Paper style={{ padding: '5%' }} className="text-center">
             You have{' '}
             {firebaseContext.userDoc?.checkoutInfo?.activeCheckouts?.length ??
               0}{' '}

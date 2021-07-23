@@ -24,10 +24,12 @@ const CheckoutRow = ({ checkoutID }: { checkoutID: string }) => {
   return (
     <TableRow>
       <TableCell>
-        {checkout?.dueDate?.toDate()?.toDateString() ?? 'Loading'}
+        {(checkout?.dueDate?.toMillis() ?? 99999999999999) > Date.now()
+          ? 'Active'
+          : 'Overdue'}
       </TableCell>
       <TableCell>
-        {checkout?.timeOut?.toDate()?.toDateString() ?? 'Loading'}
+        {checkout?.dueDate?.toDate()?.toDateString() ?? 'Loading'}
       </TableCell>
       <TableCell>
         {checkout.renewsUsed} /{' '}
@@ -74,9 +76,9 @@ const Checkouts = ({ userCheckoutIDs }: { userCheckoutIDs: string[] }) => (
   <Table>
     <TableHead>
       <TableRow>
+        <TableCell>Status</TableCell>
         <TableCell>Due Date</TableCell>
-        <TableCell>Time Checked Out</TableCell>
-        <TableCell>Renews Used</TableCell>
+        <TableCell>Renewals</TableCell>
         <TableCell>Book</TableCell>
       </TableRow>
     </TableHead>

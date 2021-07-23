@@ -74,7 +74,7 @@ const NavBarItems = () => {
             color="inherit"
             disabled={location.pathname.startsWith('/checkouts')}
           >
-            Checkouts
+            Manage Checkouts
           </Button>
         </Link>
       )}

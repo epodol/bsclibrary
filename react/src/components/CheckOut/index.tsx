@@ -20,7 +20,11 @@ import {
 import { Delete } from '@material-ui/icons';
 import * as yup from 'yup';
 import { Formik, Form } from 'formik';
-import { useFirebaseApp } from 'reactfire';
+import {
+  useFirebaseApp,
+  useFirestore,
+  useFirestoreCollectionData,
+} from 'reactfire';
 import 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import User from '@common/types/User';
@@ -63,75 +67,224 @@ function determineCondition(condition: conditionType) {
   }
 }
 
+function determineSearchField(searchField: 1 | 2 | 3) {
+  let res = 'userInfo.queryFirstName';
+  if (searchField === 1) res = 'userInfo.queryFirstName';
+  if (searchField === 2) res = 'userInfo.queryLastName';
+  if (searchField === 3) res = 'userInfo.queryEmail';
+
+  return res;
+}
+
+const FindUserTable = ({
+  searchField,
+  searchTerm,
+  setActiveState,
+  setCheckoutData,
+}: {
+  searchField: 1 | 2 | 3;
+  searchTerm: string;
+  setActiveState: React.Dispatch<React.SetStateAction<number>>;
+  setCheckoutData: React.Dispatch<React.SetStateAction<checkoutData>>;
+}) => {
+  const textSearchField = determineSearchField(searchField);
+
+  const userQueryRef = useFirestore()
+    .collection('users')
+    .orderBy(textSearchField)
+    .startAt(searchTerm.toLowerCase())
+    .endAt(`${searchTerm.toLowerCase()}\uf8ff`)
+    .where('userInfo.disabled', '==', false)
+    .limit(10);
+
+  const userData: User[] = useFirestoreCollectionData(userQueryRef, {
+    idField: 'id',
+  }).data as unknown as User[];
+
+  return (
+    <div className="text-center">
+      {userData.length !== 0 && (
+        <Table aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Active Checkouts</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {userData.map((user) => {
+              if (!user?.userInfo) return <></>;
+              return (
+                <TableRow
+                  key={user.userInfo.uid}
+                  style={{ cursor: 'pointer' }}
+                  hover
+                  onClick={() => {
+                    setCheckoutData((currentState) => ({
+                      books: currentState.books,
+                      user,
+                    }));
+                    return setActiveState(1);
+                  }}
+                >
+                  <TableCell component="th" scope="row">
+                    {user.userInfo?.firstName} {user.userInfo?.lastName}
+                  </TableCell>
+                  <TableCell>{user?.userInfo?.email}</TableCell>
+                  <TableCell>
+                    {user?.checkoutInfo?.activeCheckouts?.length} /{' '}
+                    {user?.checkoutInfo?.maxCheckouts}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      )}
+      {userData.length === 0 && (
+        <>
+          <br />
+          <h3>No Users Found.</h3>
+        </>
+      )}
+    </div>
+  );
+};
+
 const EnterUserScheme = yup.object().shape({
   userID: yup.string().required("You need to enter the User's ID"),
 });
 
 const EnterUser = ({
   setActiveState,
-  checkoutData,
   setCheckoutData,
 }: {
   setActiveState: React.Dispatch<React.SetStateAction<number>>;
-  checkoutData: checkoutData;
   setCheckoutData: React.Dispatch<React.SetStateAction<checkoutData>>;
 }) => {
   const firebaseApp = useFirebaseApp();
+  const [searchField, setSearchField] = useState<1 | 2 | 3>(1);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+
+  const [lastSearchField, setLastSearchField] = useState<1 | 2 | 3>(1);
+  const [lastSearchTerm, setLastSearchTerm] = useState<string | null>(null);
   return (
-    <div>
-      <Formik
-        initialValues={{
-          userID: '',
-        }}
-        validationSchema={EnterUserScheme}
-        onSubmit={async (values, actions) => {
-          actions.setSubmitting(true);
-          const userDoc = await firebaseApp
-            .firestore()
-            .collection('users')
-            .doc(values.userID)
-            .get();
-
-          if (!userDoc.exists) {
-            actions.setFieldError('userID', "This User doesn't exist");
-            return actions.setSubmitting(false);
-          }
-
-          const user = userDoc.data() as User;
-
-          if (!user) {
-            actions.setFieldError('userID', "This User doesn't exist");
-            return actions.setSubmitting(false);
-          }
-
-          // Check if user is disabled
-          if (user.userInfo?.disabled ?? true) {
-            actions.setFieldError('userID', 'This User is disabled');
-            return actions.setSubmitting(false);
-          }
-
-          // TODO: Implement logic to check if user can checkout books.
-          setCheckoutData({ books: checkoutData.books, user });
-          return setActiveState(1);
-        }}
-      >
-        {({ values, errors, isSubmitting, handleChange, submitCount }) => (
-          <Form noValidate>
+    <div style={{ marginInline: '5%' }}>
+      <Paper style={{ padding: '2%' }}>
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          className="text-center mx-auto"
+        >
+          <h3 className="flex-center text-center">Search Users</h3>
+          <div>
+            <FormControl className="mt-3 text-center mx-auto">
+              <Select
+                value={searchField}
+                onChange={(e: any) => setSearchField(e.target.value)}
+              >
+                <MenuItem value={1}>First Name</MenuItem>
+                <MenuItem value={2}>Last Name</MenuItem>
+                <MenuItem value={3}>Email</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
-              id="userID"
+              label="Search Terms"
+              onChange={(e) => setSearchTerm(e.target.value)}
+              value={searchTerm}
               type="text"
-              label="User ID"
-              error={!!errors.userID && submitCount > 0}
-              helperText={submitCount > 0 ? errors.userID : ''}
-              value={values.userID}
-              onChange={handleChange}
-              disabled={isSubmitting}
               required
               autoFocus
             />
-          </Form>
+          </div>
+          <div className="pt-3 mx-auto text-center">
+            <Button
+              variant="contained"
+              type="submit"
+              onClick={() => {
+                setLastSearchField(searchField);
+                setLastSearchTerm(searchTerm);
+              }}
+            >
+              Search
+            </Button>
+          </div>
+        </form>
+        {lastSearchField !== null &&
+          lastSearchTerm !== null &&
+          lastSearchTerm !== '' && (
+            <Suspense fallback={<Loading />}>
+              <FindUserTable
+                searchField={lastSearchField}
+                searchTerm={lastSearchTerm}
+                setActiveState={setActiveState}
+                setCheckoutData={setCheckoutData}
+              />
+            </Suspense>
+          )}
+        {lastSearchTerm === '' && (
+          <h5 className="text-center">Please enter a search term</h5>
         )}
-      </Formik>
+        <hr />
+        <Formik
+          initialValues={{
+            userID: '',
+          }}
+          validationSchema={EnterUserScheme}
+          onSubmit={async (values, actions) => {
+            actions.setSubmitting(true);
+            const userDoc = await firebaseApp
+              .firestore()
+              .collection('users')
+              .doc(values.userID)
+              .get();
+
+            if (!userDoc.exists) {
+              actions.setFieldError('userID', "This User doesn't exist");
+              return actions.setSubmitting(false);
+            }
+
+            const user = userDoc.data() as User;
+
+            if (!user) {
+              actions.setFieldError('userID', "This User doesn't exist");
+              return actions.setSubmitting(false);
+            }
+
+            // Check if user is disabled
+            if (user.userInfo?.disabled ?? true) {
+              actions.setFieldError('userID', 'This User is disabled');
+              return actions.setSubmitting(false);
+            }
+
+            setCheckoutData((currentState) => ({
+              books: currentState.books,
+              user,
+            }));
+            return setActiveState(1);
+          }}
+        >
+          {({ values, errors, isSubmitting, handleChange, submitCount }) => (
+            <Form noValidate>
+              <TextField
+                id="userID"
+                type="text"
+                label="User ID"
+                error={!!errors.userID && submitCount > 0}
+                helperText={
+                  submitCount > 0
+                    ? errors.userID
+                    : "You can also use the User's ID"
+                }
+                value={values.userID}
+                onChange={handleChange}
+                disabled={isSubmitting}
+                required
+              />
+            </Form>
+          )}
+        </Formik>
+      </Paper>
     </div>
   );
 };
@@ -364,6 +517,7 @@ const ScanBooks = ({
         size="large"
         style={{ marginTop: 25 }}
         onClick={() => setActiveState(2)}
+        disabled={checkoutData.books.length === 0}
       >
         Continue
       </Button>
@@ -563,7 +717,7 @@ const CheckOut = () => {
         )}
         {!checkoutData.user && <p>Select a user to get started.</p>}
       </div>
-      <Stepper style={{ marginInline: 100 }}>
+      <Stepper style={{ marginInline: '5%' }}>
         <Step key={0} active={activeState === 0} completed={activeState > 0}>
           <StepLabel>Enter User</StepLabel>
         </Step>
@@ -579,7 +733,6 @@ const CheckOut = () => {
           {activeState === 0 && (
             <EnterUser
               setActiveState={setActiveState}
-              checkoutData={checkoutData}
               setCheckoutData={setCheckoutData}
             />
           )}
