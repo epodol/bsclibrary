@@ -1,44 +1,86 @@
-import React, { FC, Suspense } from 'react';
+import React, { lazy, Suspense, useContext, useEffect } from 'react';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Redirect,
 } from 'react-router-dom';
-import { AuthCheck, useIdTokenResult, useUser } from 'reactfire';
+import { useSigninCheck } from 'reactfire';
 
 import Loading from 'src/components/Loading';
-import Contribute from 'src/components/Contribute';
-import About from 'src/components/About';
 
 import Navigation from 'src/components/Navigation';
+import NotificationContext from 'src/contexts/NotificationContext';
+
+// Will always need to use these pages, so do not lazy load
 import Home from 'src/components/Home';
 import Account from 'src/components/Account';
-import Users from 'src/components/Users';
-import DisplayUser from 'src/components/Users/DisplayUser';
-import Books from 'src/components/Books';
-import DisplayBook from 'src/components/Books/DisplayBook';
-import CheckOut from 'src/components/CheckOut';
-import CheckIn from 'src/components/CheckIn';
-import CheckOuts from 'src/components/CheckOuts';
-import Footer from 'src/components/Footer';
 
-const Routing: FC = () => {
-  const user = useUser().data;
+const Contribute = lazy(() => import('src/components/Contribute'));
 
-  const ProtectedRoute = ({
-    Component,
-    permission,
-  }: {
-    Component: FC;
-    permission: string;
-  }) => {
-    const claims = useIdTokenResult(user, true);
-    return claims.data.claims.permissions[permission] === true ? (
-      <Component />
-    ) : (
-      <Redirect to="/" />
-    );
+const About = lazy(() => import('src/components/About'));
+
+const Users = lazy(() => import('src/components/Users'));
+const DisplayUser = lazy(() => import('src/components/Users/DisplayUser'));
+const Books = lazy(() => import('src/components/Books'));
+const DisplayBook = lazy(() => import('src/components/Books/DisplayBook'));
+const CheckOut = lazy(() => import('src/components/CheckOut'));
+const CheckIn = lazy(() => import('src/components/CheckIn'));
+const CheckOuts = lazy(() => import('src/components/CheckOuts'));
+const Footer = lazy(() => import('src/components/Footer'));
+
+const ProtectedRoute = ({
+  Component,
+  permission,
+}: {
+  Component: any;
+  permission: string;
+}) => {
+  const NotificationHandler = useContext(NotificationContext);
+
+  const signInCheck = useSigninCheck({
+    suspense: true,
+    validateCustomClaims: (claims) => {
+      if (claims.data.claims.permissions[permission] !== true) {
+        NotificationHandler.addNotification({
+          message: 'You do not have permission to view this page.',
+          severity: 'warning',
+          timeout: 10000,
+          position: {
+            horizontal: 'center',
+            vertical: 'top',
+          },
+        });
+      }
+      return {
+        hasRequiredClaims: claims.data.claims.permissions[permission] === true,
+        errors: {},
+      };
+    },
+  }).data;
+
+  return signInCheck.hasRequiredClaims ? <Component /> : <Redirect to="/" />;
+};
+
+const Routing = () => {
+  const NotificationHandler = useContext(NotificationContext);
+
+  const signinCheck = useSigninCheck().data;
+
+  const UnknownPage = () => {
+    useEffect(() => {
+      NotificationHandler.addNotification({
+        message: 'The page you are looking for does not exist.',
+        severity: 'warning',
+        timeout: 10000,
+        position: {
+          horizontal: 'center',
+          vertical: 'top',
+        },
+      });
+      console.warn('The page you are looking for does not exist.');
+    }, []);
+    return <Redirect to="/" exact />;
   };
 
   return (
@@ -48,81 +90,82 @@ const Routing: FC = () => {
           <div className="content">
             <Navigation />
 
-            <Switch>
-              <Route exact path="/">
-                <AuthCheck fallback={<Home />}>
-                  <Account />
-                </AuthCheck>
-              </Route>
-              <Route exact path="/about">
-                <About />
-              </Route>
-              <Route exact path="/contribute">
-                <Contribute />
-              </Route>
-
-              <AuthCheck fallback={<Redirect to="/" exact />}>
-                <Switch>
-                  <Route path="/books" exact>
-                    <Suspense fallback={<Loading />}>
-                      <ProtectedRoute
-                        Component={Books}
-                        permission="VIEW_BOOKS"
-                      />
-                    </Suspense>
-                  </Route>
-                  <Route path="/books/:id">
-                    <Suspense fallback={<Loading />}>
-                      <ProtectedRoute
-                        Component={DisplayBook}
-                        permission="VIEW_BOOKS"
-                      />
-                    </Suspense>
-                  </Route>
-                  <Route path="/checkout">
-                    <Suspense fallback={<Loading />}>
-                      <ProtectedRoute
-                        Component={CheckOut}
-                        permission="CHECK_OUT"
-                      />
-                    </Suspense>
-                  </Route>
-                  <Route path="/checkin">
-                    <Suspense fallback={<Loading />}>
-                      <ProtectedRoute
-                        Component={CheckIn}
-                        permission="CHECK_IN"
-                      />
-                    </Suspense>
-                  </Route>
-                  <Route path="/checkouts">
-                    <Suspense fallback={<Loading />}>
-                      <ProtectedRoute
-                        Component={CheckOuts}
-                        permission="MANAGE_CHECKOUTS"
-                      />
-                    </Suspense>
-                  </Route>
-                  <Route path="/users" exact>
-                    <Suspense fallback={<Loading />}>
-                      <ProtectedRoute
-                        Component={Users}
-                        permission="MANAGE_USERS"
-                      />
-                    </Suspense>
-                  </Route>
-                  <Route path="/users/:id">
-                    <Suspense fallback={<Loading />}>
-                      <ProtectedRoute
-                        Component={DisplayUser}
-                        permission="MANAGE_USERS"
-                      />
-                    </Suspense>
-                  </Route>
-                  <Redirect to="/" exact />
-                </Switch>
-              </AuthCheck>
-            </Switch>
+            <Suspense fallback={<Loading />}>
+              <Switch>
+                <Route exact path="/">
+                  {signinCheck.signedIn && <Account />}
+                  {!signinCheck.signedIn && <Home />}
+                </Route>
+                <Route exact path="/about">
+                  <About />
+                </Route>
+                <Route exact path="/contribute">
+                  <Contribute />
+                </Route>
+                {signinCheck.signedIn && (
+                  <Switch>
+                    <Route path="/books" exact>
+                      <Suspense fallback={<Loading />}>
+                        <ProtectedRoute
+                          Component={Books}
+                          permission="VIEW_BOOKS"
+                        />
+                      </Suspense>
+                    </Route>
+                    <Route path="/books/:id">
+                      <Suspense fallback={<Loading />}>
+                        <ProtectedRoute
+                          Component={DisplayBook}
+                          permission="VIEW_BOOKS"
+                        />
+                      </Suspense>
+                    </Route>
+                    <Route path="/checkout">
+                      <Suspense fallback={<Loading />}>
+                        <ProtectedRoute
+                          Component={CheckOut}
+                          permission="CHECK_OUT"
+                        />
+                      </Suspense>
+                    </Route>
+                    <Route path="/checkin">
+                      <Suspense fallback={<Loading />}>
+                        <ProtectedRoute
+                          Component={CheckIn}
+                          permission="CHECK_IN"
+                        />
+                      </Suspense>
+                    </Route>
+                    <Route path="/checkouts/:id?">
+                      <Suspense fallback={<Loading />}>
+                        <ProtectedRoute
+                          Component={CheckOuts}
+                          permission="MANAGE_CHECKOUTS"
+                        />
+                      </Suspense>
+                    </Route>
+                    <Route path="/users" exact>
+                      <Suspense fallback={<Loading />}>
+                        <ProtectedRoute
+                          Component={Users}
+                          permission="MANAGE_USERS"
+                        />
+                      </Suspense>
+                    </Route>
+                    <Route path="/users/:id">
+                      <Suspense fallback={<Loading />}>
+                        <ProtectedRoute
+                          Component={DisplayUser}
+                          permission="MANAGE_USERS"
+                        />
+                      </Suspense>
+                    </Route>
+                    <UnknownPage />
+                  </Switch>
+                )}
+                {!signinCheck.signedIn && <UnknownPage />}
+              </Switch>
+            </Suspense>
           </div>
         </main>
         <div className="mt-auto py-3">

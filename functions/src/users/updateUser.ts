@@ -11,6 +11,7 @@ const updateUser = functions
 
     const beforeUser: User = before.data() as User;
 
+    // Update email if it has changed
     if (beforeUser?.userInfo?.email !== afterData.userInfo?.email)
       await admin
         .auth()
@@ -36,6 +37,7 @@ const updateUser = functions
           }
         });
 
+    // Update phone number if it has changed
     if (beforeUser?.userInfo?.phoneNumber !== afterData.userInfo?.phoneNumber)
       await admin
         .auth()
@@ -59,22 +61,27 @@ const updateUser = functions
         queryLastName: afterData.userInfo?.lastName?.toLowerCase() ?? null,
       },
     };
+    // Only update query info if it has changed
+    if (
+      beforeUser?.userInfo?.queryEmail !== userDoc.userInfo?.queryEmail ||
+      beforeUser?.userInfo?.queryFirstName !==
+        userDoc.userInfo?.queryFirstName ||
+      beforeUser?.userInfo?.queryLastName !== userDoc.userInfo?.queryLastName
+    ) {
+      await admin
+        .firestore()
+        .collection('users')
+        .doc(after.id)
+        .set(userDoc, { merge: true });
+    }
 
-    await admin
-      .firestore()
-      .collection('users')
-      .doc(after.id)
-      .set(userDoc, { merge: true });
-
+    // Update the user's custom claims
     return admin.auth().setCustomUserClaims(after.id, {
       role: afterData.userInfo?.role,
       firstName: afterData.userInfo?.firstName,
       lastName: afterData.userInfo?.lastName,
       permissions: afterData.userInfo?.permissions,
-      createdBy: afterData.userInfo?.createdBy,
-      createdTime: afterData.userInfo?.createdTime,
-      editedBy: afterData.userInfo?.editedBy,
-      editedTime: afterData.userInfo?.editedTime,
+      checkoutInfo: afterData.checkoutInfo,
     });
   });
 

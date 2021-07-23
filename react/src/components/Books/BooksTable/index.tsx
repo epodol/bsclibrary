@@ -14,8 +14,11 @@ import { useFirestore, useUser } from 'reactfire';
 import TableBody from 'src/components/Books/BooksTable/TableBody';
 import Loading from 'src/components/Loading';
 import FirebaseContext from 'src/contexts/FirebaseContext';
+import NotificationContext from 'src/contexts/NotificationContext';
 
 const BooksTable = () => {
+  const NotificationHandler = useContext(NotificationContext);
+
   const firestore = useFirestore();
   const fieldValue = useFirestore.FieldValue;
 
@@ -77,6 +80,18 @@ const BooksTable = () => {
                         })
                         .then((book) => {
                           history.push(book.path, { editing: true });
+                          NotificationHandler.addNotification({
+                            message: `New book created.`,
+                            severity: 'success',
+                          });
+                        })
+                        .catch((err) => {
+                          console.error(err);
+                          NotificationHandler.addNotification({
+                            message: `An unexpected error occured.`,
+                            severity: 'error',
+                            timeout: 10000,
+                          });
                         });
                     }}
                   >

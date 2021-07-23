@@ -25,7 +25,7 @@ export default interface Checkout {
   /**
    * A Firestore Timestamp of the date and time this book is due.
    */
-  dueDate: firestore.Timestamp | null;
+  dueDate: firestore.Timestamp;
   /**
    * The Firestore ID of the actual time the book was checked out.
    */
@@ -53,11 +53,11 @@ export default interface Checkout {
 }
 
 /**
- * 0: Active (Normal)
+ * 0: Active
  *
- * 1: Returned (Normal)
+ * 1: Returned
  *
- * 2: Overdue
+ * 2: Returned Overdue
  *
  * 3: Missing
  */

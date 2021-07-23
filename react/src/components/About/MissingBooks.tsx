@@ -29,8 +29,8 @@ const MissingBooks = () => (
         due.
         <ul>
           <li>
-            In the event of three overdue books, this information will be given
-            to the respective dean or school administrator to be delt with as
+            In the event of three overdue books, information will be given to
+            the respective dean or school administrator to be dealt with as
             defined in the BASIS Scottsdale Parent/Student Handbook “Care of
             Property” section.
           </li>

@@ -101,7 +101,7 @@ const FindUser = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   const [lastSearchField, setLastSearchField] = useState<1 | 2 | 3>(1);
-  const [lastSearchTerm, setLastSearchTerm] = useState<string>('');
+  const [lastSearchTerm, setLastSearchTerm] = useState<string | null>(null);
 
   return (
     <div>

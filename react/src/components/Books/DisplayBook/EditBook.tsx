@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Formik, Form, FieldArray } from 'formik';
 import * as yup from 'yup';
 import { useFirestore, useUser } from 'reactfire';
@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core';
 
 import { volumeInfo as volumeInfoType } from '@common/types/Book';
+import NotificationContext from 'src/contexts/NotificationContext';
 
 const EditBook = ({
   volumeInfo,
@@ -23,6 +24,8 @@ const EditBook = ({
   bookID: string;
   setEditing: any;
 }) => {
+  const NotificationHandler = useContext(NotificationContext);
+
   const fieldValue = useFirestore.FieldValue;
 
   const user = useUser().data;
@@ -89,39 +92,53 @@ const EditBook = ({
         onSubmit={(values, actions) => {
           actions.setSubmitting(true);
           actions.setSubmitting(false);
-          bookRef.set(
-            {
-              volumeInfo: {
-                authors: values.authors,
-                genres: values.genres,
-                description: values.description.trim(),
-                image: values.image.trim(),
-                isbn10: values.isbn10.trim(),
-                isbn13: values.isbn13.trim(),
-                grades: {
-                  grade0: values.grade0,
-                  grade1: values.grade1,
-                  grade2: values.grade2,
-                  grade3: values.grade3,
-                  grade4: values.grade4,
-                  grade5: values.grade5,
-                  grade6: values.grade6,
-                  grade7: values.grade7,
-                  grade8: values.grade8,
-                  grade9: values.grade9,
-                  grade10: values.grade10,
-                  grade11: values.grade11,
-                  grade12: values.grade12,
-                  grade13: values.grade13,
+          bookRef
+            .set(
+              {
+                volumeInfo: {
+                  authors: values.authors,
+                  genres: values.genres,
+                  description: values.description.trim(),
+                  image: values.image.trim(),
+                  isbn10: values.isbn10.trim(),
+                  isbn13: values.isbn13.trim(),
+                  grades: {
+                    grade0: values.grade0,
+                    grade1: values.grade1,
+                    grade2: values.grade2,
+                    grade3: values.grade3,
+                    grade4: values.grade4,
+                    grade5: values.grade5,
+                    grade6: values.grade6,
+                    grade7: values.grade7,
+                    grade8: values.grade8,
+                    grade9: values.grade9,
+                    grade10: values.grade10,
+                    grade11: values.grade11,
+                    grade12: values.grade12,
+                    grade13: values.grade13,
+                  },
+                  subtitle: values.subtitle.trim(),
+                  title: values.title.trim(),
                 },
-                subtitle: values.subtitle.trim(),
-                title: values.title.trim(),
+                lastEditedBy: user.uid,
+                lastEdited: fieldValue.serverTimestamp(),
               },
-              lastEditedBy: user.uid,
-              lastEdited: fieldValue.serverTimestamp(),
-            },
-            { merge: true }
-          );
+              { merge: true }
+            )
+            .then(() => {
+              NotificationHandler.addNotification({
+                message: 'Book updated.',
+                severity: 'success',
+              });
+            })
+            .catch((err) => {
+              console.error(err);
+              NotificationHandler.addNotification({
+                message: `An unexpected error occured: ${err.message} (${err.code})`,
+                severity: 'error',
+              });
+            });
           setEditing(false);
         }}
       >

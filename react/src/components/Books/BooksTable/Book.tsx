@@ -52,15 +52,7 @@ const Book = ({
 
   return (
     <>
-      <TableRow
-        key={id}
-        // style={{
-        //   '& > *': {
-        //     borderBottom: 'unset',
-        //   },
-        // }}
-        className="font-weight-bold"
-      >
+      <TableRow key={id} className="font-weight-bold">
         <TableCell padding="none">
           <IconButton
             aria-label="expand row"

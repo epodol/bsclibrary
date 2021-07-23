@@ -3,7 +3,7 @@ import Paper from '@material-ui/core/Paper';
 import { useFirestore, useFirestoreDocData } from 'reactfire';
 import { useParams } from 'react-router';
 
-import '../users.css';
+import 'src/components/Users/users.css';
 import UserInfo from 'src/components/Users/DisplayUser/UserInfo';
 import UserCheckouts from 'src/components/Users/DisplayUser/UserCheckouts';
 
@@ -38,18 +38,16 @@ const DisplayUser = () => {
         >
           <UserInfo userInfo={data.userInfo} />
         </div>
-      </Paper>
-      <br />
-      <Paper className="paper-margin">
         <div
-          className="paper-margin"
+          className=""
           style={{
+            paddingTop: 0,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          {data.checkoutInfo && <UserCheckouts checkouts={data.checkoutInfo} />}
+          <UserCheckouts checkouts={data.checkoutInfo} />
         </div>
       </Paper>
     </div>
