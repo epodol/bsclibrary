@@ -1,4 +1,47 @@
 {
-  "indexes": [],
+  "indexes": [
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userInfo.disabled",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "userInfo.queryEmail",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userInfo.disabled",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "userInfo.queryFirstName",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userInfo.disabled",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "userInfo.queryLastName",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
   "fieldOverrides": []
 }
