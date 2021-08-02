@@ -69,24 +69,32 @@ const preloadSDKs = (firebaseApp: any) => {
       },
       suspense: true,
     }),
+    preloadRemoteConfig({
+      firebaseApp,
+      setup(remoteConfig) {
+        // eslint-disable-next-line no-param-reassign
+        remoteConfig().settings = {
+          minimumFetchIntervalMillis: 10000,
+          fetchTimeoutMillis: 10000,
+        };
+        if (!isDev) remoteConfig().fetchAndActivate();
+        // eslint-disable-next-line no-param-reassign
+        remoteConfig().defaultConfig = {
+          homePageAlerts: [
+            {
+              type: 'info',
+              title: 'Welcome to Firebase!',
+              message:
+                'You can use Firebase to store, sync, and query data from the cloud.',
+            },
+          ],
+        } as any;
+      },
+      suspense: true,
+    }),
   ];
 
   if (!isDev) {
-    preloads.push(
-      preloadRemoteConfig({
-        firebaseApp,
-        setup(remoteConfig) {
-          // eslint-disable-next-line no-param-reassign
-          remoteConfig().settings = {
-            minimumFetchIntervalMillis: 10000,
-            fetchTimeoutMillis: 10000,
-          };
-          remoteConfig().fetchAndActivate();
-        },
-        suspense: true,
-      })
-    );
-
     preloads.push(
       preloadAnalytics({
         firebaseApp,

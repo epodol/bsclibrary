@@ -3,8 +3,8 @@ import { Container } from '@material-ui/core';
 
 const Renewing = () => (
   <Container>
-    <h1 className="flex-center m-4">Renewing Policy</h1>
-    <div className="mx-5">
+    <h1 className="flex-center m-3">Renewing Policy</h1>
+    <div>
       <li>
         All students will be allowed to renew a book for{' '}
         <b className="font-weight-bold">7 calendar days</b>, up to{' '}

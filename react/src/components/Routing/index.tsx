@@ -12,12 +12,10 @@ import Loading from 'src/components/Loading';
 import Navigation from 'src/components/Navigation';
 import NotificationContext from 'src/contexts/NotificationContext';
 
-// Will always need to use these pages, so do not lazy load
-import Home from 'src/components/Home';
-import Account from 'src/components/Account';
+const Home = lazy(() => import('src/components/Home'));
+const Account = lazy(() => import('src/components/Account'));
 
 const Contribute = lazy(() => import('src/components/Contribute'));
-
 const About = lazy(() => import('src/components/About'));
 
 const Users = lazy(() => import('src/components/Users'));

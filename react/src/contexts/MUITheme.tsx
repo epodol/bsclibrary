@@ -10,13 +10,16 @@ const MUITheme = createTheme({
         },
         '*::-webkit-scrollbar-thumb': {
           backgroundColor: '#6DB058',
-          borderRadius: '100em',
+          borderRadius: '5px',
         },
       },
     },
   },
   palette: {
     primary: {
+      main: '#6DB058',
+    },
+    secondary: {
       main: '#6DB058',
     },
     background: {
