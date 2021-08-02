@@ -3,8 +3,8 @@ import { Container } from '@material-ui/core';
 
 const MissingBooks = () => (
   <Container>
-    <h1 className="flex-center m-4">Missing Books Policy</h1>
-    <div className="mx-5">
+    <h1 className="flex-center m-3">Missing Books Policy</h1>
+    <div>
       <li>
         A book will be considered missing if it has not been returned{' '}
         <b className="font-weight-bold">within 3 calendar days</b> after it was

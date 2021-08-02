@@ -3,8 +3,8 @@ import { Container } from '@material-ui/core';
 
 const DueDates = () => (
   <Container>
-    <h1 className="flex-center m-4">Due Dates Policy</h1>
-    <div className="mx-5">
+    <h1 className="flex-center m-3">Due Dates Policy</h1>
+    <div>
       <li>
         Normal Books shall be due{' '}
         <b className="font-weight-bold">14 calendar days</b> after their

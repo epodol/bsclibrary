@@ -42,7 +42,7 @@ const preloadSDKs = (firebaseApp: any) => {
     preloadFirestore({
       firebaseApp,
       setup(firestore) {
-        return isDev ? firestore().useEmulator('localhost', 8080) : undefined;
+        if (isDev) firestore().useEmulator('localhost', 8080);
       },
       suspense: true,
     }),
@@ -57,36 +57,45 @@ const preloadSDKs = (firebaseApp: any) => {
     preloadAuth({
       firebaseApp,
       setup(auth) {
-        return isDev ? auth().useEmulator('http://localhost:9099/') : undefined;
+        if (isDev) auth().useEmulator('http://localhost:9099/');
       },
       suspense: true,
     }),
     preloadFunctions({
       firebaseApp,
       async setup(functions) {
-        if (isDev) return functions('us-west2').useEmulator('localhost', 5001);
-        return functions('us-west2');
+        if (isDev) functions('us-west2').useEmulator('localhost', 5001);
+        functions('us-west2');
+      },
+      suspense: true,
+    }),
+    preloadRemoteConfig({
+      firebaseApp,
+      setup(remoteConfig) {
+        // eslint-disable-next-line no-param-reassign
+        remoteConfig().settings = {
+          minimumFetchIntervalMillis: 10000,
+          fetchTimeoutMillis: 10000,
+        };
+        if (!isDev) remoteConfig().fetchAndActivate();
+        // eslint-disable-next-line no-param-reassign
+        remoteConfig().defaultConfig = {
+          home_banner_enabled: false,
+          home_banner_severity: 'success',
+          home_banner_title: 'Welcome to the BASIS Scottsdale Library!',
+          home_banner_title_enabled: false,
+          home_banner_message: 'Coming 2021',
+          home_banner_button_enabled: false,
+          home_banner_button_text: 'View the Website',
+          home_banner_button_href: 'https://bsclibrary.net',
+          home_banner_icon_enabled: false,
+        } as any;
       },
       suspense: true,
     }),
   ];
 
   if (!isDev) {
-    preloads.push(
-      preloadRemoteConfig({
-        firebaseApp,
-        setup(remoteConfig) {
-          // eslint-disable-next-line no-param-reassign
-          remoteConfig().settings = {
-            minimumFetchIntervalMillis: 10000,
-            fetchTimeoutMillis: 10000,
-          };
-          remoteConfig().fetchAndActivate();
-        },
-        suspense: true,
-      })
-    );
-
     preloads.push(
       preloadAnalytics({
         firebaseApp,

@@ -15,17 +15,13 @@
 
 # misc
 .DS_Store
-.env
-.env.development.local
-.env.test.local
-.env.production.local
 
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
 /dir
-/emulator-data
+**/emulator-data/*
 
 # Created by https://www.toptal.com/developers/gitignore/api/react,firebase,webstorm+iml,windows,macos
 # Edit at https://www.toptal.com/developers/gitignore?templates=react,firebase,webstorm+iml,windows,macos
@@ -200,3 +196,5 @@ typings/
 tsconfig.json
 
 tsconfig.tsbuildinfo
+
+.vscode/

@@ -151,7 +151,7 @@ const AddUserForm = () => {
                 actions.setFieldError('email', 'An internal error occurred.');
                 console.error(err);
                 NotificationHandler.addNotification({
-                  message: `An unexpected error occured.`,
+                  message: `An unexpected error occurred.`,
                   severity: 'error',
                   timeout: 10000,
                 });

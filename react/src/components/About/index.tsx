@@ -20,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
   },
   tabs: {
     borderRight: `1px solid ${theme.palette.divider}`,
-    padding: `10px`,
   },
 }));
 
@@ -34,24 +33,18 @@ const TabPanel = ({ children, value, index, ...other }: TabPanelProps) => (
   <div
     role="tabpanel"
     hidden={value !== index}
-    id={`vertical-tabpanel-${index}`}
-    aria-labelledby={`vertical-tab-${index}`}
+    style={{ overflowWrap: 'break-word' }}
     {...other}
   >
     {value === index && (
-      <Box p={4} px={0}>
-        {children}
+      <Box m="5%">
+        <div style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>
+          {children}
+        </div>
       </Box>
     )}
   </div>
 );
-
-function a11yProps(index: number) {
-  return {
-    id: `vertical-tab-${index}`,
-    'aria-controls': `vertical-tabpanel-${index}`,
-  };
-}
 
 const About = () => {
   const [value, setValue] = useState(0);
@@ -60,24 +53,23 @@ const About = () => {
   return (
     <>
       <h1 className="text-center m-4">About</h1>
-      <p className="text-center font-italic">
-        This page is still a work in progress.
-      </p>
       <Container>
         <Paper className={classes.root}>
-          <Tabs
-            orientation="vertical"
-            variant="standard"
-            value={value}
-            onChange={(e, newValue) => setValue(newValue)}
-            aria-label="About"
-            className={classes.tabs}
-          >
-            <Tab label="Introduction" {...a11yProps(0)} />
-            <Tab label="Due Dates" {...a11yProps(1)} />
-            <Tab label="Missing Books" {...a11yProps(2)} />
-            <Tab label="Renewing" {...a11yProps(3)} />
-          </Tabs>
+          <div className={classes.tabs}>
+            <Tabs
+              orientation="vertical"
+              variant="scrollable"
+              value={value}
+              onChange={(e, newValue) => setValue(newValue)}
+              scrollButtons="on"
+              style={{ overflowWrap: 'anywhere' }}
+            >
+              <Tab wrapped label="Introduction" />
+              <Tab wrapped label="Due Dates" />
+              <Tab wrapped label="Missing Books" />
+              <Tab wrapped label="Renewing" />
+            </Tabs>
+          </div>
           <TabPanel value={value} index={0}>
             <Introduction />
           </TabPanel>

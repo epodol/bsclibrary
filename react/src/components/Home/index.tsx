@@ -1,11 +1,34 @@
 import React from 'react';
 import { Typography, Button, Box, Container, Paper } from '@material-ui/core';
+import { Alert, AlertTitle, Color } from '@material-ui/lab';
 import { styled } from '@material-ui/core/styles';
 
 import { useHistory, Link } from 'react-router-dom';
+import { useRemoteConfig } from 'reactfire';
 
 const Home = () => {
   const history = useHistory();
+  const remoteConfig = useRemoteConfig();
+
+  const home_banner_enabled = remoteConfig.getBoolean('home_banner_enabled');
+  const home_banner_severity = remoteConfig.getString('home_banner_severity');
+  const home_banner_title = remoteConfig.getString('home_banner_title');
+  const home_banner_title_enabled = remoteConfig.getBoolean(
+    'home_banner_title_enabled'
+  );
+  const home_banner_message = remoteConfig.getString('home_banner_message');
+  const home_banner_button_enabled = remoteConfig.getBoolean(
+    'home_banner_button_enabled'
+  );
+  const home_banner_button_text = remoteConfig.getString(
+    'home_banner_button_text'
+  );
+  const home_banner_button_href = remoteConfig.getString(
+    'home_banner_button_href'
+  );
+  const home_banner_icon_enabled = remoteConfig.getBoolean(
+    'home_banner_icon_enabled'
+  );
 
   const Content = styled(Container)(({ theme }) => ({
     display: 'flex',
@@ -43,29 +66,42 @@ const Home = () => {
     },
   }));
   const AboutShort = styled(Paper)(({ theme }) => ({
-    marginLeft: theme.spacing(4),
-    marginRight: theme.spacing(4),
-    marginTop: theme.spacing(4),
-    marginBottom: theme.spacing(4),
-    paddingLeft: theme.spacing(4),
-    paddingRight: theme.spacing(4),
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
+    margin: theme.spacing(4),
+    padding: theme.spacing(4),
     [theme.breakpoints.up('md')]: {
-      marginLeft: theme.spacing(32),
-      marginRight: theme.spacing(32),
-      marginTop: theme.spacing(0),
-      marginBottom: theme.spacing(0),
-      paddingLeft: theme.spacing(8),
-      paddingRight: theme.spacing(8),
-      paddingTop: theme.spacing(8),
-      paddingBottom: theme.spacing(8),
+      marginInline: '10%',
+      padding: theme.spacing(8),
     },
   }));
 
   return (
-    <div id="classicformpage">
-      <Box sx={{ pt: 8, color: 'primary.main' }}>
+    <div>
+      {home_banner_enabled && (
+        <Alert
+          style={{ marginInline: '20%', marginTop: '2%' }}
+          icon={home_banner_icon_enabled ? undefined : false}
+          variant="filled"
+          severity={home_banner_severity as Color}
+          action={
+            home_banner_button_enabled ? (
+              <Button
+                color="inherit"
+                size="small"
+                href={home_banner_button_href}
+              >
+                {home_banner_button_text}
+              </Button>
+            ) : undefined
+          }
+        >
+          {home_banner_title_enabled && (
+            <AlertTitle>{home_banner_title}</AlertTitle>
+          )}
+          {home_banner_message}
+        </Alert>
+      )}
+
+      <Box sx={{ pt: 0, color: 'primary.main' }}>
         <Content maxWidth="md">
           <Logo
             src={`${process.env.PUBLIC_URL}/assets/logos/BASIS Scottsdale Library Logo - v0.1.1.svg`}
@@ -130,6 +166,69 @@ const Home = () => {
           out <Link to="/about">the About page</Link>. If you still have any
           questions, feel free to email us at{' '}
           <a href="mailto:support@bsclibrary.net">support@bsclibrary.net</a>.
+        </h6>
+      </AboutShort>
+      <AboutShort>
+        <h1>BASIS Scottsdale Library • Update • 2021-04-23</h1>
+        <h6>
+          Hello BASIS Scottsdale! We have been working hard to bring the first
+          library to our school over this past year. We have received many
+          questions and are hoping to answer them in this post.
+        </h6>
+        <h2>Books</h2>
+        <h6>
+          We currently have around 700 books, and this number will only rise as
+          we get closer to opening. We would like to offer a huge thanks to
+          everyone who donated to the book drive, your generosity has helped
+          significantly. We are hoping to have a wide range of books, from
+          novels to textbooks, and fantasies to biographies, which will provide
+          the student body with access to a wide variety with which they can
+          learn, grow, or just unwind.
+        </h6>
+        <h2>Committee Organization</h2>
+        <h6>
+          In this unprecedented year, the Library Committee has been working to
+          create a lasting library within BASIS Scottsdale, the benefits of
+          which students will be able to reap years from now. However, just like
+          a well working machine consists of multiple parts, the Library
+          Committee is subdivided into multiple teams, so that more focus and
+          deliberation is dedicated towards our work. The 6 teams are the Art,
+          Finance, Public Relations, Book Management, and Technology Team. These
+          teams have been working together with our wonderful advisor, Ms. de
+          Blas, to ensure that everything runs smoothly. While our organization
+          is simple, our goal is momentous. We are working as fast as we can to
+          make the library a reality during these strange times, but we need
+          your support.
+        </h6>
+        <h2>How to Contribute</h2>
+        <h6>
+          There are multiple ways to help, both right now and in the future. You
+          can donate used books. Just contact us and we will arrange a time to
+          drop them off. You can also purchase new books on our{' '}
+          <a
+            href="https://wishlist.bsclibrary.net"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Amazon Wishlist (https://wishlist.bsclibrary.net/)
+          </a>{' '}
+          and have them shipped directly to the school. When the library opens,
+          students will be able to volunteer and give back to the community,
+          even if they are not in the Committee.
+        </h6>
+        <h2>How to Use the Library</h2>
+        <h6>
+          The library will be available to all BASIS Scottsdale students who
+          register a free account with us next year. To register, all you will
+          have to do is stop by the library and let us know you’re interested.
+          More details about this process will be available next year.
+        </h6>
+        <h2>Questions?</h2>
+        <h6>
+          The library will be available to all BASIS Scottsdale students who
+          register a free account with us next year. To register, all you will
+          have to do is stop by the library and let us know you’re interested.
+          More details about this process will be available next year.
         </h6>
       </AboutShort>
     </div>

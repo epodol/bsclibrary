@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: 'century-gothic', sans-serif;
+  font-family: 'century-gothic';
   font-style: normal;
   font-weight: 400;
   position: relative;
@@ -28,8 +28,8 @@ a {
 .content {
   display: block;
   position: relative;
-  /* padding-bottom: 100px; */
 }
+
 .footer {
   position: absolute;
   bottom: 0;
