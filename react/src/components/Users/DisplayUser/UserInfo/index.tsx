@@ -80,7 +80,7 @@ const UserInfo = ({ userInfo }: { userInfo: userInfoInterface }) => {
                   .catch((err) => {
                     console.error(err);
                     NotificationHandler.addNotification({
-                      message: `An unexpected error occured: ${err.code} ${err.message}`,
+                      message: `An unexpected error occurred: ${err.code} ${err.message}`,
                       severity: 'error',
                       timeout: 10000,
                     });
@@ -126,7 +126,7 @@ const UserInfo = ({ userInfo }: { userInfo: userInfoInterface }) => {
                 .catch((err) => {
                   console.error(err);
                   NotificationHandler.addNotification({
-                    message: `An unexpected error occured: ${err.code} ${err.message}`,
+                    message: `An unexpected error occurred: ${err.code} ${err.message}`,
                     severity: 'error',
                     timeout: 10000,
                   });
@@ -218,7 +218,7 @@ const UserInfo = ({ userInfo }: { userInfo: userInfoInterface }) => {
             .catch((err) => {
               console.error(err);
               NotificationHandler.addNotification({
-                message: `An unexpected error occured: ${err.code} ${err.message}`,
+                message: `An unexpected error occurred: ${err.code} ${err.message}`,
                 severity: 'error',
                 timeout: 10000,
               });

@@ -88,7 +88,7 @@ const BooksTable = () => {
                         .catch((err) => {
                           console.error(err);
                           NotificationHandler.addNotification({
-                            message: `An unexpected error occured.`,
+                            message: `An unexpected error occurred.`,
                             severity: 'error',
                             timeout: 10000,
                           });

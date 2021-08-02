@@ -39,10 +39,7 @@ const Footer = () => (
         <div>
           <>
             This{' '}
-            <Tooltip
-              title="Open souce on GitHub, where developers and companies build, ship, and maintain their software"
-              placement="top"
-            >
+            <Tooltip title="Open source on GitHub" placement="top">
               <a
                 href="https://github.com/epodol/bsclibrary/"
                 target="_blank"
@@ -97,7 +94,7 @@ const Footer = () => (
             </Tooltip>
           </>
           <br />
-          <Tooltip title="Licenced under the MIT License" placement="top">
+          <Tooltip title="Licensed under the MIT License" placement="top">
             <a
               href="https://github.com/epodol/bsclibrary/blob/main/LICENSE/"
               target="_blank"

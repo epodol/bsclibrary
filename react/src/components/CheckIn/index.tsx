@@ -108,7 +108,7 @@ const CheckIn = () => {
                 console.table(err);
                 console.error(err);
                 NotificationHandler.addNotification({
-                  message: `An unexpected error occured: ${err.message} (${err.code})`,
+                  message: `An unexpected error occurred: ${err.message} (${err.code})`,
                   severity: 'error',
                   timeout: 10000,
                 });

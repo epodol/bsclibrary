@@ -126,13 +126,7 @@ const Navigation = () => {
           <div style={{ marginLeft: 'auto', marginRight: 0 }}>
             {signinCheck.signedIn && (
               <div>
-                <IconButton
-                  aria-label="account of current user"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                  onClick={handleMenu}
-                  color="inherit"
-                >
+                <IconButton onClick={handleMenu} color="inherit">
                   <Avatar
                     alt={`${firebaseContext?.claims?.firstName || ''} ${
                       firebaseContext?.claims?.lastName || ''

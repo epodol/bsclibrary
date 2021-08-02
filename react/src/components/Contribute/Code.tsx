@@ -6,7 +6,7 @@ const Code = () => (
     <h1 className="flex-center m-3">Code</h1>
     <div>
       <p>
-        If you are interested in coding or have expierence with any of the tools
+        If you are interested in coding or have experience with any of the tools
         below, please contact us to help contribute to this website!
         <br />
         <br />

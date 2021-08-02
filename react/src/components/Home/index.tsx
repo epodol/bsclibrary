@@ -3,9 +3,13 @@ import { Typography, Button, Box, Container, Paper } from '@material-ui/core';
 import { styled } from '@material-ui/core/styles';
 
 import { useHistory, Link } from 'react-router-dom';
+import { useRemoteConfig } from 'reactfire';
 
 const Home = () => {
   const history = useHistory();
+  const remoteConfig = useRemoteConfig();
+
+  console.log(remoteConfig.getAll());
 
   const Content = styled(Container)(({ theme }) => ({
     display: 'flex',

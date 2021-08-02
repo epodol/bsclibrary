@@ -26,7 +26,7 @@ const Donate = () => (
       <p>
         We are also currently accepting donations on our{' '}
         <a
-          href="https:wishlist.bsclibrary.net"
+          href="https://wishlist.bsclibrary.net"
           target="_blank"
           rel="noopener noreferrer"
         >

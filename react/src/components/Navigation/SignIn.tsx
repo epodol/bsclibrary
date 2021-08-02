@@ -24,7 +24,7 @@ const SignIn = () => {
     password: yup.string().required('Please enter your password'),
   });
 
-  const ResetPassowrdScheme = yup.object().shape({
+  const ResetPasswordScheme = yup.object().shape({
     email: yup
       .string()
       .email('Please enter a valid email')
@@ -88,7 +88,7 @@ const SignIn = () => {
               <DialogContent>
                 <DialogContentText>
                   Welcome! If you already have registered for an account, please
-                  sign in here. If you do not have an account, please vist the
+                  sign in here. If you do not have an account, please visit the
                   library and register.
                 </DialogContentText>
                 <TextField
@@ -164,7 +164,7 @@ const SignIn = () => {
           initialValues={{
             email: '',
           }}
-          validationSchema={ResetPassowrdScheme}
+          validationSchema={ResetPasswordScheme}
           onSubmit={async (values, actions) => {
             actions.setSubmitting(true);
             const actionCodeSettings = {
@@ -193,7 +193,7 @@ const SignIn = () => {
                   console.error(err);
                   actions.setFieldError('email', `Internal error: ${err.code}`);
                   NotificationHandler.addNotification({
-                    message: `An unexpected error occured: ${err.code} ${err.message}`,
+                    message: `An unexpected error occurred: ${err.code} ${err.message}`,
                     severity: 'error',
                     timeout: 10000,
                   });
