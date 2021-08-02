@@ -39,7 +39,7 @@ const TableBody = () => {
 
   const [query, setQuery] = useState({
     search: location?.state?.query?.search || '',
-    limit: 5,
+    limit: 25,
   });
   const [search, setSearch] = useState('');
 
