@@ -8,20 +8,19 @@ const Code = () => (
       <p>
         If you are interested in coding or have experience with any of the tools
         below, please contact us to help contribute to this website!
-        <br />
-        <br />
-        <p className="font-italic">
-          React, JavaScript, HTML, CSS, Node.JS, Firebase
-        </p>
-        <br />
-        <a
-          href="https://github.com/epodol/bsclibrary"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn more here: https://github.com/epodol/bsclibrary
-        </a>
       </p>
+      <br />
+      <p className="font-italic">
+        React, JavaScript, HTML, CSS, Node.JS, Firebase
+      </p>
+      <br />
+      <a
+        href="https://github.com/epodol/bsclibrary"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Learn more here: https://github.com/epodol/bsclibrary
+      </a>
     </div>
   </Container>
 );

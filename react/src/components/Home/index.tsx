@@ -45,7 +45,7 @@ const Home = () => {
       textAlign: 'left',
     },
   }));
-  const Title = styled(Typography)(({ theme }) => ({
+  const Title = styled('h1')(({ theme }) => ({
     marginLeft: -12,
     whiteSpace: 'nowrap',
     textIndent: '.7rem',
@@ -108,9 +108,7 @@ const Home = () => {
             alt="BASIS Scottsdale Library Logo"
           />
           <div>
-            <Title variant="h1" color="inherit">
-              BASIS Scottsdale Library
-            </Title>
+            <Title color="inherit">BASIS Scottsdale Library</Title>
             <Typography variant="h5" component="p" color="inherit">
               Coming 2021
             </Typography>

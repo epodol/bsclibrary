@@ -27,12 +27,31 @@ const CheckIn = lazy(() => import('src/components/CheckIn'));
 const CheckOuts = lazy(() => import('src/components/CheckOuts'));
 const Footer = lazy(() => import('src/components/Footer'));
 
+const DocumentTitle = ({
+  title,
+  children,
+}: {
+  title: string;
+  children: any;
+}) => {
+  useEffect(() => {
+    document.title = title;
+    return () => {
+      document.title = 'BASIS Scottsdale Library';
+    };
+  }, [title]);
+  return children;
+};
+
 const ProtectedRoute = ({
   Component,
   permission,
+  title,
 }: {
   Component: any;
   permission: string;
+  // eslint-disable-next-line react/require-default-props
+  title?: string;
 }) => {
   const NotificationHandler = useContext(NotificationContext);
 
@@ -57,7 +76,15 @@ const ProtectedRoute = ({
     },
   }).data;
 
-  return signInCheck.hasRequiredClaims ? <Component /> : <Redirect to="/" />;
+  if (!signInCheck.hasRequiredClaims) return <Redirect to="/" />;
+
+  return title ? (
+    <DocumentTitle title={title}>
+      <Component />
+    </DocumentTitle>
+  ) : (
+    <Component />
+  );
 };
 
 const Routing = () => {
@@ -91,14 +118,20 @@ const Routing = () => {
             <Suspense fallback={<Loading />}>
               <Switch>
                 <Route exact path="/">
-                  {signinCheck.signedIn && <Account />}
-                  {!signinCheck.signedIn && <Home />}
+                  <DocumentTitle title="BASIS Scottsdale Library">
+                    {signinCheck.signedIn && <Account />}
+                    {!signinCheck.signedIn && <Home />}
+                  </DocumentTitle>
                 </Route>
                 <Route exact path="/about">
-                  <About />
+                  <DocumentTitle title="About – BASIS Scottsdale Library">
+                    <About />
+                  </DocumentTitle>
                 </Route>
                 <Route exact path="/contribute">
-                  <Contribute />
+                  <DocumentTitle title="Contribute – BASIS Scottsdale Library">
+                    <Contribute />
+                  </DocumentTitle>
                 </Route>
                 {signinCheck.signedIn && (
                   <Switch>
@@ -107,6 +140,7 @@ const Routing = () => {
                         <ProtectedRoute
                           Component={Books}
                           permission="VIEW_BOOKS"
+                          title="Books – BASIS Scottsdale Library"
                         />
                       </Suspense>
                     </Route>
@@ -115,6 +149,7 @@ const Routing = () => {
                         <ProtectedRoute
                           Component={DisplayBook}
                           permission="VIEW_BOOKS"
+                          title="View Book – BASIS Scottsdale Library"
                         />
                       </Suspense>
                     </Route>
@@ -123,6 +158,7 @@ const Routing = () => {
                         <ProtectedRoute
                           Component={CheckOut}
                           permission="CHECK_OUT"
+                          title="Check Out – BASIS Scottsdale Library"
                         />
                       </Suspense>
                     </Route>
@@ -131,6 +167,7 @@ const Routing = () => {
                         <ProtectedRoute
                           Component={CheckIn}
                           permission="CHECK_IN"
+                          title="Check In – BASIS Scottsdale Library"
                         />
                       </Suspense>
                     </Route>
@@ -139,6 +176,7 @@ const Routing = () => {
                         <ProtectedRoute
                           Component={CheckOuts}
                           permission="MANAGE_CHECKOUTS"
+                          title="Manage Checkouts – BASIS Scottsdale Library"
                         />
                       </Suspense>
                     </Route>
@@ -147,6 +185,7 @@ const Routing = () => {
                         <ProtectedRoute
                           Component={Users}
                           permission="MANAGE_USERS"
+                          title="Users – BASIS Scottsdale Library"
                         />
                       </Suspense>
                     </Route>
@@ -155,6 +194,7 @@ const Routing = () => {
                         <ProtectedRoute
                           Component={DisplayUser}
                           permission="MANAGE_USERS"
+                          title="Display User – BASIS Scottsdale Library"
                         />
                       </Suspense>
                     </Route>
