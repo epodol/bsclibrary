@@ -19,7 +19,7 @@
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
-    "@types/node": "^16.4.10",
+    "@types/node": "^16.4.11",
     "@types/node-fetch": "^2.5.12",
     "firebase-functions-test": "^0.3.1",
     "jest": "^27.0.6",
