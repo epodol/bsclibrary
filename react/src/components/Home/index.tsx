@@ -223,10 +223,9 @@ const Home = () => {
         </h6>
         <h2>Questions?</h2>
         <h6>
-          The library will be available to all BASIS Scottsdale students who
-          register a free account with us next year. To register, all you will
-          have to do is stop by the library and let us know you’re interested.
-          More details about this process will be available next year.
+          If you have any other questions, please reach out to us at{' '}
+          <a href="mailto:support@bsclibrary.net">support@bsclibrary.net</a>.
+          Thank you again for all your generosity and support!
         </h6>
       </AboutShort>
     </div>
