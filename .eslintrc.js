@@ -12,6 +12,7 @@ module.exports = {
     'react-hooks',
     'jsx-a11y',
     'prettier',
+    'import',
   ],
   extends: [
     'plugin:react/recommended',
@@ -19,6 +20,7 @@ module.exports = {
     'plugin:jest/recommended',
     'plugin:react-hooks/recommended',
     'prettier',
+    'plugin:import/typescript',
   ],
   parserOptions: {
     ecmaFeatures: {

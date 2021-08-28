@@ -1,16 +1,23 @@
 import React, { Suspense, useEffect, useState } from 'react';
+
 import {
   useFirebaseApp,
-  preloadFirestore,
-  preloadAuth,
-  preloadFunctions,
-  preloadStorage,
-  preloadRemoteConfig,
-  preloadAnalytics,
-  preloadPerformance,
   FirebaseAppProvider,
+  FirestoreProvider,
+  StorageProvider,
+  AuthProvider,
+  Provi
 } from 'reactfire';
-import 'firebase/app-check';
+
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
+import { connectStorageEmulator, getStorage } from 'firebase/storage';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
+import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
+import { getRemoteConfig } from 'firebase/remote-config';
+import { getAnalytics } from 'firebase/analytics';
+import { getPerformance } from 'firebase/performance';
+import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
+
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
 
@@ -37,112 +44,113 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
-const preloadSDKs = (firebaseApp: any) => {
-  const preloads: any[] = [
-    preloadFirestore({
-      firebaseApp,
-      setup(firestore) {
-        if (isDev) firestore().useEmulator('localhost', 8080);
-      },
-      suspense: true,
-    }),
-    preloadStorage({
-      firebaseApp,
-      setup(storage) {
-        if (isDev) storage().useEmulator('localhost', 9199);
-        return storage().setMaxUploadRetryTime(10000);
-      },
-      suspense: true,
-    }),
-    preloadAuth({
-      firebaseApp,
-      setup(auth) {
-        if (isDev) auth().useEmulator('http://localhost:9099/');
-      },
-      suspense: true,
-    }),
-    preloadFunctions({
-      firebaseApp,
-      async setup(functions) {
-        if (isDev) functions('us-west2').useEmulator('localhost', 5001);
-        functions('us-west2');
-      },
-      suspense: true,
-    }),
-    preloadRemoteConfig({
-      firebaseApp,
-      setup(remoteConfig) {
-        // eslint-disable-next-line no-param-reassign
-        remoteConfig().settings = {
-          minimumFetchIntervalMillis: 10000,
-          fetchTimeoutMillis: 10000,
-        };
-        if (!isDev) remoteConfig().fetchAndActivate();
-        // eslint-disable-next-line no-param-reassign
-        remoteConfig().defaultConfig = {
-          home_banner_enabled: false,
-          home_banner_severity: 'success',
-          home_banner_title: 'Welcome to the BASIS Scottsdale Library!',
-          home_banner_title_enabled: false,
-          home_banner_message: 'Coming 2021',
-          home_banner_button_enabled: false,
-          home_banner_button_text: 'View the Website',
-          home_banner_button_href: 'https://bsclibrary.net',
-          home_banner_icon_enabled: false,
-        } as any;
-      },
-      suspense: true,
-    }),
-  ];
+//     preloadFunctions({
+//       firebaseApp,
+//       async setup(functions) {
+//         if (isDev) functions('us-west2').useEmulator('localhost', 5001);
+//         functions('us-west2');
+//       },
+//       suspense: true,
+//     }),
+//     preloadRemoteConfig({
+//       firebaseApp,
+//       setup(remoteConfig) {
+//         // eslint-disable-next-line no-param-reassign
+//         remoteConfig().settings = {
+//           minimumFetchIntervalMillis: 10000,
+//           fetchTimeoutMillis: 10000,
+//         };
+//         if (!isDev) remoteConfig().fetchAndActivate();
+//         // eslint-disable-next-line no-param-reassign
+//         remoteConfig().defaultConfig = {
+//           home_banner_enabled: false,
+//           home_banner_severity: 'success',
+//           home_banner_title: 'Welcome to the BASIS Scottsdale Library!',
+//           home_banner_title_enabled: false,
+//           home_banner_message: 'Coming 2021',
+//           home_banner_button_enabled: false,
+//           home_banner_button_text: 'View the Website',
+//           home_banner_button_href: 'https://bsclibrary.net',
+//           home_banner_icon_enabled: false,
+//         } as any;
+//       },
+//       suspense: true,
+//     }),
+//   ];
 
-  if (!isDev) {
-    preloads.push(
-      preloadAnalytics({
-        firebaseApp,
-        setup(analytics) {
-          analytics();
-        },
-        suspense: true,
-      })
-    );
+//   if (!isDev) {
+//     preloads.push(
+//       preloadAnalytics({
+//         firebaseApp,
+//         setup(analytics) {
+//           analytics();
+//         },
+//         suspense: true,
+//       })
+//     );
 
-    preloads.push(
-      preloadPerformance({
-        firebaseApp,
-        setup(performance) {
-          performance();
-        },
-        suspense: true,
-      })
-    );
-  }
+//     preloads.push(
+//       preloadPerformance({
+//         firebaseApp,
+//         setup(performance) {
+//           performance();
+//         },
+//         suspense: true,
+//       })
+//     );
+//   }
 
-  return Promise.all(preloads);
-};
+//   return Promise.all(preloads);
+// };
 
 const AppWithFirebase = () => {
-  const [loading, setLoading] = useState(true);
-  const firebaseApp = useFirebaseApp();
+  const [loading] = useState(true);
+  const app = useFirebaseApp();
 
-  const appCheck = !isDev ? firebaseApp.appCheck() : null;
+  const firestore = getFirestore(app);
+  const storage = getStorage(app);
+  const auth = getAuth(app);
+  const functions = getFunctions(app, 'us-west2');
+
+  let remoteConfig;
+  let analytics;
+  let performance;
+
+  if (isDev) {
+    connectFirestoreEmulator(firestore, 'localhost', 8080);
+    connectStorageEmulator(storage, 'localhost', 9199);
+    connectAuthEmulator(auth, 'http://localhost:9099/');
+    connectFunctionsEmulator(functions, 'localhost', 5001);
+  } else {
+    remoteConfig = getRemoteConfig(app);
+    analytics = getAnalytics(app);
+    performance = getPerformance(app);
+  }
 
   useEffect(() => {
     if (!isDev && process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY)
-      appCheck?.activate(process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY);
-  }, [appCheck]);
-
-  preloadSDKs(firebaseApp).then(() => setLoading(false));
+      initializeAppCheck(app, {
+        provider: new ReCaptchaV3Provider(
+          process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY
+        ),
+        isTokenAutoRefreshEnabled: true,
+      });
+  }, [app]);
 
   if (loading) return <Loading />;
   return (
     <ThemeProvider theme={MUITheme}>
       <CssBaseline />
       <NotificationProvider>
-        <FirebaseProvider>
+        <FirestoreProvider sdk={firestore}>
+                  <StorageProvider sdk={storage}>
+        <AuthProvider sdk={auth}>
+        <FunctionsPro sdk={firestore}>
+
           <Suspense fallback={<Loading />}>
             <Routing />
           </Suspense>
-        </FirebaseProvider>
+        </FirestoreProvider>
       </NotificationProvider>
     </ThemeProvider>
   );
