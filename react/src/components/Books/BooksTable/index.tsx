@@ -11,6 +11,8 @@ import {
 import { Add } from '@material-ui/icons';
 
 import { useFirestore, useUser } from 'reactfire';
+import { collection, serverTimestamp, addDoc } from 'firebase/firestore';
+
 import TableBody from 'src/components/Books/BooksTable/TableBody';
 import Loading from 'src/components/Loading';
 import FirebaseContext from 'src/contexts/FirebaseContext';
@@ -20,11 +22,11 @@ const BooksTable = () => {
   const NotificationHandler = useContext(NotificationContext);
 
   const firestore = useFirestore();
-  const fieldValue = useFirestore.FieldValue;
-
   const firebaseContext = useContext(FirebaseContext);
 
   const user = useUser().data;
+  if (user === null) throw new Error('No user exists.');
+
   const history = useHistory();
 
   return (
@@ -45,39 +47,37 @@ const BooksTable = () => {
                     className="px-3 white-text"
                     color="inherit"
                     onClick={() => {
-                      firestore
-                        .collection('books')
-                        .add({
-                          featured: false,
-                          volumeInfo: {
-                            authors: [],
-                            genres: [],
-                            description: '',
-                            image: '',
-                            isbn10: '',
-                            isbn13: '',
-                            grades: {
-                              grade0: false,
-                              grade1: false,
-                              grade2: false,
-                              grade3: false,
-                              grade4: false,
-                              grade5: false,
-                              grade6: false,
-                              grade7: false,
-                              grade8: false,
-                              grade9: false,
-                              grade10: false,
-                              grade11: false,
-                              grade12: false,
-                              grade13: false,
-                            },
-                            subtitle: '',
-                            title: '',
+                      addDoc(collection(firestore, 'books'), {
+                        featured: false,
+                        volumeInfo: {
+                          authors: [],
+                          genres: [],
+                          description: '',
+                          image: '',
+                          isbn10: '',
+                          isbn13: '',
+                          grades: {
+                            grade0: false,
+                            grade1: false,
+                            grade2: false,
+                            grade3: false,
+                            grade4: false,
+                            grade5: false,
+                            grade6: false,
+                            grade7: false,
+                            grade8: false,
+                            grade9: false,
+                            grade10: false,
+                            grade11: false,
+                            grade12: false,
+                            grade13: false,
                           },
-                          lastEditedBy: user.uid,
-                          lastEdited: fieldValue.serverTimestamp(),
-                        })
+                          subtitle: '',
+                          title: '',
+                        },
+                        lastEditedBy: user.uid,
+                        lastEdited: serverTimestamp(),
+                      })
                         .then((book) => {
                           history.push(book.path, { editing: true });
                           NotificationHandler.addNotification({

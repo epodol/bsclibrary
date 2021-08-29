@@ -14,6 +14,10 @@ import * as yup from 'yup';
 import { useAuth } from 'reactfire';
 
 import NotificationContext from 'src/contexts/NotificationContext';
+import {
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
 
 const SignIn = () => {
   const SignInSchema = yup.object().shape({
@@ -62,8 +66,11 @@ const SignIn = () => {
           validationSchema={SignInSchema}
           onSubmit={async (values, actions) => {
             actions.setSubmitting(true);
-            await auth
-              .signInWithEmailAndPassword(values.email, values.password)
+            await signInWithEmailAndPassword(
+              auth,
+              values.email,
+              values.password
+            )
               .catch((err) => {
                 if (err.code === 'auth/wrong-password') {
                   actions.setFieldError('password', 'Wrong Password');
@@ -171,8 +178,7 @@ const SignIn = () => {
               url: window.location.origin,
               handleCodeInApp: true,
             };
-            await auth
-              .sendPasswordResetEmail(values.email, actionCodeSettings)
+            await sendPasswordResetEmail(auth, values.email, actionCodeSettings)
               .then(() => {
                 NotificationHandler.addNotification({
                   message: 'Reset Password Email Sent!',

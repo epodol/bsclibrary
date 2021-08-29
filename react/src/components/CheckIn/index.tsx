@@ -2,12 +2,14 @@ import React, { useContext, useRef, useState } from 'react';
 import { Button, TextField, ButtonGroup, Paper } from '@material-ui/core';
 import * as yup from 'yup';
 import { Formik, Form } from 'formik';
-import { useFirebaseApp } from 'reactfire';
+import { useFirebaseApp, useFirestore } from 'reactfire';
 import 'firebase/firestore';
 
 import Copy, { condition, status } from '@common/types/Copy';
 import checkinBookData from '@common/functions/checkinBook';
 import NotificationContext from 'src/contexts/NotificationContext';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { collectionGroup, getDocs, query, where } from 'firebase/firestore';
 
 const ScanBooksScheme = yup.object().shape({
   book: yup.string().required('You need to enter the Barcode'),
@@ -17,7 +19,8 @@ const CheckIn = () => {
   const NotificationHandler = useContext(NotificationContext);
 
   const firebaseApp = useFirebaseApp();
-  const functions = firebaseApp.functions('us-west2');
+  const functions = getFunctions(firebaseApp, 'us-west2');
+  const firestore = useFirestore();
   const bookInput: any = useRef();
 
   const [statusCheckIn, setStatusCheckIn] = useState<status>(0);
@@ -45,11 +48,12 @@ const CheckIn = () => {
               return bookInput?.current?.focus() || null;
             }
 
-            const bookResults = await firebaseApp
-              .firestore()
-              .collectionGroup('copies')
-              .where('barcode', '==', values.book)
-              .get();
+            const bookQuery = query(
+              collectionGroup(firestore, 'copies'),
+              where('barcode', '==', values.book)
+            );
+
+            const bookResults = await getDocs(bookQuery);
 
             if (bookResults.empty) {
               actions.setFieldError('book', "This book doesn't exist");
@@ -94,8 +98,10 @@ const CheckIn = () => {
               status: statusCheckIn,
             };
 
-            await functions
-              .httpsCallable('checkinBook')(checkinBookFunctionData)
+            await httpsCallable(
+              functions,
+              'checkinBook'
+            )(checkinBookFunctionData)
               .then(() => {
                 NotificationHandler.addNotification({
                   message: `Checked in 1 book (${values.book})`,

@@ -17,6 +17,7 @@ import './featured.css';
 import { ArrowLeft, ArrowRight } from '@material-ui/icons';
 
 import Book from '@common/types/Book';
+import { collection, query, where } from 'firebase/firestore';
 
 interface BookWithID extends Book {
   id?: string;
@@ -24,9 +25,13 @@ interface BookWithID extends Book {
 
 const FeaturedBooks = () => {
   const history = useHistory();
-  const featuredBooksRef = useFirestore()
-    .collection('books')
-    .where('featured', '==', true);
+  const firestore = useFirestore();
+
+  const featuredBooksRef = query(
+    collection(firestore, 'books'),
+    where('featured', '==', true)
+  );
+
   const featured: BookWithID[] = useFirestoreCollectionData(featuredBooksRef, {
     idField: 'id',
   }).data as unknown as BookWithID[];

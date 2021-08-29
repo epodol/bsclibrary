@@ -20,12 +20,14 @@ import {
 import { Delete } from '@material-ui/icons';
 import * as yup from 'yup';
 import { Formik, Form } from 'formik';
+
 import {
   useFirebaseApp,
   useFirestore,
   useFirestoreCollectionData,
 } from 'reactfire';
-import 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+
 import { Link } from 'react-router-dom';
 import User from '@common/types/User';
 import Copy, { condition as conditionType } from '@common/types/Copy';
@@ -36,6 +38,19 @@ import checkoutBookData, {
 import FirebaseContext from 'src/contexts/FirebaseContext';
 import Loading from 'src/components/Loading';
 import NotificationContext from 'src/contexts/NotificationContext';
+import {
+  collection,
+  collectionGroup,
+  doc,
+  endAt,
+  getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  startAt,
+  where,
+} from 'firebase/firestore';
 
 interface checkoutData {
   user: User | null;
@@ -89,13 +104,16 @@ const FindUserTable = ({
 }) => {
   const textSearchField = determineSearchField(searchField);
 
-  const userQueryRef = useFirestore()
-    .collection('users')
-    .orderBy(textSearchField)
-    .startAt(searchTerm.toLowerCase())
-    .endAt(`${searchTerm.toLowerCase()}\uf8ff`)
-    .where('userInfo.disabled', '==', false)
-    .limit(10);
+  const firestore = useFirestore();
+
+  const userQueryRef = query(
+    collection(firestore, 'users'),
+    orderBy(textSearchField),
+    startAt(searchTerm.toLowerCase()),
+    endAt(`${searchTerm.toLowerCase()}\uf8ff`),
+    where('userInfo.disabled', '==', false),
+    limit(10)
+  );
 
   const userData: User[] = useFirestoreCollectionData(userQueryRef, {
     idField: 'id',
@@ -163,7 +181,7 @@ const EnterUser = ({
   setActiveState: React.Dispatch<React.SetStateAction<number>>;
   setCheckoutData: React.Dispatch<React.SetStateAction<checkoutData>>;
 }) => {
-  const firebaseApp = useFirebaseApp();
+  const firestore = useFirestore();
   const [searchField, setSearchField] = useState<1 | 2 | 3>(1);
   const [searchTerm, setSearchTerm] = useState<string>('');
 
@@ -233,11 +251,10 @@ const EnterUser = ({
           validationSchema={EnterUserScheme}
           onSubmit={async (values, actions) => {
             actions.setSubmitting(true);
-            const userDoc = await firebaseApp
-              .firestore()
-              .collection('users')
-              .doc(values.userID)
-              .get();
+
+            const userDoc = await getDoc(
+              doc(firestore, 'users', values.userID)
+            );
 
             if (!userDoc.exists) {
               actions.setFieldError('userID', "This User doesn't exist");
@@ -303,7 +320,7 @@ const ScanBooks = ({
   setCheckoutData: React.Dispatch<React.SetStateAction<checkoutData>>;
 }) => {
   const bookInput: any = useRef();
-  const firebaseApp = useFirebaseApp();
+  const firestore = useFirestore();
   return (
     <div>
       <Formik
@@ -312,11 +329,12 @@ const ScanBooks = ({
         }}
         validationSchema={ScanBooksScheme}
         onSubmit={async (values, actions) => {
-          const bookResults = await firebaseApp
-            .firestore()
-            .collectionGroup('copies')
-            .where('barcode', '==', values.book)
-            .get();
+          const bookResults = await getDocs(
+            query(
+              collectionGroup(firestore, 'copies'),
+              where('barcode', '==', values.book)
+            )
+          );
 
           if (bookResults.empty) {
             actions.setFieldError('book', "This book doesn't exist");
@@ -365,7 +383,7 @@ const ScanBooks = ({
             return bookInput?.current?.focus() || null;
           }
 
-          const parentData = await (await parent.get()).data();
+          const parentData = await (await getDoc(parent)).data();
 
           data.condition = data.condition ?? 3;
 
@@ -542,7 +560,8 @@ const Submit = ({
   checkoutData: checkoutData;
   setCheckoutData: React.Dispatch<React.SetStateAction<checkoutData>>;
 }) => {
-  const functions = useFirebaseApp();
+  const firebaseApp = useFirebaseApp();
+  const functions = getFunctions(firebaseApp, 'us-west2');
   const NotificationHandler = useContext(NotificationContext);
 
   async function submit() {
@@ -566,9 +585,10 @@ const Submit = ({
       userID: checkoutData.user?.userInfo?.uid,
     };
 
-    await functions
-      .functions('us-west2')
-      .httpsCallable('checkoutBook')(checkoutBookFunctionData)
+    await httpsCallable(
+      functions,
+      'checkoutBook'
+    )(checkoutBookFunctionData)
       .then(() => {
         setCheckoutData({
           user: null,

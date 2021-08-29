@@ -8,6 +8,7 @@ import UserInfo from 'src/components/Users/DisplayUser/UserInfo';
 import UserCheckouts from 'src/components/Users/DisplayUser/UserCheckouts';
 
 import UserInterface from '@common/types/User';
+import { doc } from 'firebase/firestore';
 
 interface UserInterfaceWithID extends UserInterface {
   id?: string;
@@ -15,10 +16,10 @@ interface UserInterfaceWithID extends UserInterface {
 const DisplayUser = () => {
   const firestore = useFirestore();
   const { id }: { id: string } = useParams();
-  const ref = firestore.collection('users').doc(id);
-  const { data }: { data: UserInterfaceWithID } = useFirestoreDocData(ref, {
+  const ref = doc(firestore, 'users', id);
+  const data = useFirestoreDocData(ref, {
     idField: 'id',
-  });
+  }).data as unknown as UserInterfaceWithID;
 
   if (typeof data.userInfo === 'undefined') {
     return (

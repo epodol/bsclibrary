@@ -17,6 +17,7 @@ import {
 import User from '@common/types/User';
 
 import Loading from 'src/components/Loading';
+import { collection, limit, query, where } from '@firebase/firestore';
 
 function determineSearchField(searchField: 1 | 2 | 3) {
   let res = 'userInfo.queryFirstName';
@@ -36,11 +37,14 @@ const FindUserTable = ({
 }) => {
   const textSearchField = determineSearchField(searchField);
 
-  const userQueryRef = useFirestore()
-    .collection('users')
-    .where(textSearchField, '>=', searchTerm.toLowerCase())
-    .where(textSearchField, '<=', `${searchTerm.toLowerCase()}~`)
-    .limit(25);
+  const firestore = useFirestore();
+
+  const userQueryRef = query(
+    collection(firestore, 'users'),
+    where(textSearchField, '>=', searchTerm.toLowerCase()),
+    where(textSearchField, '<=', `${searchTerm.toLowerCase()}~`),
+    limit(25)
+  );
 
   const userData: User[] = useFirestoreCollectionData(userQueryRef, {
     idField: 'id',

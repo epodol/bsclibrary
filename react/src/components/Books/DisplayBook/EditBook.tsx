@@ -14,6 +14,7 @@ import {
 
 import { volumeInfo as volumeInfoType } from '@common/types/Book';
 import NotificationContext from 'src/contexts/NotificationContext';
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 
 const EditBook = ({
   volumeInfo,
@@ -26,9 +27,9 @@ const EditBook = ({
 }) => {
   const NotificationHandler = useContext(NotificationContext);
 
-  const fieldValue = useFirestore.FieldValue;
-
+  const firestore = useFirestore();
   const user = useUser().data;
+  if (user === null) throw new Error('No user exists.');
 
   const EditBookSchema = yup.object().shape({
     authors: yup.array().of(yup.string()),
@@ -59,7 +60,8 @@ const EditBook = ({
 
   const [newAuthor, setNewAuthor] = useState('');
 
-  const bookRef = useFirestore().collection('books').doc(bookID);
+  // const bookRef = useFirestore().collection('books').doc(bookID);
+  const bookRef = doc(firestore, 'books', bookID);
 
   return (
     <div>
@@ -89,43 +91,43 @@ const EditBook = ({
           title: volumeInfo.title || '',
         }}
         validationSchema={EditBookSchema}
-        onSubmit={(values, actions) => {
+        onSubmit={async (values, actions) => {
           actions.setSubmitting(true);
           actions.setSubmitting(false);
-          bookRef
-            .set(
-              {
-                volumeInfo: {
-                  authors: values.authors,
-                  genres: values.genres,
-                  description: values.description.trim(),
-                  image: values.image.trim(),
-                  isbn10: values.isbn10.trim(),
-                  isbn13: values.isbn13.trim(),
-                  grades: {
-                    grade0: values.grade0,
-                    grade1: values.grade1,
-                    grade2: values.grade2,
-                    grade3: values.grade3,
-                    grade4: values.grade4,
-                    grade5: values.grade5,
-                    grade6: values.grade6,
-                    grade7: values.grade7,
-                    grade8: values.grade8,
-                    grade9: values.grade9,
-                    grade10: values.grade10,
-                    grade11: values.grade11,
-                    grade12: values.grade12,
-                    grade13: values.grade13,
-                  },
-                  subtitle: values.subtitle.trim(),
-                  title: values.title.trim(),
+          await setDoc(
+            bookRef,
+            {
+              volumeInfo: {
+                authors: values.authors,
+                genres: values.genres,
+                description: values.description.trim(),
+                image: values.image.trim(),
+                isbn10: values.isbn10.trim(),
+                isbn13: values.isbn13.trim(),
+                grades: {
+                  grade0: values.grade0,
+                  grade1: values.grade1,
+                  grade2: values.grade2,
+                  grade3: values.grade3,
+                  grade4: values.grade4,
+                  grade5: values.grade5,
+                  grade6: values.grade6,
+                  grade7: values.grade7,
+                  grade8: values.grade8,
+                  grade9: values.grade9,
+                  grade10: values.grade10,
+                  grade11: values.grade11,
+                  grade12: values.grade12,
+                  grade13: values.grade13,
                 },
-                lastEditedBy: user.uid,
-                lastEdited: fieldValue.serverTimestamp(),
+                subtitle: values.subtitle.trim(),
+                title: values.title.trim(),
               },
-              { merge: true }
-            )
+              lastEditedBy: user.uid,
+              lastEdited: serverTimestamp(),
+            },
+            { merge: true }
+          )
             .then(() => {
               NotificationHandler.addNotification({
                 message: 'Book updated.',

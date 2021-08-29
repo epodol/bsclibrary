@@ -57,7 +57,7 @@ const ProtectedRoute = ({
 
   const signInCheck = useSigninCheck({
     suspense: true,
-    validateCustomClaims: (claims) => {
+    validateCustomClaims: (claims: any) => {
       if (claims.permissions[permission] !== true) {
         NotificationHandler.addNotification({
           message: 'You do not have permission to view this page.',

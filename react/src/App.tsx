@@ -6,16 +6,13 @@ import {
   FirestoreProvider,
   StorageProvider,
   AuthProvider,
-  Provi
 } from 'reactfire';
 
 import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 import { connectStorageEmulator, getStorage } from 'firebase/storage';
 import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
-import { getRemoteConfig } from 'firebase/remote-config';
-import { getAnalytics } from 'firebase/analytics';
-import { getPerformance } from 'firebase/performance';
+
 import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -112,19 +109,11 @@ const AppWithFirebase = () => {
   const auth = getAuth(app);
   const functions = getFunctions(app, 'us-west2');
 
-  let remoteConfig;
-  let analytics;
-  let performance;
-
   if (isDev) {
     connectFirestoreEmulator(firestore, 'localhost', 8080);
     connectStorageEmulator(storage, 'localhost', 9199);
     connectAuthEmulator(auth, 'http://localhost:9099/');
     connectFunctionsEmulator(functions, 'localhost', 5001);
-  } else {
-    remoteConfig = getRemoteConfig(app);
-    analytics = getAnalytics(app);
-    performance = getPerformance(app);
   }
 
   useEffect(() => {
@@ -143,13 +132,15 @@ const AppWithFirebase = () => {
       <CssBaseline />
       <NotificationProvider>
         <FirestoreProvider sdk={firestore}>
-                  <StorageProvider sdk={storage}>
-        <AuthProvider sdk={auth}>
-        <FunctionsPro sdk={firestore}>
-
-          <Suspense fallback={<Loading />}>
-            <Routing />
-          </Suspense>
+          <StorageProvider sdk={storage}>
+            <AuthProvider sdk={auth}>
+              <FirebaseProvider>
+                <Suspense fallback={<Loading />}>
+                  <Routing />
+                </Suspense>
+              </FirebaseProvider>
+            </AuthProvider>
+          </StorageProvider>
         </FirestoreProvider>
       </NotificationProvider>
     </ThemeProvider>
