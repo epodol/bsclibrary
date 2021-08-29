@@ -132,6 +132,7 @@ const Navigation = () => {
                       firebaseContext?.claims?.lastName || ''
                     }`}
                     src={firebaseContext?.claims?.picture}
+                    variant="rounded"
                   >
                     {`${firebaseContext?.claims?.firstName?.slice(
                       0,
@@ -141,21 +142,21 @@ const Navigation = () => {
                 </IconButton>
                 <Menu
                   anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
+                  // anchorOrigin={{
+                  //   vertical: 'top',
+                  //   horizontal: 'right',
+                  // }}
                   keepMounted
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
+                  // transformOrigin={{
+                  //   vertical: 'top',
+                  //   horizontal: 'right',
+                  // }}
                   open={open}
                   onClose={handleClose}
                 >
                   <MenuItem
                     onClick={() => {
-                      history.push('/');
+                      history.push('/account');
                       setAnchorEl(null);
                     }}
                   >

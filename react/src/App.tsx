@@ -12,12 +12,9 @@ import {
   RemoteConfigProvider,
 } from 'reactfire';
 
-import {
-  connectFirestoreEmulator,
-  initializeFirestore,
-} from 'firebase/firestore';
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 import { connectStorageEmulator, getStorage } from 'firebase/storage';
-import { connectAuthEmulator, initializeAuth } from 'firebase/auth';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
 import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 import { fetchAndActivate, getRemoteConfig } from 'firebase/remote-config';
@@ -54,9 +51,8 @@ const AppWithFirebase = () => {
 
   const { status: useInitFirestoreStatus, data: firestore } = useInitFirestore(
     async (firebaseApp) => {
-      const firestoreInit = initializeFirestore(firebaseApp, {});
+      const firestoreInit = getFirestore(firebaseApp);
       if (isDev) connectFirestoreEmulator(firestoreInit, 'localhost', 8080);
-      // await enableMultiTabIndexedDbPersistence(firestoreInit);
       return firestoreInit;
     }
   );
@@ -71,8 +67,7 @@ const AppWithFirebase = () => {
 
   const { status: useInitAuthStatus, data: auth } = useInitAuth(
     async (firebaseApp) => {
-      const authInit = initializeAuth(firebaseApp);
-      console.log('innit');
+      const authInit = getAuth(firebaseApp);
       if (isDev) connectAuthEmulator(authInit, 'http://localhost:9099/');
       return authInit;
     }
@@ -102,25 +97,22 @@ const AppWithFirebase = () => {
       return remoteConfigInit;
     });
 
-  const functions = getFunctions(app, 'us-west2');
-
-  if (isDev) {
-    connectFunctionsEmulator(functions, 'localhost', 5001);
-  }
-
   useEffect(() => {
-    {
-      if (!isDev && process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY) {
-        initializeAppCheck(app, {
-          provider: new ReCaptchaV3Provider(
-            process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY
-          ),
-          isTokenAutoRefreshEnabled: true,
-        });
-        initializePerformance(app, {});
-      }
+    if (!isDev && process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY) {
+      initializeAppCheck(app, {
+        provider: new ReCaptchaV3Provider(
+          process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY
+        ),
+        isTokenAutoRefreshEnabled: true,
+      });
+      initializePerformance(app, {});
     }
-  }, [app]);
+    const functions = getFunctions(app, 'us-west2');
+
+    if (isDev) {
+      connectFunctionsEmulator(functions, 'localhost', 5001);
+    }
+  });
 
   if (
     useInitFirestoreStatus === 'loading' ||

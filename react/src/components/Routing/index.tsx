@@ -128,8 +128,7 @@ const Routing = () => {
               <Switch>
                 <Route exact path="/">
                   <DocumentTitle title="BASIS Scottsdale Library">
-                    {signinCheck.signedIn && <Account />}
-                    {!signinCheck.signedIn && <Home />}
+                    <Home />
                   </DocumentTitle>
                 </Route>
                 <Route exact path="/about">
@@ -144,6 +143,13 @@ const Routing = () => {
                 </Route>
                 {signinCheck.signedIn && (
                   <Switch>
+                    <Route path="/account" exact>
+                      <Suspense fallback={<Loading />}>
+                        <DocumentTitle title="Account – BASIS Scottsdale Library">
+                          <Account />
+                        </DocumentTitle>
+                      </Suspense>
+                    </Route>
                     <Route path="/books" exact>
                       <Suspense fallback={<Loading />}>
                         <ProtectedRoute

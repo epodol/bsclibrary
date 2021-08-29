@@ -15,7 +15,7 @@
     "react-material-ui-carousel": "^2.3.1",
     "react-phone-number-input": "^3.1.25",
     "react-router-dom": "^5.2.1",
-    "reactfire": "^4.0.0",
+    "reactfire": "^4.0.0-exp.b6c8eeb",
     "yup": "^0.32.9"
   },
   "scripts": {
