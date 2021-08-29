@@ -564,7 +564,10 @@ const Submit = ({
   const functions = getFunctions(firebaseApp, 'us-west2');
   const NotificationHandler = useContext(NotificationContext);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   async function submit() {
+    setIsSubmitting(true);
     const books: checkoutBookDataBooks[] = [];
     checkoutData.books.forEach((book) => {
       books.push({
@@ -604,6 +607,7 @@ const Submit = ({
           timeout: 10000,
         });
       });
+    setIsSubmitting(false);
   }
   return (
     <div>
@@ -663,10 +667,16 @@ const Submit = ({
         variant="contained"
         color="primary"
         size="large"
+        disabled={isSubmitting}
         style={{ marginTop: 25 }}
         onClick={() => submit()}
       >
-        Submit
+        {!isSubmitting && <>Submit</>}
+        {isSubmitting && (
+          <div className="spinner-border" role="status">
+            <span className="sr-only">Loading...</span>
+          </div>
+        )}
       </Button>
       <br />
       <Button

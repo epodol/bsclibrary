@@ -246,7 +246,12 @@ const CheckIn = () => {
                 color="primary"
                 disabled={isSubmitting}
               >
-                Check In
+                {!isSubmitting && <>Check In</>}
+                {isSubmitting && (
+                  <div className="spinner-border" role="status">
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                )}
               </Button>
             </Form>
           )}

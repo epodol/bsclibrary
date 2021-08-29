@@ -5,7 +5,9 @@ import {
   Route,
   Redirect,
 } from 'react-router-dom';
-import { useSigninCheck } from 'reactfire';
+
+import { useFirebaseApp, useSigninCheck } from 'reactfire';
+import { getAnalytics, logEvent } from 'firebase/analytics';
 
 import Loading from 'src/components/Loading';
 
@@ -27,6 +29,8 @@ const CheckIn = lazy(() => import('src/components/CheckIn'));
 const CheckOuts = lazy(() => import('src/components/CheckOuts'));
 const Footer = lazy(() => import('src/components/Footer'));
 
+const isDev = process.env.NODE_ENV !== 'production';
+
 const DocumentTitle = ({
   title,
   children,
@@ -34,12 +38,17 @@ const DocumentTitle = ({
   title: string;
   children: any;
 }) => {
+  const app = useFirebaseApp();
   useEffect(() => {
+    if (!isDev) {
+      const analytics = getAnalytics(app);
+      logEvent(analytics, 'page_view', { page_location: location.href });
+    }
     document.title = title;
     return () => {
       document.title = 'BASIS Scottsdale Library';
     };
-  }, [title]);
+  }, [title, app]);
   return children;
 };
 

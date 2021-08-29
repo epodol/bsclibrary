@@ -141,20 +141,20 @@ const AddUserForm = () => {
               });
             })
             .catch((err) => {
-              if (err.code === 'unauthenticated') {
-                actions.setFieldError('email', 'Permission denied.');
+              if (err.code === 'functions/unauthenticated') {
+                actions.setFieldError('email', 'functions/Permission denied.');
               } else if (err.code === 'permission-denied') {
                 actions.setFieldError(
                   'email',
                   'You do not have the permissions required to complete this request.'
                 );
-              } else if (err.code === 'invalid-argument') {
+              } else if (err.code === 'functions/invalid-argument') {
                 actions.setFieldError('email', 'Invalid arguments');
-              } else if (err.code === 'already-exists') {
+              } else if (err.code === 'functions/already-exists') {
                 actions.setFieldError('email', 'This user already exists.');
               } else {
-                actions.setFieldError('email', 'An internal error occurred.');
-                console.error(err);
+                actions.setFieldError('email', 'An unexpected error occurred.');
+                console.error(err.code);
                 NotificationHandler.addNotification({
                   message: `An unexpected error occurred.`,
                   severity: 'error',
