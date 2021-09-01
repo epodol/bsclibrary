@@ -4,39 +4,24 @@
   "description": "The BASIS Scottsdale Library Website",
   "icons": [
     {
-      "src": "./assets/logos/BASIS Scottsdale Library Logo - v0.1.1.ico",
+      "src": "./assets/logos/BASIS Scottsdale Library Logo.ico",
       "sizes": "48x48",
       "type": "image/x-icon"
     },
     {
-      "src": "./assets/logos/BASIS Scottsdale Library Logo - v0.1.1 - 192h.png",
+      "src": "./assets/logos/BASIS Scottsdale Library Logo - 192h.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "./assets/logos/BASIS Scottsdale Library Logo - v0.1.1 - 512h.png",
+      "src": "./assets/logos/BASIS Scottsdale Library Logo - 512h.png",
       "type": "image/png",
       "sizes": "512x512"
     },
     {
-      "src": "./assets/logos/BASIS Scottsdale Library Logo - v0.1.1 - 0.5x.png",
-      "type": "image/png",
-      "sizes": "1000x1000"
-    },
-    {
-      "src": "./assets/logos/BASIS Scottsdale Library Logo - v0.1.1 - 1x.png",
+      "src": "./assets/logos/BASIS Scottsdale Library Logo - 1x.png",
       "type": "image/png",
       "sizes": "2000x2000"
-    },
-    {
-      "src": "./assets/logos/BASIS Scottsdale Library Logo - v0.1.1 - 2x.png",
-      "type": "image/png",
-      "sizes": "4000x4000"
-    },
-    {
-      "src": "./assets/logos/BASIS Scottsdale Library Logo - v0.1.1 - 4x.png",
-      "type": "image/png",
-      "sizes": "8000x8000"
     }
   ],
   "orientation": "landscape",

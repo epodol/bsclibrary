@@ -4,6 +4,12 @@ We would love for you to contribute to `bsclibrary`, pull requests are welcome! 
 
 ## Setting up your workspace
 
+1. Ensure you have the following installed:
+
+   - Node.JS v14
+   - Node Package Manager v7
+   - Firebase CLI
+
 1. Clone the repo
 
    ```

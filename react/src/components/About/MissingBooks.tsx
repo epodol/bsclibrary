@@ -14,7 +14,7 @@ const MissingBooks = () => (
           <li>
             In the event of a missing book, the information about the book, its
             value, and the person who checked out the book, will be given to the
-            respective dean or school administrator to be delt with as defined
+            respective dean or school administrator to be dealt with as defined
             in the BASIS Scottsdale Parent/Student Handbook “Care of Property”
             section.
           </li>

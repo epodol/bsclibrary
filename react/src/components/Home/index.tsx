@@ -110,7 +110,7 @@ const Home = () => {
       <Box sx={{ pt: 0, color: 'primary.main' }}>
         <Content maxWidth="md">
           <Logo
-            src={`${process.env.PUBLIC_URL}/assets/logos/BASIS Scottsdale Library Logo - v0.1.1.svg`}
+            src={`${process.env.PUBLIC_URL}/assets/logos/BASIS Scottsdale Library Logo.svg`}
             alt="BASIS Scottsdale Library Logo"
           />
           <div>

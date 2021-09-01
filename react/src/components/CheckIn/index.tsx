@@ -3,7 +3,6 @@ import { Button, TextField, ButtonGroup, Paper } from '@material-ui/core';
 import * as yup from 'yup';
 import { Formik, Form } from 'formik';
 import { useFirebaseApp, useFirestore } from 'reactfire';
-import 'firebase/firestore';
 
 import Copy, { condition, status } from '@common/types/Copy';
 import checkinBookData from '@common/functions/checkinBook';

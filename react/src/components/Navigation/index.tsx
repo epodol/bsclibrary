@@ -115,7 +115,7 @@ const Navigation = () => {
         <Toolbar variant="regular">
           <Link to="/">
             <img
-              src={`${process.env.PUBLIC_URL}/assets/logos/BASIS Scottsdale Library Logo - v0.1.1.svg`}
+              src={`${process.env.PUBLIC_URL}/assets/logos/BASIS Scottsdale Library Logo.svg`}
               height="50"
               width="50"
               alt="BASIS Scottsdale Library Logo"

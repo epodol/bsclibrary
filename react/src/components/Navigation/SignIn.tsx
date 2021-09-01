@@ -18,6 +18,7 @@ import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from 'firebase/auth';
+import { useHistory } from 'react-router';
 
 const SignIn = () => {
   const SignInSchema = yup.object().shape({
@@ -36,6 +37,7 @@ const SignIn = () => {
   });
 
   const auth = useAuth();
+  const history = useHistory();
 
   const NotificationHandler = useContext(NotificationContext);
 
@@ -71,6 +73,9 @@ const SignIn = () => {
               values.email,
               values.password
             )
+              .then(() => {
+                history.push('/account');
+              })
               .catch((err) => {
                 if (err.code === 'auth/wrong-password') {
                   actions.setFieldError('password', 'Wrong Password');

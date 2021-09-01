@@ -52,10 +52,16 @@
     "deploy:hosting": "firebase depoloy --only hosting",
     "deploy:storage": "firebase depoloy --only storage",
     "deploy:firestore": "firebase depoloy --only firestore",
-    "deploy:functions": "firebase deploy --only functions"
+    "deploy:functions": "firebase deploy --only functions",
+    "outdated": "npm-run-all --parallel outdated:bsclibrary outdated:discord outdated:functions outdated:react outdated:common",
+    "outdated:bsclibrary": "npm outdated",
+    "outdated:discord": "cd discord && npm outdated",
+    "outdated:functions": "cd functions && npm outdated",
+    "outdated:react": "cd react && npm outdated",
+    "outdated:common": "cd common && npm outdated"
   },
   "devDependencies": {
-    "@types/node": "^16.7.8",
+    "@types/node": "^16.7.10",
     "@typescript-eslint/eslint-plugin": "^4.30.0",
     "@typescript-eslint/parser": "^4.30.0",
     "eslint": "^7.32.0",
