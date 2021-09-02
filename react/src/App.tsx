@@ -1,24 +1,38 @@
 import React, { Suspense, useEffect } from 'react';
 import {
   useFirebaseApp,
-  FirebaseAppProvider,
-  FirestoreProvider,
-  StorageProvider,
-  AuthProvider,
   useInitFirestore,
   useInitStorage,
   useInitAuth,
   useInitRemoteConfig,
+  useInitAppCheck,
+  useInitAnalytics,
+  useInitPerformance,
+  FirebaseAppProvider,
+  FirestoreProvider,
+  StorageProvider,
+  AuthProvider,
   RemoteConfigProvider,
+  AppCheckProvider,
+  AnalyticsProvider,
+  PerformanceProvider,
 } from 'reactfire';
 
 import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 import { connectStorageEmulator, getStorage } from 'firebase/storage';
 import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
-import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
+import {
+  AppCheck,
+  initializeAppCheck,
+  ReCaptchaV3Provider,
+} from 'firebase/app-check';
 import { fetchAndActivate, getRemoteConfig } from 'firebase/remote-config';
-import { initializePerformance } from 'firebase/performance';
+import {
+  FirebasePerformance,
+  initializePerformance,
+} from 'firebase/performance';
+import { Analytics, initializeAnalytics } from '@firebase/analytics';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -44,6 +58,19 @@ const firebaseConfig = {
   messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.REACT_APP_FIREBASE_APP_ID,
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+};
+
+const RenderInProdOnly = ({
+  Component,
+  children,
+  ...props
+}: {
+  Component: any;
+  children: any;
+  [key: string]: any;
+}) => {
+  if (isDev) return children;
+  return <Component {...props}>{children}</Component>;
 };
 
 const AppWithFirebase = () => {
@@ -97,16 +124,36 @@ const AppWithFirebase = () => {
       return remoteConfigInit;
     });
 
-  useEffect(() => {
-    if (!isDev && process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY) {
-      initializeAppCheck(app, {
+  const { status: useInitAppCheckStatus, data: appCheck } = useInitAppCheck(
+    async (firebaseApp) => {
+      if (isDev || !process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY)
+        return null as unknown as AppCheck;
+      const appCheckInit = initializeAppCheck(firebaseApp, {
         provider: new ReCaptchaV3Provider(
           process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY
         ),
         isTokenAutoRefreshEnabled: true,
       });
-      initializePerformance(app, {});
+      return appCheckInit;
     }
+  );
+
+  const { status: useInitAnalyticsStatus, data: analytics } = useInitAnalytics(
+    async (firebaseApp) => {
+      if (isDev) return null as unknown as Analytics;
+      const analyticsInit = initializeAnalytics(firebaseApp);
+      return analyticsInit;
+    }
+  );
+
+  const { status: useInitPerformanceStatus, data: performance } =
+    useInitPerformance(async (firebaseApp) => {
+      if (isDev) return null as unknown as FirebasePerformance;
+      const performanceInit = initializePerformance(firebaseApp, {});
+      return performanceInit;
+    });
+
+  useEffect(() => {
     const functions = getFunctions(app, 'us-west2');
 
     if (isDev) {
@@ -118,7 +165,10 @@ const AppWithFirebase = () => {
     useInitFirestoreStatus === 'loading' ||
     useInitStorageStatus === 'loading' ||
     useInitAuthStatus === 'loading' ||
-    useInitRemoteConfigStatus === 'loading'
+    useInitRemoteConfigStatus === 'loading' ||
+    useInitAppCheckStatus === 'loading' ||
+    useInitAnalyticsStatus === 'loading' ||
+    useInitPerformanceStatus === 'loading'
   )
     return <Loading />;
   return (
@@ -129,11 +179,23 @@ const AppWithFirebase = () => {
           <StorageProvider sdk={storage}>
             <AuthProvider sdk={auth}>
               <RemoteConfigProvider sdk={remoteConfig}>
-                <FirebaseProvider>
-                  <Suspense fallback={<Loading />}>
-                    <Routing />
-                  </Suspense>
-                </FirebaseProvider>
+                <RenderInProdOnly Component={AppCheckProvider} sdk={appCheck}>
+                  <RenderInProdOnly
+                    Component={AnalyticsProvider}
+                    sdk={analytics}
+                  >
+                    <RenderInProdOnly
+                      Component={PerformanceProvider}
+                      sdk={performance}
+                    >
+                      <FirebaseProvider>
+                        <Suspense fallback={<Loading />}>
+                          <Routing />
+                        </Suspense>
+                      </FirebaseProvider>
+                    </RenderInProdOnly>
+                  </RenderInProdOnly>
+                </RenderInProdOnly>
               </RemoteConfigProvider>
             </AuthProvider>
           </StorageProvider>
