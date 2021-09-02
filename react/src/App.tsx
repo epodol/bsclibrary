@@ -18,9 +18,12 @@ import {
   PerformanceProvider,
 } from 'reactfire';
 
-import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
+import {
+  connectFirestoreEmulator,
+  initializeFirestore,
+} from 'firebase/firestore';
 import { connectStorageEmulator, getStorage } from 'firebase/storage';
-import { connectAuthEmulator, getAuth } from 'firebase/auth';
+import { connectAuthEmulator, initializeAuth } from 'firebase/auth';
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
 import {
   AppCheck,
@@ -78,7 +81,7 @@ const AppWithFirebase = () => {
 
   const { status: useInitFirestoreStatus, data: firestore } = useInitFirestore(
     async (firebaseApp) => {
-      const firestoreInit = getFirestore(firebaseApp);
+      const firestoreInit = initializeFirestore(firebaseApp, {});
       if (isDev) connectFirestoreEmulator(firestoreInit, 'localhost', 8080);
       return firestoreInit;
     }
@@ -94,7 +97,7 @@ const AppWithFirebase = () => {
 
   const { status: useInitAuthStatus, data: auth } = useInitAuth(
     async (firebaseApp) => {
-      const authInit = getAuth(firebaseApp);
+      const authInit = initializeAuth(firebaseApp);
       if (isDev) connectAuthEmulator(authInit, 'http://localhost:9099/');
       return authInit;
     }
