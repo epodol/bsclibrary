@@ -19,23 +19,42 @@ import {
 } from 'reactfire';
 
 import {
+  Firestore,
   connectFirestoreEmulator,
   initializeFirestore,
 } from 'firebase/firestore';
-import { connectStorageEmulator, getStorage } from 'firebase/storage';
-import { connectAuthEmulator, initializeAuth } from 'firebase/auth';
-import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
+import {
+  FirebaseStorage,
+  connectStorageEmulator,
+  getStorage,
+} from 'firebase/storage';
+import {
+  Auth,
+  connectAuthEmulator,
+  initializeAuth,
+  browserLocalPersistence,
+  browserSessionPersistence,
+} from 'firebase/auth';
+import {
+  // Functions,
+  connectFunctionsEmulator,
+  getFunctions,
+} from 'firebase/functions';
 import {
   AppCheck,
   initializeAppCheck,
   ReCaptchaV3Provider,
 } from 'firebase/app-check';
-import { fetchAndActivate, getRemoteConfig } from 'firebase/remote-config';
+import {
+  RemoteConfig,
+  fetchAndActivate,
+  getRemoteConfig,
+} from 'firebase/remote-config';
 import {
   FirebasePerformance,
   initializePerformance,
 } from 'firebase/performance';
-import { Analytics, initializeAnalytics } from '@firebase/analytics';
+import { Analytics, initializeAnalytics } from 'firebase/analytics';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -76,15 +95,26 @@ const RenderInProdOnly = ({
   return <Component {...props}>{children}</Component>;
 };
 
-const AppWithFirebase = () => {
-  const app = useFirebaseApp();
-
+const useInitFirebaseSDKs = (): {
+  loading: boolean;
+  SDKs: {
+    analytics: Analytics | null;
+    appCheck: AppCheck | null;
+    auth: Auth;
+    firestore: Firestore;
+    // functions: Functions;
+    performance: FirebasePerformance | null;
+    storage: FirebaseStorage;
+    remoteConfig: RemoteConfig;
+  } | null;
+} => {
   const { status: useInitFirestoreStatus, data: firestore } = useInitFirestore(
     async (firebaseApp) => {
       const firestoreInit = initializeFirestore(firebaseApp, {});
       if (isDev) connectFirestoreEmulator(firestoreInit, 'localhost', 8080);
       return firestoreInit;
-    }
+    },
+    { suspense: false }
   );
 
   const { status: useInitStorageStatus, data: storage } = useInitStorage(
@@ -92,45 +122,55 @@ const AppWithFirebase = () => {
       const storageInit = getStorage(firebaseApp);
       if (isDev) connectStorageEmulator(storageInit, 'localhost', 9199);
       return storageInit;
-    }
+    },
+    { suspense: false }
   );
 
   const { status: useInitAuthStatus, data: auth } = useInitAuth(
     async (firebaseApp) => {
-      const authInit = initializeAuth(firebaseApp);
-      if (isDev) connectAuthEmulator(authInit, 'http://localhost:9099/');
+      const authInit = initializeAuth(firebaseApp, {
+        persistence: [browserLocalPersistence, browserSessionPersistence],
+      });
+      if (isDev)
+        connectAuthEmulator(authInit, 'http://localhost:9099/', {
+          disableWarnings: true,
+        });
       return authInit;
-    }
+    },
+    { suspense: false }
   );
 
   const { status: useInitRemoteConfigStatus, data: remoteConfig } =
-    useInitRemoteConfig(async (firebaseApp) => {
-      const remoteConfigInit = getRemoteConfig(firebaseApp);
-      remoteConfigInit.settings = {
-        minimumFetchIntervalMillis: 10000,
-        fetchTimeoutMillis: 10000,
-      };
+    useInitRemoteConfig(
+      async (firebaseApp) => {
+        const remoteConfigInit = getRemoteConfig(firebaseApp);
+        remoteConfigInit.settings = {
+          minimumFetchIntervalMillis: 10000,
+          fetchTimeoutMillis: 10000,
+        };
 
-      remoteConfigInit.defaultConfig = {
-        home_banner_enabled: false,
-        home_banner_severity: 'success',
-        home_banner_title: 'Welcome to the BASIS Scottsdale Library!',
-        home_banner_title_enabled: false,
-        home_banner_message: 'Coming 2021',
-        home_banner_button_enabled: false,
-        home_banner_button_text: 'View the Website',
-        home_banner_button_href: 'https://bsclibrary.net',
-        home_banner_icon_enabled: false,
-      } as any;
+        remoteConfigInit.defaultConfig = {
+          home_banner_enabled: false,
+          home_banner_severity: 'success',
+          home_banner_title: 'Welcome to the BASIS Scottsdale Library!',
+          home_banner_title_enabled: false,
+          home_banner_message: 'Coming 2021',
+          home_banner_button_enabled: false,
+          home_banner_button_text: 'View the Website',
+          home_banner_button_href: 'https://bsclibrary.net',
+          home_banner_icon_enabled: false,
+        } as any;
 
-      if (!isDev) await fetchAndActivate(remoteConfigInit);
-      return remoteConfigInit;
-    });
+        if (!isDev) await fetchAndActivate(remoteConfigInit);
+        return remoteConfigInit;
+      },
+      { suspense: false }
+    );
 
   const { status: useInitAppCheckStatus, data: appCheck } = useInitAppCheck(
     async (firebaseApp) => {
       if (isDev || !process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY)
-        return null as unknown as AppCheck;
+        return null as any;
       const appCheckInit = initializeAppCheck(firebaseApp, {
         provider: new ReCaptchaV3Provider(
           process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY
@@ -138,23 +178,30 @@ const AppWithFirebase = () => {
         isTokenAutoRefreshEnabled: true,
       });
       return appCheckInit;
-    }
+    },
+    { suspense: false }
   );
 
   const { status: useInitAnalyticsStatus, data: analytics } = useInitAnalytics(
     async (firebaseApp) => {
-      if (isDev) return null as unknown as Analytics;
+      if (isDev) return null as any;
       const analyticsInit = initializeAnalytics(firebaseApp);
       return analyticsInit;
-    }
+    },
+    { suspense: false }
   );
 
   const { status: useInitPerformanceStatus, data: performance } =
-    useInitPerformance(async (firebaseApp) => {
-      if (isDev) return null as unknown as FirebasePerformance;
-      const performanceInit = initializePerformance(firebaseApp, {});
-      return performanceInit;
-    });
+    useInitPerformance(
+      async (firebaseApp) => {
+        if (isDev) return null as any;
+        const performanceInit = initializePerformance(firebaseApp, {});
+        return performanceInit;
+      },
+      { suspense: false }
+    );
+
+  const app = useFirebaseApp();
 
   useEffect(() => {
     const functions = getFunctions(app, 'us-west2');
@@ -173,23 +220,44 @@ const AppWithFirebase = () => {
     useInitAnalyticsStatus === 'loading' ||
     useInitPerformanceStatus === 'loading'
   )
-    return <Loading />;
+    return { loading: true, SDKs: null };
+  return {
+    loading: false,
+    SDKs: {
+      firestore,
+      storage,
+      auth,
+      remoteConfig,
+      appCheck,
+      analytics,
+      performance,
+    },
+  };
+};
+
+const AppWithFirebase = () => {
+  const { loading, SDKs } = useInitFirebaseSDKs();
+  if (loading || SDKs === null) return <Loading />;
+
   return (
     <ThemeProvider theme={MUITheme}>
       <CssBaseline />
       <NotificationProvider>
-        <FirestoreProvider sdk={firestore}>
-          <StorageProvider sdk={storage}>
-            <AuthProvider sdk={auth}>
-              <RemoteConfigProvider sdk={remoteConfig}>
-                <RenderInProdOnly Component={AppCheckProvider} sdk={appCheck}>
+        <FirestoreProvider sdk={SDKs.firestore}>
+          <StorageProvider sdk={SDKs.storage}>
+            <AuthProvider sdk={SDKs.auth}>
+              <RemoteConfigProvider sdk={SDKs.remoteConfig}>
+                <RenderInProdOnly
+                  Component={AppCheckProvider}
+                  sdk={SDKs.appCheck}
+                >
                   <RenderInProdOnly
                     Component={AnalyticsProvider}
-                    sdk={analytics}
+                    sdk={SDKs.analytics}
                   >
                     <RenderInProdOnly
                       Component={PerformanceProvider}
-                      sdk={performance}
+                      sdk={SDKs.performance}
                     >
                       <FirebaseProvider>
                         <Suspense fallback={<Loading />}>

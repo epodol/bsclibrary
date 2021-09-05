@@ -7,6 +7,8 @@ import {
   DialogContentText,
   TextField,
   DialogActions,
+  FormControlLabel,
+  Checkbox,
 } from '@material-ui/core';
 
 import { Formik, Form } from 'formik';
@@ -17,6 +19,9 @@ import NotificationContext from 'src/contexts/NotificationContext';
 import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
 } from 'firebase/auth';
 import { useHistory } from 'react-router';
 
@@ -64,32 +69,45 @@ const SignIn = () => {
           initialValues={{
             email: '',
             password: '',
+            rememberMe: true,
           }}
           validationSchema={SignInSchema}
           onSubmit={async (values, actions) => {
             actions.setSubmitting(true);
-            await signInWithEmailAndPassword(
+            await setPersistence(
               auth,
-              values.email,
-              values.password
-            )
-              .then(() => {
-                history.push('/account');
-              })
-              .catch((err) => {
-                if (err.code === 'auth/wrong-password') {
-                  actions.setFieldError('password', 'Wrong Password');
-                } else if (err.code === 'auth/user-not-found') {
-                  actions.setFieldError('email', 'User not Found');
-                } else if (err.code === 'auth/user-disabled') {
-                  actions.setFieldError('email', 'This user has been disabled');
-                } else if (err.code === 'auth/invalid-email') {
-                  actions.setFieldError('email', 'Please enter a valid email');
-                }
-              })
-              .finally(() => {
-                actions.setSubmitting(false);
-              });
+              values.rememberMe
+                ? browserLocalPersistence
+                : browserSessionPersistence
+            ).then(async () => {
+              await signInWithEmailAndPassword(
+                auth,
+                values.email,
+                values.password
+              )
+                .then(() => {
+                  actions.setSubmitting(false);
+                  history.push('/account');
+                })
+                .catch((err) => {
+                  if (err.code === 'auth/wrong-password') {
+                    actions.setFieldError('password', 'Wrong Password');
+                  } else if (err.code === 'auth/user-not-found') {
+                    actions.setFieldError('email', 'User not Found');
+                  } else if (err.code === 'auth/user-disabled') {
+                    actions.setFieldError(
+                      'email',
+                      'This user has been disabled'
+                    );
+                  } else if (err.code === 'auth/invalid-email') {
+                    actions.setFieldError(
+                      'email',
+                      'Please enter a valid email'
+                    );
+                  }
+                  actions.setSubmitting(false);
+                });
+            });
           }}
         >
           {({ values, errors, isSubmitting, handleChange, submitCount }) => (
@@ -126,6 +144,18 @@ const SignIn = () => {
                   autoComplete="current-password"
                   value={values.password}
                   onChange={handleChange}
+                />
+                <FormControlLabel
+                  style={{ marginTop: '.5rem' }}
+                  control={
+                    <Checkbox
+                      checked={values.rememberMe}
+                      onChange={handleChange}
+                      name="rememberMe"
+                      color="primary"
+                    />
+                  }
+                  label="Remember Me  "
                 />
                 <br />
                 <div style={{ float: 'right', paddingTop: 3 }}>
@@ -165,7 +195,7 @@ const SignIn = () => {
               </DialogActions>
             </Form>
           )}
-        </Formik>{' '}
+        </Formik>
       </Dialog>
 
       <Dialog

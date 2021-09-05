@@ -23,7 +23,7 @@ We would love for you to contribute to `bsclibrary`, pull requests are welcome! 
 
 1. Install dependencies
    ```
-   > npm install
+   > npm install --no-audit
    ```
 1. Start the React development server, Typescript compiler, and Firebase Emulators.
    ```

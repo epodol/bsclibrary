@@ -165,8 +165,8 @@ const Navigation = () => {
                   <MenuItem
                     onClick={() => {
                       setAnchorEl(null);
+                      history.push('.');
                       auth.signOut().then(() => {
-                        history.push('.');
                         window.location.reload();
                       });
                     }}
