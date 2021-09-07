@@ -169,7 +169,7 @@ const Home = () => {
           be able to make this a reality. To learn more about the library, check
           out <Link to="/about">the About page</Link>. If you still have any
           questions, feel free to email us at{' '}
-          <a href="mailto:support@bsclibrary.net">support@bsclibrary.net</a>.
+          <a href="mailto:info@bsclibrary.net">info@bsclibrary.net</a>.
         </h6>
       </AboutShort>
       <AboutShort>
@@ -230,8 +230,8 @@ const Home = () => {
         <h2>Questions?</h2>
         <h6>
           If you have any other questions, please reach out to us at{' '}
-          <a href="mailto:support@bsclibrary.net">support@bsclibrary.net</a>.
-          Thank you again for all your generosity and support!
+          <a href="mailto:info@bsclibrary.net">info@bsclibrary.net</a>. Thank
+          you again for all your generosity and support!
         </h6>
       </AboutShort>
     </div>

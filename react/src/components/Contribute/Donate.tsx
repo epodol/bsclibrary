@@ -19,8 +19,8 @@ const Donate = () => (
       </p>
       <p>
         For larger donations, please contact us at{' '}
-        <a href="mailto:support@bsclibrary.net">support@bsclibrary.net</a> to
-        schedule a pickup time.
+        <a href="mailto:info@bsclibrary.net">info@bsclibrary.net</a> to schedule
+        a pickup time.
       </p>
       <br />
       <p>

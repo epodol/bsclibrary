@@ -8,10 +8,10 @@ const Footer = () => (
       <div className="text-center">
         <ul className="list-unstyled list-inline">
           <li className="list-inline-item">
-            <Tooltip title="support@bsclibrary.net" placement="top">
+            <Tooltip title="info@bsclibrary.net" placement="top">
               <a
                 className=" btn-sm btn-dribbble mx-3"
-                href="mailto:support@bsclibrary.net"
+                href="mailto:info@bsclibrary.net"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: '#fff', textDecoration: 'none' }}

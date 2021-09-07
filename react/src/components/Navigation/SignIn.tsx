@@ -20,7 +20,7 @@ import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   setPersistence,
-  browserLocalPersistence,
+  indexedDBLocalPersistence,
   browserSessionPersistence,
 } from 'firebase/auth';
 import { useHistory } from 'react-router';
@@ -77,7 +77,7 @@ const SignIn = () => {
             await setPersistence(
               auth,
               values.rememberMe
-                ? browserLocalPersistence
+                ? indexedDBLocalPersistence
                 : browserSessionPersistence
             ).then(async () => {
               await signInWithEmailAndPassword(

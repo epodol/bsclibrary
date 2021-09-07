@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense, useEffect, Component } from 'react';
 import {
   useFirebaseApp,
   useInitFirestore,
@@ -28,13 +28,7 @@ import {
   connectStorageEmulator,
   getStorage,
 } from 'firebase/storage';
-import {
-  Auth,
-  connectAuthEmulator,
-  initializeAuth,
-  browserLocalPersistence,
-  browserSessionPersistence,
-} from 'firebase/auth';
+import { Auth, connectAuthEmulator, getAuth } from 'firebase/auth';
 import {
   // Functions,
   connectFunctionsEmulator,
@@ -50,11 +44,8 @@ import {
   fetchAndActivate,
   getRemoteConfig,
 } from 'firebase/remote-config';
-import {
-  FirebasePerformance,
-  initializePerformance,
-} from 'firebase/performance';
-import { Analytics, initializeAnalytics } from 'firebase/analytics';
+import { FirebasePerformance, getPerformance } from 'firebase/performance';
+import { Analytics, getAnalytics } from 'firebase/analytics';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -83,16 +74,16 @@ const firebaseConfig = {
 };
 
 const RenderInProdOnly = ({
-  Component,
+  RenderComponent,
   children,
   ...props
 }: {
-  Component: any;
+  RenderComponent: any;
   children: any;
   [key: string]: any;
 }) => {
   if (isDev) return children;
-  return <Component {...props}>{children}</Component>;
+  return <RenderComponent {...props}>{children}</RenderComponent>;
 };
 
 const useInitFirebaseSDKs = (): {
@@ -128,9 +119,7 @@ const useInitFirebaseSDKs = (): {
 
   const { status: useInitAuthStatus, data: auth } = useInitAuth(
     async (firebaseApp) => {
-      const authInit = initializeAuth(firebaseApp, {
-        persistence: [browserLocalPersistence, browserSessionPersistence],
-      });
+      const authInit = getAuth(firebaseApp);
       if (isDev)
         connectAuthEmulator(authInit, 'http://localhost:9099/', {
           disableWarnings: true,
@@ -185,7 +174,7 @@ const useInitFirebaseSDKs = (): {
   const { status: useInitAnalyticsStatus, data: analytics } = useInitAnalytics(
     async (firebaseApp) => {
       if (isDev) return null as any;
-      const analyticsInit = initializeAnalytics(firebaseApp);
+      const analyticsInit = getAnalytics(firebaseApp);
       return analyticsInit;
     },
     { suspense: false }
@@ -195,7 +184,7 @@ const useInitFirebaseSDKs = (): {
     useInitPerformance(
       async (firebaseApp) => {
         if (isDev) return null as any;
-        const performanceInit = initializePerformance(firebaseApp, {});
+        const performanceInit = getPerformance(firebaseApp);
         return performanceInit;
       },
       { suspense: false }
@@ -248,15 +237,15 @@ const AppWithFirebase = () => {
             <AuthProvider sdk={SDKs.auth}>
               <RemoteConfigProvider sdk={SDKs.remoteConfig}>
                 <RenderInProdOnly
-                  Component={AppCheckProvider}
+                  RenderComponent={AppCheckProvider}
                   sdk={SDKs.appCheck}
                 >
                   <RenderInProdOnly
-                    Component={AnalyticsProvider}
+                    RenderComponent={AnalyticsProvider}
                     sdk={SDKs.analytics}
                   >
                     <RenderInProdOnly
-                      Component={PerformanceProvider}
+                      RenderComponent={PerformanceProvider}
                       sdk={SDKs.performance}
                     >
                       <FirebaseProvider>
@@ -276,12 +265,59 @@ const AppWithFirebase = () => {
   );
 };
 
+// Have to use class because componentDidCatch is not supported in hooks
+class ErrorBoundary extends Component<{}, any> {
+  constructor(props: any) {
+    super(props);
+    this.state = { error: null, errorInfo: null };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    // Catch errors in any components below and re-render with error message
+    this.setState({
+      error: error,
+      errorInfo: errorInfo,
+    });
+
+    console.error(error);
+    console.error(errorInfo);
+    console.trace();
+    // You can also log error messages to an error reporting service here
+  }
+
+  render() {
+    if (this.state.errorInfo) {
+      // Error path
+      return (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <h2>Something went wrong.</h2>
+          <details style={{ whiteSpace: 'pre-wrap' }}>
+            {this.state.error && this.state.error.toString()}
+            <br />
+            {this.state.errorInfo.componentStack}
+          </details>
+        </div>
+      );
+    }
+    // Normally, just render children
+    return this.props.children;
+  }
+}
+
 const App = () => (
-  <Suspense fallback={<Loading />}>
-    <FirebaseAppProvider firebaseConfig={firebaseConfig} suspense>
-      <AppWithFirebase />
-    </FirebaseAppProvider>
-  </Suspense>
+  <ErrorBoundary>
+    <Suspense fallback={<Loading />}>
+      <FirebaseAppProvider firebaseConfig={firebaseConfig} suspense>
+        <AppWithFirebase />
+      </FirebaseAppProvider>
+    </Suspense>
+  </ErrorBoundary>
 );
 
 export default App;

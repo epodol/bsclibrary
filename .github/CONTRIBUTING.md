@@ -1,6 +1,6 @@
 # Contributing
 
-We would love for you to contribute to `bsclibrary`, pull requests are welcome! Please contact `support@bsclibrary.net` if you would like to become a contributor.
+We would love for you to contribute to `bsclibrary`, pull requests are welcome! Please contact `info@bsclibrary.net` if you would like to become a contributor.
 
 ## Setting up your workspace
 
