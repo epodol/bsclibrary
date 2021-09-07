@@ -289,19 +289,47 @@ class ErrorBoundary extends Component<{}, any> {
     if (this.state.errorInfo) {
       // Error path
       return (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <h2>Something went wrong.</h2>
-          <details style={{ whiteSpace: 'pre-wrap' }}>
-            {this.state.error && this.state.error.toString()}
-            <br />
-            {this.state.errorInfo.componentStack}
-          </details>
+        <div>
+          <h2
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignContent: 'center',
+            }}
+          >
+            Something went wrong.
+          </h2>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignContent: 'center',
+            }}
+          >
+            <details style={{ whiteSpace: 'pre-wrap' }}>
+              {this.state.error && this.state.error.toString()}
+              <br />
+              {this.state.errorInfo.componentStack}
+            </details>
+          </div>
+          <br />
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignContent: 'center',
+            }}
+          >
+            <a
+              href="https://github.com/epodol/bsclibrary"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Think you found a bug? Please open a new issue in our GitHub Repo:
+              https://github.com/epodol/bsclibrary
+            </a>
+          </div>
         </div>
       );
     }
