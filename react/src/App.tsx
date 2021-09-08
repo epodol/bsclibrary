@@ -76,14 +76,14 @@ const firebaseConfig = {
 const RenderInProdOnly = ({
   RenderComponent,
   children,
-  ...props
+  sdk,
 }: {
   RenderComponent: any;
   children: any;
-  [key: string]: any;
+  sdk: any;
 }) => {
   if (isDev) return children;
-  return <RenderComponent {...props}>{children}</RenderComponent>;
+  return <RenderComponent sdk={sdk}>{children}</RenderComponent>;
 };
 
 const useInitFirebaseSDKs = (): {
