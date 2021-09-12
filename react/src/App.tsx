@@ -1,13 +1,10 @@
-import React, { Suspense, useEffect, Component } from 'react';
+import React, { Suspense, Component, useEffect } from 'react';
 import {
   useFirebaseApp,
   useInitFirestore,
   useInitStorage,
   useInitAuth,
   useInitRemoteConfig,
-  useInitAppCheck,
-  useInitAnalytics,
-  useInitPerformance,
   FirebaseAppProvider,
   FirestoreProvider,
   StorageProvider,
@@ -31,18 +28,14 @@ import {
   connectFunctionsEmulator,
   getFunctions,
 } from 'firebase/functions';
-import {
-  AppCheck,
-  initializeAppCheck,
-  ReCaptchaV3Provider,
-} from 'firebase/app-check';
+import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 import {
   RemoteConfig,
   fetchAndActivate,
   getRemoteConfig,
 } from 'firebase/remote-config';
-import { FirebasePerformance, getPerformance } from 'firebase/performance';
-import { Analytics, getAnalytics } from 'firebase/analytics';
+import { getPerformance } from 'firebase/performance';
+import { getAnalytics } from 'firebase/analytics';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -72,16 +65,11 @@ const firebaseConfig = {
 
 const useInitFirebaseSDKs = (): {
   loading: boolean;
-  SDKs: {
-    analytics: Analytics | null;
-    appCheck: AppCheck | null;
-    auth: Auth;
-    firestore: Firestore;
-    // functions: Functions;
-    performance: FirebasePerformance | null;
-    storage: FirebaseStorage;
-    remoteConfig: RemoteConfig;
-  } | null;
+  auth: Auth | null;
+  firestore: Firestore | null;
+  // functions: Functions | null;
+  storage: FirebaseStorage | null;
+  remoteConfig: RemoteConfig | null;
 } => {
   const { status: useInitFirestoreStatus, data: firestore } = useInitFirestore(
     async (firebaseApp) => {
@@ -140,40 +128,6 @@ const useInitFirebaseSDKs = (): {
       { suspense: false }
     );
 
-  const { status: useInitAppCheckStatus, data: appCheck } = useInitAppCheck(
-    async (firebaseApp) => {
-      if (isDev || !process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY)
-        return null as any;
-      const appCheckInit = initializeAppCheck(firebaseApp, {
-        provider: new ReCaptchaV3Provider(
-          process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY
-        ),
-        isTokenAutoRefreshEnabled: true,
-      });
-      return appCheckInit;
-    },
-    { suspense: false }
-  );
-
-  const { status: useInitAnalyticsStatus, data: analytics } = useInitAnalytics(
-    async (firebaseApp) => {
-      if (isDev) return null as any;
-      const analyticsInit = getAnalytics(firebaseApp);
-      return analyticsInit;
-    },
-    { suspense: false }
-  );
-
-  const { status: useInitPerformanceStatus, data: performance } =
-    useInitPerformance(
-      async (firebaseApp) => {
-        if (isDev) return null as any;
-        const performanceInit = getPerformance(firebaseApp);
-        return performanceInit;
-      },
-      { suspense: false }
-    );
-
   const app = useFirebaseApp();
 
   useEffect(() => {
@@ -181,54 +135,70 @@ const useInitFirebaseSDKs = (): {
 
     if (isDev) {
       connectFunctionsEmulator(functions, 'localhost', 5001);
+    } else {
+      if (process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY)
+        initializeAppCheck(app, {
+          provider: new ReCaptchaV3Provider(
+            process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY
+          ),
+          isTokenAutoRefreshEnabled: true,
+        });
+      getAnalytics(app);
+      getPerformance(app);
     }
-  });
+  }, [app]);
 
   if (
     useInitFirestoreStatus === 'loading' ||
     useInitStorageStatus === 'loading' ||
     useInitAuthStatus === 'loading' ||
-    useInitRemoteConfigStatus === 'loading' ||
-    useInitAppCheckStatus === 'loading' ||
-    useInitAnalyticsStatus === 'loading' ||
-    useInitPerformanceStatus === 'loading'
+    useInitRemoteConfigStatus === 'loading'
   )
-    return { loading: true, SDKs: null };
+    return {
+      loading: true,
+      auth: null,
+      firestore: null,
+      storage: null,
+      remoteConfig: null,
+    };
   return {
     loading: false,
-    SDKs: {
-      firestore,
-      storage,
-      auth,
-      remoteConfig,
-      appCheck,
-      analytics,
-      performance,
-    },
+    auth,
+    firestore,
+    storage,
+    remoteConfig,
   };
 };
 
 const AppWithFirebase = () => {
-  const { loading, SDKs } = useInitFirebaseSDKs();
-  if (loading || SDKs === null) return <Loading />;
+  const { loading, auth, firestore, storage, remoteConfig } =
+    useInitFirebaseSDKs();
+  if (
+    loading ||
+    auth === null ||
+    firestore === null ||
+    storage === null ||
+    remoteConfig === null
+  )
+    return <Loading />;
 
   return (
     <ThemeProvider theme={MUITheme}>
       <CssBaseline />
       <NotificationProvider>
-        <FirestoreProvider sdk={SDKs.firestore}>
-          <StorageProvider sdk={SDKs.storage}>
-            <AuthProvider sdk={SDKs.auth}>
-              <RemoteConfigProvider sdk={SDKs.remoteConfig}>
+        <AuthProvider sdk={auth}>
+          <FirestoreProvider sdk={firestore}>
+            <StorageProvider sdk={storage}>
+              <RemoteConfigProvider sdk={remoteConfig}>
                 <FirebaseProvider>
                   <Suspense fallback={<Loading />}>
                     <Routing />
                   </Suspense>
                 </FirebaseProvider>
               </RemoteConfigProvider>
-            </AuthProvider>
-          </StorageProvider>
-        </FirestoreProvider>
+            </StorageProvider>
+          </FirestoreProvider>
+        </AuthProvider>
       </NotificationProvider>
     </ThemeProvider>
   );
