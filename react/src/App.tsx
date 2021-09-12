@@ -13,9 +13,6 @@ import {
   StorageProvider,
   AuthProvider,
   RemoteConfigProvider,
-  AppCheckProvider,
-  AnalyticsProvider,
-  PerformanceProvider,
 } from 'reactfire';
 
 import {
@@ -71,19 +68,6 @@ const firebaseConfig = {
   messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.REACT_APP_FIREBASE_APP_ID,
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
-};
-
-const RenderInProdOnly = ({
-  RenderComponent,
-  children,
-  sdk,
-}: {
-  RenderComponent: any;
-  children: any;
-  sdk: any;
-}) => {
-  if (isDev) return children;
-  return <RenderComponent sdk={sdk}>{children}</RenderComponent>;
 };
 
 const useInitFirebaseSDKs = (): {
@@ -236,26 +220,11 @@ const AppWithFirebase = () => {
           <StorageProvider sdk={SDKs.storage}>
             <AuthProvider sdk={SDKs.auth}>
               <RemoteConfigProvider sdk={SDKs.remoteConfig}>
-                <RenderInProdOnly
-                  RenderComponent={AppCheckProvider}
-                  sdk={SDKs.appCheck}
-                >
-                  <RenderInProdOnly
-                    RenderComponent={AnalyticsProvider}
-                    sdk={SDKs.analytics}
-                  >
-                    <RenderInProdOnly
-                      RenderComponent={PerformanceProvider}
-                      sdk={SDKs.performance}
-                    >
-                      <FirebaseProvider>
-                        <Suspense fallback={<Loading />}>
-                          <Routing />
-                        </Suspense>
-                      </FirebaseProvider>
-                    </RenderInProdOnly>
-                  </RenderInProdOnly>
-                </RenderInProdOnly>
+                <FirebaseProvider>
+                  <Suspense fallback={<Loading />}>
+                    <Routing />
+                  </Suspense>
+                </FirebaseProvider>
               </RemoteConfigProvider>
             </AuthProvider>
           </StorageProvider>
