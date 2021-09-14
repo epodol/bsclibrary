@@ -13,13 +13,16 @@ import { useFirebaseApp, useFirestore, useFirestoreDocData } from 'reactfire';
 import Checkout from '@common/types/Checkout';
 import FirebaseContext from 'src/contexts/FirebaseContext';
 import NotificationContext from 'src/contexts/NotificationContext';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { doc } from 'firebase/firestore';
 
 const CheckoutRow = ({ checkoutID }: { checkoutID: string }) => {
   const NotificationHandler = useContext(NotificationContext);
   const firebaseContext = useContext(FirebaseContext);
-  const functions = useFirebaseApp().functions('us-west2');
+  const app = useFirebaseApp();
+  const functions = getFunctions(app, 'us-west2');
   const firestore = useFirestore();
-  const checkoutRef = firestore.collection('checkouts').doc(checkoutID);
+  const checkoutRef = doc(firestore, 'checkouts', checkoutID);
   const checkout = useFirestoreDocData(checkoutRef).data as unknown as Checkout;
   return (
     <TableRow>
@@ -46,8 +49,10 @@ const CheckoutRow = ({ checkoutID }: { checkoutID: string }) => {
             0
           }
           onClick={() => {
-            functions
-              .httpsCallable('renewCheckout')({ checkoutID })
+            httpsCallable(
+              functions,
+              'renewCheckout'
+            )({ checkoutID })
               .then(() => {
                 NotificationHandler.addNotification({
                   message: 'Checkout renewed',

@@ -1,16 +1,42 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, Component, useEffect } from 'react';
 import {
   useFirebaseApp,
-  preloadFirestore,
-  preloadAuth,
-  preloadFunctions,
-  preloadStorage,
-  preloadRemoteConfig,
-  preloadAnalytics,
-  preloadPerformance,
+  useInitFirestore,
+  useInitStorage,
+  useInitAuth,
+  useInitRemoteConfig,
   FirebaseAppProvider,
+  FirestoreProvider,
+  StorageProvider,
+  AuthProvider,
+  RemoteConfigProvider,
 } from 'reactfire';
-import 'firebase/app-check';
+
+import {
+  Firestore,
+  connectFirestoreEmulator,
+  initializeFirestore,
+} from 'firebase/firestore';
+import {
+  FirebaseStorage,
+  connectStorageEmulator,
+  getStorage,
+} from 'firebase/storage';
+import { Auth, connectAuthEmulator, getAuth } from 'firebase/auth';
+import {
+  // Functions,
+  connectFunctionsEmulator,
+  getFunctions,
+} from 'firebase/functions';
+import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
+import {
+  RemoteConfig,
+  fetchAndActivate,
+  getRemoteConfig,
+} from 'firebase/remote-config';
+import { getPerformance } from 'firebase/performance';
+import { getAnalytics } from 'firebase/analytics';
+
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
 
@@ -37,49 +63,54 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
-const preloadSDKs = (firebaseApp: any) => {
-  const preloads: any[] = [
-    preloadFirestore({
-      firebaseApp,
-      setup(firestore) {
-        if (isDev) firestore().useEmulator('localhost', 8080);
-      },
-      suspense: true,
-    }),
-    preloadStorage({
-      firebaseApp,
-      setup(storage) {
-        if (isDev) storage().useEmulator('localhost', 9199);
-        return storage().setMaxUploadRetryTime(10000);
-      },
-      suspense: true,
-    }),
-    preloadAuth({
-      firebaseApp,
-      setup(auth) {
-        if (isDev) auth().useEmulator('http://localhost:9099/');
-      },
-      suspense: true,
-    }),
-    preloadFunctions({
-      firebaseApp,
-      async setup(functions) {
-        if (isDev) functions('us-west2').useEmulator('localhost', 5001);
-        functions('us-west2');
-      },
-      suspense: true,
-    }),
-    preloadRemoteConfig({
-      firebaseApp,
-      setup(remoteConfig) {
-        // eslint-disable-next-line no-param-reassign
-        remoteConfig().settings = {
+const useInitFirebaseSDKs = (): {
+  loading: boolean;
+  auth: Auth | null;
+  firestore: Firestore | null;
+  // functions: Functions | null;
+  storage: FirebaseStorage | null;
+  remoteConfig: RemoteConfig | null;
+} => {
+  const { status: useInitFirestoreStatus, data: firestore } = useInitFirestore(
+    async (firebaseApp) => {
+      const firestoreInit = initializeFirestore(firebaseApp, {});
+      if (isDev) connectFirestoreEmulator(firestoreInit, 'localhost', 8080);
+      return firestoreInit;
+    },
+    { suspense: false }
+  );
+
+  const { status: useInitStorageStatus, data: storage } = useInitStorage(
+    async (firebaseApp) => {
+      const storageInit = getStorage(firebaseApp);
+      if (isDev) connectStorageEmulator(storageInit, 'localhost', 9199);
+      return storageInit;
+    },
+    { suspense: false }
+  );
+
+  const { status: useInitAuthStatus, data: auth } = useInitAuth(
+    async (firebaseApp) => {
+      const authInit = getAuth(firebaseApp);
+      if (isDev)
+        connectAuthEmulator(authInit, 'http://localhost:9099/', {
+          disableWarnings: true,
+        });
+      return authInit;
+    },
+    { suspense: false }
+  );
+
+  const { status: useInitRemoteConfigStatus, data: remoteConfig } =
+    useInitRemoteConfig(
+      async (firebaseApp) => {
+        const remoteConfigInit = getRemoteConfig(firebaseApp);
+        remoteConfigInit.settings = {
           minimumFetchIntervalMillis: 10000,
           fetchTimeoutMillis: 10000,
         };
-        if (!isDev) remoteConfig().fetchAndActivate();
-        // eslint-disable-next-line no-param-reassign
-        remoteConfig().defaultConfig = {
+
+        remoteConfigInit.defaultConfig = {
           home_banner_enabled: false,
           home_banner_severity: 'success',
           home_banner_title: 'Welcome to the BASIS Scottsdale Library!',
@@ -90,70 +121,170 @@ const preloadSDKs = (firebaseApp: any) => {
           home_banner_button_href: 'https://bsclibrary.net',
           home_banner_icon_enabled: false,
         } as any;
+
+        if (!isDev) await fetchAndActivate(remoteConfigInit);
+        return remoteConfigInit;
       },
-      suspense: true,
-    }),
-  ];
-
-  if (!isDev) {
-    preloads.push(
-      preloadAnalytics({
-        firebaseApp,
-        setup(analytics) {
-          analytics();
-        },
-        suspense: true,
-      })
+      { suspense: false }
     );
 
-    preloads.push(
-      preloadPerformance({
-        firebaseApp,
-        setup(performance) {
-          performance();
-        },
-        suspense: true,
-      })
-    );
-  }
+  const app = useFirebaseApp();
 
-  return Promise.all(preloads);
+  useEffect(() => {
+    const functions = getFunctions(app, 'us-west2');
+
+    if (isDev) {
+      connectFunctionsEmulator(functions, 'localhost', 5001);
+    } else {
+      if (process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY)
+        initializeAppCheck(app, {
+          provider: new ReCaptchaV3Provider(
+            process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY
+          ),
+          isTokenAutoRefreshEnabled: true,
+        });
+      getAnalytics(app);
+      getPerformance(app);
+    }
+  }, [app]);
+
+  if (
+    useInitFirestoreStatus === 'loading' ||
+    useInitStorageStatus === 'loading' ||
+    useInitAuthStatus === 'loading' ||
+    useInitRemoteConfigStatus === 'loading'
+  )
+    return {
+      loading: true,
+      auth: null,
+      firestore: null,
+      storage: null,
+      remoteConfig: null,
+    };
+  return {
+    loading: false,
+    auth,
+    firestore,
+    storage,
+    remoteConfig,
+  };
 };
 
 const AppWithFirebase = () => {
-  const [loading, setLoading] = useState(true);
-  const firebaseApp = useFirebaseApp();
+  const { loading, auth, firestore, storage, remoteConfig } =
+    useInitFirebaseSDKs();
+  if (
+    loading ||
+    auth === null ||
+    firestore === null ||
+    storage === null ||
+    remoteConfig === null
+  )
+    return <Loading />;
 
-  const appCheck = !isDev ? firebaseApp.appCheck() : null;
-
-  useEffect(() => {
-    if (!isDev && process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY)
-      appCheck?.activate(process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY);
-  }, [appCheck]);
-
-  preloadSDKs(firebaseApp).then(() => setLoading(false));
-
-  if (loading) return <Loading />;
   return (
     <ThemeProvider theme={MUITheme}>
       <CssBaseline />
       <NotificationProvider>
-        <FirebaseProvider>
-          <Suspense fallback={<Loading />}>
-            <Routing />
-          </Suspense>
-        </FirebaseProvider>
+        <AuthProvider sdk={auth}>
+          <FirestoreProvider sdk={firestore}>
+            <StorageProvider sdk={storage}>
+              <RemoteConfigProvider sdk={remoteConfig}>
+                <FirebaseProvider>
+                  <Suspense fallback={<Loading />}>
+                    <Routing />
+                  </Suspense>
+                </FirebaseProvider>
+              </RemoteConfigProvider>
+            </StorageProvider>
+          </FirestoreProvider>
+        </AuthProvider>
       </NotificationProvider>
     </ThemeProvider>
   );
 };
 
+// Have to use class because componentDidCatch is not supported in hooks
+class ErrorBoundary extends Component<{}, any> {
+  constructor(props: any) {
+    super(props);
+    this.state = { error: null, errorInfo: null };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    // Catch errors in any components below and re-render with error message
+    this.setState({
+      error: error,
+      errorInfo: errorInfo,
+    });
+
+    console.error(error);
+    console.error(errorInfo);
+    console.trace();
+    // You can also log error messages to an error reporting service here
+  }
+
+  render() {
+    if (this.state.errorInfo) {
+      // Error path
+      return (
+        <div>
+          <h2
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignContent: 'center',
+            }}
+          >
+            Something went wrong.
+          </h2>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignContent: 'center',
+            }}
+          >
+            <details style={{ whiteSpace: 'pre-wrap' }}>
+              {this.state.error && this.state.error.toString()}
+              <br />
+              {this.state.errorInfo.componentStack}
+            </details>
+          </div>
+          <br />
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignContent: 'center',
+            }}
+          >
+            <a
+              href="https://github.com/epodol/bsclibrary"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Think you found a bug? Please open a new issue in our GitHub Repo:
+              https://github.com/epodol/bsclibrary
+            </a>
+          </div>
+        </div>
+      );
+    }
+    // Normally, just render children
+    return this.props.children;
+  }
+}
+
 const App = () => (
-  <Suspense fallback={<Loading />}>
-    <FirebaseAppProvider firebaseConfig={firebaseConfig} suspense>
-      <AppWithFirebase />
-    </FirebaseAppProvider>
-  </Suspense>
+  <ErrorBoundary>
+    <Suspense fallback={<Loading />}>
+      <FirebaseAppProvider firebaseConfig={firebaseConfig} suspense>
+        <AppWithFirebase />
+      </FirebaseAppProvider>
+    </Suspense>
+  </ErrorBoundary>
 );
 
 export default App;

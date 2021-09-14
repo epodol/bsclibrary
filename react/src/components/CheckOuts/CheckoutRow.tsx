@@ -28,6 +28,7 @@ import User from '@common/types/User';
 import WithID from '@common/types/WithID';
 import FirebaseContext from 'src/contexts/FirebaseContext';
 import NotificationContext from 'src/contexts/NotificationContext';
+import { doc, setDoc, Timestamp } from 'firebase/firestore';
 
 function determineCondition(conditionArg: condition | null) {
   switch (conditionArg) {
@@ -68,25 +69,18 @@ const CheckoutDialog = ({ checkout }: { checkout: WithID<CheckoutType> }) => {
   const NotificationHandler = useContext(NotificationContext);
 
   const history = useHistory();
-  const { Timestamp } = useFirestore;
   const firestore = useFirestore();
 
-  const user = useFirestoreDocData(
-    firestore.collection('users').doc(checkout.userID),
-    { idField: 'ID' }
-  ).data as unknown as WithID<User>;
+  const user = useFirestoreDocData(doc(firestore, 'users', checkout.userID), {
+    idField: 'ID',
+  }).data as unknown as WithID<User>;
 
-  const book = useFirestoreDocData(
-    firestore.collection('books').doc(checkout.bookID),
-    { idField: 'ID' }
-  ).data as unknown as WithID<Book>;
+  const book = useFirestoreDocData(doc(firestore, 'books', checkout.bookID), {
+    idField: 'ID',
+  }).data as unknown as WithID<Book>;
 
   const copy = useFirestoreDocData(
-    firestore
-      .collection('books')
-      .doc(checkout.bookID)
-      .collection('copies')
-      .doc(checkout.copyID),
+    doc(firestore, 'books', checkout.bookID, 'copies', checkout.copyID),
     { idField: 'ID' }
   ).data as unknown as WithID<Copy>;
 
@@ -203,10 +197,9 @@ const CheckoutDialog = ({ checkout }: { checkout: WithID<CheckoutType> }) => {
               ),
             } as Partial<CheckoutType>;
 
-            firestore
-              .collection('checkouts')
-              .doc(checkout.ID)
-              .set(newData, { merge: true })
+            setDoc(doc(firestore, 'checkouts', checkout.ID), newData, {
+              merge: true,
+            })
               .then(() => {
                 NotificationHandler.addNotification({
                   message: 'The due date has been updated.',

@@ -1,5 +1,19 @@
 import React, { useEffect, useState, useContext } from 'react';
+
 import { useFirestore, useFirestoreCollectionData, useUser } from 'reactfire';
+import {
+  collection,
+  where,
+  orderBy,
+  query,
+  limit,
+  addDoc,
+  serverTimestamp,
+  updateDoc,
+  doc,
+  deleteDoc,
+} from 'firebase/firestore';
+
 import {
   Button,
   ButtonGroup,
@@ -67,20 +81,22 @@ const CopiesTable = ({
   editing: boolean;
 }) => {
   const firestore = useFirestore();
-  const fieldValue = useFirestore.FieldValue;
   const user = useUser().data;
+  if (user === null) throw new Error('No user exists.');
 
-  const copiesInitRef = firestore
-    .collection('books')
-    .doc(bookID)
-    .collection('copies');
+  const copiesInitRef = collection(firestore, `books/${bookID}/copies`);
 
   const copiesRef = editing
-    ? copiesInitRef
-    : copiesInitRef.where('status', '!=', 4).orderBy('status');
+    ? query(copiesInitRef, limit(25))
+    : query(
+        copiesInitRef,
+        where('status', '!=', 4),
+        orderBy('status'),
+        limit(25)
+      );
 
   const copies: WithID<CopyInterface>[] = useFirestoreCollectionData(
-    copiesRef.limit(25),
+    copiesRef,
     {
       idField: 'ID',
     }
@@ -114,18 +130,14 @@ const CopiesTable = ({
                   <Button
                     className="px-3"
                     onClick={() => {
-                      firestore
-                        .collection('books')
-                        .doc(bookID)
-                        .collection('copies')
-                        .add({
-                          barcode: '',
-                          status: 4,
-                          condition: 3,
-                          notes: '',
-                          lastEditedBy: user.uid,
-                          lastEdited: fieldValue.serverTimestamp(),
-                        });
+                      addDoc(collection(firestore, `books/${bookID}/copies`), {
+                        barcode: '',
+                        status: 4,
+                        condition: 3,
+                        notes: '',
+                        lastEditedBy: user.uid,
+                        lastEdited: serverTimestamp(),
+                      });
                     }}
                   >
                     <Add className="mt-0" />
@@ -216,8 +228,8 @@ const EditCopy = ({
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const firestore = useFirestore();
-  const fieldValue = useFirestore.FieldValue;
   const user = useUser().data;
+  if (user === null) throw new Error('No user exists.');
 
   let activeTimer: NodeJS.Timeout | null = null;
 
@@ -384,19 +396,17 @@ const EditCopy = ({
             className="px-4"
             variant="contained"
             onClick={async () => {
-              await firestore
-                .collection('books')
-                .doc(bookID)
-                .collection('copies')
-                .doc(id)
-                .update({
+              await updateDoc(
+                doc(firestore, 'books', bookID ?? '', 'copies', id ?? ''),
+                {
                   barcode: barcodeValue,
                   status: statusValue,
                   condition: conditionValue,
                   notes: notesValue,
                   lastEditedBy: user.uid,
-                  lastEdited: fieldValue.serverTimestamp(),
-                })
+                  lastEdited: serverTimestamp(),
+                }
+              )
                 .then(() => {
                   NotificationHandler.addNotification({
                     message: 'Copy updated.',
@@ -425,12 +435,9 @@ const EditCopy = ({
             color="secondary"
             className="px-3"
             onClick={() => {
-              firestore
-                .collection('books')
-                .doc(bookID)
-                .collection('copies')
-                .doc(id)
-                .delete();
+              deleteDoc(
+                doc(firestore, 'books', bookID ?? '', 'copies', id ?? '')
+              );
             }}
           >
             <Delete />

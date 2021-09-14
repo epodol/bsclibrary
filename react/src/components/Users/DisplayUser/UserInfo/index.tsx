@@ -22,17 +22,19 @@ import { VpnKey, Lock, LockOpen } from '@material-ui/icons';
 import FirebaseContext from 'src/contexts/FirebaseContext';
 import { userInfo as userInfoInterface } from '@common/types/User';
 import NotificationContext from 'src/contexts/NotificationContext';
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { sendPasswordResetEmail } from 'firebase/auth';
 
 const UserInfo = ({ userInfo }: { userInfo: userInfoInterface }) => {
   const NotificationHandler = useContext(NotificationContext);
 
-  const firestore = useFirestore;
-  const { FieldValue } = firestore;
+  const firestore = useFirestore();
   const auth = useAuth();
   const { id } = useParams<any>();
-  const userDocRef = firestore().collection('users').doc(id);
+  const userDocRef = doc(firestore, 'users', id);
 
   const currentUser = useUser().data;
+  if (currentUser === null) throw new Error('User does not exist.');
   const firebaseContext = useContext(FirebaseContext);
 
   const UserSchema = yup.object().shape({
@@ -69,8 +71,7 @@ const UserInfo = ({ userInfo }: { userInfo: userInfoInterface }) => {
                 handleCodeInApp: true,
               };
               if (userInfo.email)
-                auth
-                  .sendPasswordResetEmail(userInfo.email, actionCodeSettings)
+                sendPasswordResetEmail(auth, userInfo.email, actionCodeSettings)
                   .then(() => {
                     NotificationHandler.addNotification({
                       message: `Reset Password Email Sent`,
@@ -104,17 +105,17 @@ const UserInfo = ({ userInfo }: { userInfo: userInfoInterface }) => {
             startIcon={userInfo.disabled ? <LockOpen /> : <Lock />}
             style={{ float: 'right' }}
             onClick={() => {
-              userDocRef
-                .set(
-                  {
-                    userInfo: {
-                      editedBy: currentUser.uid,
-                      editedTime: FieldValue.serverTimestamp(),
-                      disabled: !userInfo.disabled,
-                    },
+              setDoc(
+                userDocRef,
+                {
+                  userInfo: {
+                    editedBy: currentUser.uid,
+                    editedTime: serverTimestamp(),
+                    disabled: !userInfo.disabled,
                   },
-                  { merge: true }
-                )
+                },
+                { merge: true }
+              )
                 .then(() => {
                   NotificationHandler.addNotification({
                     message: `Account ${
@@ -177,38 +178,38 @@ const UserInfo = ({ userInfo }: { userInfo: userInfoInterface }) => {
         validationSchema={UserSchema}
         onSubmit={(values, actions) => {
           actions.setSubmitting(true);
-          userDocRef
-            .set(
-              {
-                userInfo: {
-                  editedBy: currentUser.uid,
-                  editedTime: FieldValue.serverTimestamp(),
-                  displayName: `${values.firstName} ${values.lastName}`,
-                  email: values.email,
-                  firstName: values.firstName,
-                  lastName: values.lastName,
-                  phoneNumber:
-                    (values.phoneNumber || null) === ''
-                      ? null
-                      : values.phoneNumber || null,
-                  photoURL:
-                    (values.photoURL || null) === ''
-                      ? null
-                      : values.photoURL || null,
-                  role: values.role,
-                  permissions: {
-                    VIEW_BOOKS: values.VIEW_BOOKS,
-                    REVIEW_BOOKS: values.REVIEW_BOOKS,
-                    CHECK_IN: values.CHECK_IN,
-                    CHECK_OUT: values.CHECK_OUT,
-                    MANAGE_BOOKS: values.MANAGE_BOOKS,
-                    MANAGE_CHECKOUTS: values.MANAGE_CHECKOUTS,
-                    MANAGE_USERS: values.MANAGE_USERS,
-                  },
+          setDoc(
+            userDocRef,
+            {
+              userInfo: {
+                editedBy: currentUser.uid,
+                editedTime: serverTimestamp(),
+                displayName: `${values.firstName} ${values.lastName}`,
+                email: values.email,
+                firstName: values.firstName,
+                lastName: values.lastName,
+                phoneNumber:
+                  (values.phoneNumber || null) === ''
+                    ? null
+                    : values.phoneNumber || null,
+                photoURL:
+                  (values.photoURL || null) === ''
+                    ? null
+                    : values.photoURL || null,
+                role: values.role,
+                permissions: {
+                  VIEW_BOOKS: values.VIEW_BOOKS,
+                  REVIEW_BOOKS: values.REVIEW_BOOKS,
+                  CHECK_IN: values.CHECK_IN,
+                  CHECK_OUT: values.CHECK_OUT,
+                  MANAGE_BOOKS: values.MANAGE_BOOKS,
+                  MANAGE_CHECKOUTS: values.MANAGE_CHECKOUTS,
+                  MANAGE_USERS: values.MANAGE_USERS,
                 },
               },
-              { merge: true }
-            )
+            },
+            { merge: true }
+          )
             .then(() => {
               NotificationHandler.addNotification({
                 message: `User info updated.`,

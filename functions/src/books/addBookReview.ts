@@ -91,7 +91,7 @@ const addBookReview = functions
         }
       );
 
-      const perspectiveResult = await perspectiveResultRaw.json();
+      const perspectiveResult = (await perspectiveResultRaw.json()) as any;
 
       reviewData.perspectiveResults = {
         raw: {

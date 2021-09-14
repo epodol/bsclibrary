@@ -20,6 +20,7 @@ import Loading from 'src/components/Loading';
 
 import BookInterface from '@common/types/Book';
 import NotificationContext from 'src/contexts/NotificationContext';
+import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
 
 interface BookInterfaceWithID extends BookInterface {
   id?: string;
@@ -32,10 +33,10 @@ const Book = () => {
   const location: { state: { editing?: boolean } } = useLocation();
   const history = useHistory();
   const firestore = useFirestore();
-  const ref = firestore.collection('books').doc(id);
-  const { data }: { data: BookInterfaceWithID } = useFirestoreDocData(ref, {
+  const ref = doc(firestore, 'books', id);
+  const data = useFirestoreDocData(ref, {
     idField: 'id',
-  });
+  }).data as unknown as BookInterfaceWithID;
   const { volumeInfo, featured } = data;
   const firebaseContext = useContext(FirebaseContext);
 
@@ -58,7 +59,7 @@ const Book = () => {
                   <Button
                     className="m-2"
                     onClick={() => {
-                      ref.delete();
+                      deleteDoc(ref);
                       history.push({
                         pathname: '/books',
                       });
@@ -81,10 +82,9 @@ const Book = () => {
                     className="m-2"
                     disabled={!(firebaseContext?.claims?.role >= 500)}
                     onClick={() => {
-                      ref
-                        .update({
-                          featured: !featured,
-                        })
+                      updateDoc(ref, {
+                        featured: !featured,
+                      })
                         .then(() => {
                           NotificationHandler.addNotification({
                             message: 'Toggled featured',

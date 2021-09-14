@@ -1,8 +1,14 @@
 # Contributing
 
-We would love for you to contribute to `bsclibrary`, pull requests are welcome! Please contact `support@bsclibrary.net` if you would like to become a contributor.
+We would love for you to contribute to `bsclibrary`, pull requests are welcome! Please contact `info@bsclibrary.net` if you would like to become a contributor.
 
 ## Setting up your workspace
+
+1. Ensure you have the following installed:
+
+   - Node.JS v14
+   - Node Package Manager v7
+   - Firebase CLI
 
 1. Clone the repo
 
@@ -17,7 +23,7 @@ We would love for you to contribute to `bsclibrary`, pull requests are welcome! 
 
 1. Install dependencies
    ```
-   > npm install
+   > npm install --no-audit
    ```
 1. Start the React development server, Typescript compiler, and Firebase Emulators.
    ```

@@ -10,6 +10,8 @@ import RecursivePartial from '@common/types/RecursivePartial';
 
 import FirebaseContext from 'src/contexts/FirebaseContext';
 import NotificationContext from 'src/contexts/NotificationContext';
+import { doc, setDoc } from 'firebase/firestore';
+import { serverTimestamp } from 'firebase/database';
 
 const checkoutInfoSchema = yup.object().shape({
   activeCheckouts: yup.array().of(yup.string()),
@@ -20,14 +22,14 @@ const checkoutInfoSchema = yup.object().shape({
 const UserCheckouts = ({ checkouts }: { checkouts: checkoutInfo }) => {
   const NotificationHandler = useContext(NotificationContext);
 
-  const firestore = useFirestore;
-  const { FieldValue } = firestore;
+  const firestore = useFirestore();
   const currentUser = useUser().data;
+  if (currentUser === null) throw new Error('User does not exist.');
 
   const firebaseContext = useContext(FirebaseContext);
 
   const { id } = useParams<any>();
-  const userDocRef = firestore().collection('users').doc(id);
+  const userDocRef = doc(firestore, 'users', id);
   return (
     <div className="text-center">
       <h5>{checkouts?.activeCheckouts.length ?? 0} active checkouts</h5>
@@ -50,11 +52,10 @@ const UserCheckouts = ({ checkouts }: { checkouts: checkoutInfo }) => {
             },
             userInfo: {
               editedBy: currentUser.uid,
-              editedTime: FieldValue.serverTimestamp(),
+              editedTime: serverTimestamp(),
             },
           };
-          userDocRef
-            .set(newData, { merge: true })
+          setDoc(userDocRef, newData, { merge: true })
             .then(() => {
               NotificationHandler.addNotification({
                 message: `Checkout info updated.`,

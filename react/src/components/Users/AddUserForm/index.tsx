@@ -16,12 +16,15 @@ import { useHistory } from 'react-router';
 
 import { addNewUserResult } from '@common/functions/addNewUser';
 import NotificationContext from 'src/contexts/NotificationContext';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { sendPasswordResetEmail } from 'firebase/auth';
 
 const AddUserForm = () => {
   const NotificationHandler = useContext(NotificationContext);
 
-  const functions = useFirebaseApp().functions('us-west2');
+  const firebaseApp = useFirebaseApp();
 
+  const functions = getFunctions(firebaseApp, 'us-west2');
   const auth = useAuth();
 
   const history = useHistory();
@@ -96,31 +99,33 @@ const AddUserForm = () => {
         validationSchema={SetRoleSchema}
         onSubmit={async (values, actions) => {
           actions.setSubmitting(true);
-          await functions
-            .httpsCallable('addNewUser')({
-              email: values.email,
-              first_name: values.first_name,
-              last_name: values.last_name,
-              role: values.role,
-              permissions: {
-                VIEW_BOOKS: values.VIEW_BOOKS,
-                REVIEW_BOOKS: values.REVIEW_BOOKS,
-                CHECK_IN: values.CHECK_IN,
-                CHECK_OUT: values.CHECK_OUT,
-                MANAGE_BOOKS: values.MANAGE_BOOKS,
-                MANAGE_CHECKOUTS: values.MANAGE_CHECKOUTS,
-                MANAGE_USERS: values.MANAGE_USERS,
-              },
-              maxCheckouts: values.maxCheckouts,
-              maxRenews: values.maxRenews,
-            })
+          await httpsCallable(
+            functions,
+            'addNewUser'
+          )({
+            email: values.email,
+            first_name: values.first_name,
+            last_name: values.last_name,
+            role: values.role,
+            permissions: {
+              VIEW_BOOKS: values.VIEW_BOOKS,
+              REVIEW_BOOKS: values.REVIEW_BOOKS,
+              CHECK_IN: values.CHECK_IN,
+              CHECK_OUT: values.CHECK_OUT,
+              MANAGE_BOOKS: values.MANAGE_BOOKS,
+              MANAGE_CHECKOUTS: values.MANAGE_CHECKOUTS,
+              MANAGE_USERS: values.MANAGE_USERS,
+            },
+            maxCheckouts: values.maxCheckouts,
+            maxRenews: values.maxRenews,
+          })
             .then((newUser) => {
               const newUserData = newUser.data as unknown as addNewUserResult;
               const actionCodeSettings = {
                 url: window.location.origin,
                 handleCodeInApp: true,
               };
-              auth.sendPasswordResetEmail(values.email, actionCodeSettings);
+              sendPasswordResetEmail(auth, values.email, actionCodeSettings);
               actions.setFieldValue('email', '', true);
               actions.setFieldTouched('email', false, true);
               actions.setFieldValue('first_name', '', true);
@@ -136,20 +141,20 @@ const AddUserForm = () => {
               });
             })
             .catch((err) => {
-              if (err.code === 'unauthenticated') {
-                actions.setFieldError('email', 'Permission denied.');
+              if (err.code === 'functions/unauthenticated') {
+                actions.setFieldError('email', 'functions/Permission denied.');
               } else if (err.code === 'permission-denied') {
                 actions.setFieldError(
                   'email',
                   'You do not have the permissions required to complete this request.'
                 );
-              } else if (err.code === 'invalid-argument') {
+              } else if (err.code === 'functions/invalid-argument') {
                 actions.setFieldError('email', 'Invalid arguments');
-              } else if (err.code === 'already-exists') {
+              } else if (err.code === 'functions/already-exists') {
                 actions.setFieldError('email', 'This user already exists.');
               } else {
-                actions.setFieldError('email', 'An internal error occurred.');
-                console.error(err);
+                actions.setFieldError('email', 'An unexpected error occurred.');
+                console.error(err.code);
                 NotificationHandler.addNotification({
                   message: `An unexpected error occurred.`,
                   severity: 'error',

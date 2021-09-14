@@ -1,12 +1,25 @@
 import React from 'react';
 import { AppBar, Tooltip } from '@material-ui/core';
-import { GitHub, Instagram } from '@material-ui/icons';
+import { GitHub, Instagram, Email } from '@material-ui/icons';
 
 const Footer = () => (
   <div className="footer">
     <AppBar className="font-small pt-3" position="absolute">
       <div className="text-center">
         <ul className="list-unstyled list-inline">
+          <li className="list-inline-item">
+            <Tooltip title="info@bsclibrary.net" placement="top">
+              <a
+                className=" btn-sm btn-dribbble mx-3"
+                href="mailto:info@bsclibrary.net"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#fff', textDecoration: 'none' }}
+              >
+                <Email style={{ fontSize: 40 }} />
+              </a>
+            </Tooltip>
+          </li>
           <li className="list-inline-item">
             <Tooltip title="Open souce on GitHub" placement="top">
               <a

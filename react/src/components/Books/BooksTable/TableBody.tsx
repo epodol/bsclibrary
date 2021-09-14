@@ -21,9 +21,16 @@ import { HelpOutline, Search } from '@material-ui/icons';
 
 import { useHistory, useLocation } from 'react-router-dom';
 import algoliasearch from 'algoliasearch';
-import firebase from 'firebase/app';
 
 import Book from './Book';
+import {
+  collection,
+  query as firestoreQuery,
+  where,
+  limit,
+  getDocs,
+} from 'firebase/firestore';
+import { useFirestore } from 'reactfire';
 
 const isDev = process.env.NODE_ENV !== 'production';
 
@@ -36,6 +43,8 @@ interface location {
 const TableBody = () => {
   const history = useHistory();
   const location = useLocation<location>();
+
+  const firestore = useFirestore();
 
   const [query, setQuery] = useState({
     search: location?.state?.query?.search || '',
@@ -65,30 +74,30 @@ const TableBody = () => {
         .then(({ hits }) => setBooks(hits));
     } else {
       // ONLY EXECUTED IN A DEVELOPMENT ENVIRONMENT
-      const booksRef = firebase.firestore().collection('books');
+      const booksRef = collection(firestore, 'books');
 
       const ref =
         query.search !== ''
-          ? booksRef
-              .where('volumeInfo.title', '>=', query.search)
-              .where('volumeInfo.title', '<=', `${query.search}~`)
-          : booksRef;
+          ? firestoreQuery(
+              booksRef,
+              where('volumeInfo.title', '>=', query.search),
+              where('volumeInfo.title', '<=', `${query.search}~`),
+              limit(query.limit)
+            )
+          : firestoreQuery(booksRef, limit(query.limit));
 
       const booksArray: any = [];
-      ref
-        .limit(query.limit)
-        .get()
-        .then((res) => {
-          res.docs.forEach((doc) =>
-            booksArray.push({ ...doc.data(), objectID: doc.id })
-          );
-          if (isSubscribed) setBooks(booksArray);
-        });
+      getDocs(ref).then((res) => {
+        res.docs.forEach((doc) =>
+          booksArray.push({ ...doc.data(), objectID: doc.id })
+        );
+        if (isSubscribed) setBooks(booksArray);
+      });
     }
     return () => {
       isSubscribed = false;
     };
-  }, [history, location.pathname, query]);
+  }, [history, location.pathname, query, firestore]);
 
   const searchRef = useRef(search);
   searchRef.current = search;

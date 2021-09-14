@@ -5,28 +5,34 @@ import { styled } from '@material-ui/core/styles';
 
 import { useHistory, Link } from 'react-router-dom';
 import { useRemoteConfig } from 'reactfire';
+import { getBoolean, getString } from 'firebase/remote-config';
 
 const Home = () => {
   const history = useHistory();
   const remoteConfig = useRemoteConfig();
 
-  const home_banner_enabled = remoteConfig.getBoolean('home_banner_enabled');
-  const home_banner_severity = remoteConfig.getString('home_banner_severity');
-  const home_banner_title = remoteConfig.getString('home_banner_title');
-  const home_banner_title_enabled = remoteConfig.getBoolean(
+  const home_banner_enabled = getBoolean(remoteConfig, 'home_banner_enabled');
+  const home_banner_severity = getString(remoteConfig, 'home_banner_severity');
+  const home_banner_title = getString(remoteConfig, 'home_banner_title');
+  const home_banner_title_enabled = getBoolean(
+    remoteConfig,
     'home_banner_title_enabled'
   );
-  const home_banner_message = remoteConfig.getString('home_banner_message');
-  const home_banner_button_enabled = remoteConfig.getBoolean(
+  const home_banner_message = getString(remoteConfig, 'home_banner_message');
+  const home_banner_button_enabled = getBoolean(
+    remoteConfig,
     'home_banner_button_enabled'
   );
-  const home_banner_button_text = remoteConfig.getString(
+  const home_banner_button_text = getString(
+    remoteConfig,
     'home_banner_button_text'
   );
-  const home_banner_button_href = remoteConfig.getString(
+  const home_banner_button_href = getString(
+    remoteConfig,
     'home_banner_button_href'
   );
-  const home_banner_icon_enabled = remoteConfig.getBoolean(
+  const home_banner_icon_enabled = getBoolean(
+    remoteConfig,
     'home_banner_icon_enabled'
   );
 
@@ -104,13 +110,13 @@ const Home = () => {
       <Box sx={{ pt: 0, color: 'primary.main' }}>
         <Content maxWidth="md">
           <Logo
-            src={`${process.env.PUBLIC_URL}/assets/logos/BASIS Scottsdale Library Logo - v0.1.1.svg`}
+            src={`${process.env.PUBLIC_URL}/assets/logos/BASIS Scottsdale Library Logo.svg`}
             alt="BASIS Scottsdale Library Logo"
           />
           <div>
             <Title color="inherit">BASIS Scottsdale Library</Title>
             <Typography variant="h5" component="p" color="inherit">
-              Coming 2021
+              Coming Soon
             </Typography>
             <Button
               style={{ marginTop: 4 }}
@@ -129,14 +135,14 @@ const Home = () => {
       <AboutShort>
         <h2>BASIS Scottsdale is getting a library!?</h2>
         <h6>
-          Yes! BASIS Scottsdale is getting its own dedicated library in 2021.
-          Our goal is to gather books and create an area where all BASIS
-          Scottsdale students can come check out books for their enjoyment. This
-          will also serve as a resource center for students. A library is a
-          peaceful area where everyone can study. The library will be designed
-          in a way where everyone will be able access it easily and have enough
-          time to read the books they take out while making it fair to others.
-          Everyone will be welcome!
+          Yes! BASIS Scottsdale is getting its own dedicated library! Our goal
+          is to gather books and create an area where all BASIS Scottsdale
+          students can come check out books for their enjoyment. This will also
+          serve as a resource center for students. A library is a peaceful area
+          where everyone can study. The library will be designed in a way where
+          everyone will be able access it easily and have enough time to read
+          the books they take out while making it fair to others. Everyone will
+          be welcome!
         </h6>
         <h2>Who will be able to use the library?</h2>
         <h6>
@@ -147,8 +153,8 @@ const Home = () => {
         <h6>
           The BASIS Scottsdale Library Committee is working as fast as possible
           to coordinate with the school administration and to set up or physical
-          library environment. We are excited to announce our opening date in
-          August of 2021. All updates will be posted in the Bulldog Blast, and
+          library environment. We are excited to announce our opening date as
+          soon as possible. All updates will be posted in the Bulldog Blast, and
           will be available here.
         </h6>
         <h2>What can I do to help?</h2>
@@ -163,7 +169,7 @@ const Home = () => {
           be able to make this a reality. To learn more about the library, check
           out <Link to="/about">the About page</Link>. If you still have any
           questions, feel free to email us at{' '}
-          <a href="mailto:support@bsclibrary.net">support@bsclibrary.net</a>.
+          <a href="mailto:info@bsclibrary.net">info@bsclibrary.net</a>.
         </h6>
       </AboutShort>
       <AboutShort>
@@ -224,8 +230,8 @@ const Home = () => {
         <h2>Questions?</h2>
         <h6>
           If you have any other questions, please reach out to us at{' '}
-          <a href="mailto:support@bsclibrary.net">support@bsclibrary.net</a>.
-          Thank you again for all your generosity and support!
+          <a href="mailto:info@bsclibrary.net">info@bsclibrary.net</a>. Thank
+          you again for all your generosity and support!
         </h6>
       </AboutShort>
     </div>

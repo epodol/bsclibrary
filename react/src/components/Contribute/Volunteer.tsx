@@ -8,7 +8,7 @@ const Volunteer = () => (
       The BASIS Scottsdale Library is looking for volunteers to help run the
       library on a daily basis. If you are interested in helping out, please
       contact the library at{' '}
-      <a href="mailto:support@bsclibrary.net">support@bsclibrary.net</a>.
+      <a href="mailto:info@bsclibrary.net">info@bsclibrary.net</a>.
       <p>
         More information about our volunteer program will be available soon!
       </p>

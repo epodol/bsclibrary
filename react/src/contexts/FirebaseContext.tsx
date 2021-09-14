@@ -6,15 +6,15 @@ import React, {
   useRef,
 } from 'react';
 import { useAuth, useFirestore } from 'reactfire';
-import 'firebase/app';
-import 'firebase/auth';
-import User from '@common/types/User';
+import { sendEmailVerification, User as AuthUser } from 'firebase/auth';
 import Loading from 'src/components/Loading';
 
 import NotificationContext from 'src/contexts/NotificationContext';
+import User from '@common/types/User';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 const FirebaseContext = createContext<{
-  user: firebase.default.User | null;
+  user: AuthUser | null;
   userDoc: User | null;
   claims: claims | null;
 }>({
@@ -34,7 +34,7 @@ export const FirebaseProvider = ({ children }: any) => {
   const NotificationHandler = useContext(NotificationContext);
 
   const [firebaseContextState, setFirebaseContextState] = useState<{
-    user: firebase.default.User | null;
+    user: AuthUser | null;
     userDoc: User | null;
     claims: claims | null;
   }>({
@@ -60,8 +60,7 @@ export const FirebaseProvider = ({ children }: any) => {
             url: window.location.href,
             handleCodeInApp: true,
           };
-          user
-            .sendEmailVerification(actionCodeSettings)
+          sendEmailVerification(user, actionCodeSettings)
             .then(() => {
               NotificationHandler.addNotification({
                 message:
@@ -84,9 +83,9 @@ export const FirebaseProvider = ({ children }: any) => {
         }
 
         // The user's firestore document
-        const userDocRef = firestore.collection('users').doc(user.uid);
+        const userDocRef = doc(firestore, 'users', user.uid);
 
-        docUnsubscribe = userDocRef.onSnapshot(async (snapshot) => {
+        docUnsubscribe = onSnapshot(userDocRef, async (snapshot) => {
           if (!isLoadedRef.current) {
             setFirebaseContextState({
               userDoc: (snapshot.data() as unknown as User) || null,

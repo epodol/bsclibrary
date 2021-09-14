@@ -115,7 +115,7 @@ const Navigation = () => {
         <Toolbar variant="regular">
           <Link to="/">
             <img
-              src={`${process.env.PUBLIC_URL}/assets/logos/BASIS Scottsdale Library Logo - v0.1.1.svg`}
+              src={`${process.env.PUBLIC_URL}/assets/logos/BASIS Scottsdale Library Logo.svg`}
               height="50"
               width="50"
               alt="BASIS Scottsdale Library Logo"
@@ -132,6 +132,7 @@ const Navigation = () => {
                       firebaseContext?.claims?.lastName || ''
                     }`}
                     src={firebaseContext?.claims?.picture}
+                    variant="rounded"
                   >
                     {`${firebaseContext?.claims?.firstName?.slice(
                       0,
@@ -141,21 +142,21 @@ const Navigation = () => {
                 </IconButton>
                 <Menu
                   anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
+                  // anchorOrigin={{
+                  //   vertical: 'top',
+                  //   horizontal: 'right',
+                  // }}
                   keepMounted
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
+                  // transformOrigin={{
+                  //   vertical: 'top',
+                  //   horizontal: 'right',
+                  // }}
                   open={open}
                   onClose={handleClose}
                 >
                   <MenuItem
                     onClick={() => {
-                      history.push('/');
+                      history.push('/account');
                       setAnchorEl(null);
                     }}
                   >
@@ -164,8 +165,8 @@ const Navigation = () => {
                   <MenuItem
                     onClick={() => {
                       setAnchorEl(null);
+                      history.push('.');
                       auth.signOut().then(() => {
-                        history.push('.');
                         window.location.reload();
                       });
                     }}

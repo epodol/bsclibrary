@@ -1,5 +1,12 @@
 import React, { useState, ChangeEvent } from 'react';
 import { useFirestore, useFirestoreCollectionData } from 'reactfire';
+import {
+  Timestamp,
+  query as firestoreQuery,
+  collection,
+  orderBy,
+  where,
+} from 'firebase/firestore';
 
 import {
   TableContainer,
@@ -24,7 +31,7 @@ import WithID from '@common/types/WithID';
 
 const CheckOuts = () => {
   const firestore = useFirestore();
-  const now = useFirestore.Timestamp.fromMillis(
+  const now = Timestamp.fromMillis(
     new Date(new Date().toDateString()).valueOf()
   );
 
@@ -38,16 +45,18 @@ const CheckOuts = () => {
   });
 
   const useCheckoutRef = (queryArg: queryInterface) => {
-    let checkoutRef = firestore.collection('checkouts').orderBy('dueDate');
+    let checkoutRef = firestoreQuery(
+      collection(firestore, 'checkouts'),
+      orderBy('dueDate')
+    );
     if (queryArg.checkoutStatus !== null) {
-      checkoutRef = checkoutRef.where(
-        'checkoutStatus',
-        '==',
-        queryArg.checkoutStatus
+      checkoutRef = firestoreQuery(
+        checkoutRef,
+        where('checkoutStatus', '==', queryArg.checkoutStatus)
       );
     }
     if (queryArg.showOverdue) {
-      checkoutRef = checkoutRef.where('dueDate', '<=', now);
+      checkoutRef = firestoreQuery(checkoutRef, where('dueDate', '<=', now));
     }
     return checkoutRef;
   };
