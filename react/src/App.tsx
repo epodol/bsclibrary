@@ -122,7 +122,8 @@ const useInitFirebaseSDKs = (): {
           home_banner_icon_enabled: false,
         } as any;
 
-        if (!isDev) await fetchAndActivate(remoteConfigInit);
+        if (!isDev)
+          await fetchAndActivate(remoteConfigInit).catch(console.error);
         return remoteConfigInit;
       },
       { suspense: false }
