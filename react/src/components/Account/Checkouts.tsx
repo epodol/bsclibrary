@@ -8,19 +8,18 @@ import {
   TableBody,
   Button,
 } from '@material-ui/core';
-import { useFirebaseApp, useFirestore, useFirestoreDocData } from 'reactfire';
+import { useFirestore, useFirestoreDocData, useFunctions } from 'reactfire';
 
 import Checkout from '@common/types/Checkout';
 import FirebaseContext from 'src/contexts/FirebaseContext';
 import NotificationContext from 'src/contexts/NotificationContext';
-import { getFunctions, httpsCallable } from 'firebase/functions';
+import { httpsCallable } from 'firebase/functions';
 import { doc } from 'firebase/firestore';
 
 const CheckoutRow = ({ checkoutID }: { checkoutID: string }) => {
   const NotificationHandler = useContext(NotificationContext);
   const firebaseContext = useContext(FirebaseContext);
-  const app = useFirebaseApp();
-  const functions = getFunctions(app, 'us-west2');
+  const functions = useFunctions();
   const firestore = useFirestore();
   const checkoutRef = doc(firestore, 'checkouts', checkoutID);
   const checkout = useFirestoreDocData(checkoutRef).data as unknown as Checkout;

@@ -22,11 +22,11 @@ import * as yup from 'yup';
 import { Formik, Form } from 'formik';
 
 import {
-  useFirebaseApp,
   useFirestore,
   useFirestoreCollectionData,
+  useFunctions,
 } from 'reactfire';
-import { getFunctions, httpsCallable } from 'firebase/functions';
+import { httpsCallable } from 'firebase/functions';
 
 import { Link } from 'react-router-dom';
 import User from '@common/types/User';
@@ -560,8 +560,7 @@ const Submit = ({
   checkoutData: checkoutData;
   setCheckoutData: React.Dispatch<React.SetStateAction<checkoutData>>;
 }) => {
-  const firebaseApp = useFirebaseApp();
-  const functions = getFunctions(firebaseApp, 'us-west2');
+  const functions = useFunctions();
   const NotificationHandler = useContext(NotificationContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);

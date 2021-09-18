@@ -2,11 +2,13 @@ import React, { Suspense, Component, useEffect } from 'react';
 import {
   useFirebaseApp,
   useInitFirestore,
+  useInitFunctions,
   useInitStorage,
   useInitAuth,
   useInitRemoteConfig,
   FirebaseAppProvider,
   FirestoreProvider,
+  FunctionsProvider,
   StorageProvider,
   AuthProvider,
   RemoteConfigProvider,
@@ -24,7 +26,7 @@ import {
 } from 'firebase/storage';
 import { Auth, connectAuthEmulator, getAuth } from 'firebase/auth';
 import {
-  // Functions,
+  Functions,
   connectFunctionsEmulator,
   getFunctions,
 } from 'firebase/functions';
@@ -67,7 +69,7 @@ const useInitFirebaseSDKs = (): {
   loading: boolean;
   auth: Auth | null;
   firestore: Firestore | null;
-  // functions: Functions | null;
+  functions: Functions | null;
   storage: FirebaseStorage | null;
   remoteConfig: RemoteConfig | null;
 } => {
@@ -76,6 +78,15 @@ const useInitFirebaseSDKs = (): {
       const firestoreInit = initializeFirestore(firebaseApp, {});
       if (isDev) connectFirestoreEmulator(firestoreInit, 'localhost', 8080);
       return firestoreInit;
+    },
+    { suspense: false }
+  );
+
+  const { status: useInitFunctionsStatus, data: functions } = useInitFunctions(
+    async (firebaseApp) => {
+      const functionsInit = getFunctions(firebaseApp, 'us-west2');
+      if (isDev) connectFunctionsEmulator(functionsInit, 'localhost', 5001);
+      return functionsInit;
     },
     { suspense: false }
   );
@@ -132,11 +143,7 @@ const useInitFirebaseSDKs = (): {
   const app = useFirebaseApp();
 
   useEffect(() => {
-    const functions = getFunctions(app, 'us-west2');
-
-    if (isDev) {
-      connectFunctionsEmulator(functions, 'localhost', 5001);
-    } else {
+    if (!isDev) {
       if (process.env.REACT_APP_RECAPTCHA_PUBLIC_KEY)
         initializeAppCheck(app, {
           provider: new ReCaptchaV3Provider(
@@ -151,6 +158,7 @@ const useInitFirebaseSDKs = (): {
 
   if (
     useInitFirestoreStatus === 'loading' ||
+    useInitFunctionsStatus === 'loading' ||
     useInitStorageStatus === 'loading' ||
     useInitAuthStatus === 'loading' ||
     useInitRemoteConfigStatus === 'loading'
@@ -159,6 +167,7 @@ const useInitFirebaseSDKs = (): {
       loading: true,
       auth: null,
       firestore: null,
+      functions: null,
       storage: null,
       remoteConfig: null,
     };
@@ -166,18 +175,20 @@ const useInitFirebaseSDKs = (): {
     loading: false,
     auth,
     firestore,
+    functions,
     storage,
     remoteConfig,
   };
 };
 
 const AppWithFirebase = () => {
-  const { loading, auth, firestore, storage, remoteConfig } =
+  const { loading, auth, firestore, functions, storage, remoteConfig } =
     useInitFirebaseSDKs();
   if (
     loading ||
     auth === null ||
     firestore === null ||
+    functions === null ||
     storage === null ||
     remoteConfig === null
   )
@@ -189,15 +200,17 @@ const AppWithFirebase = () => {
       <NotificationProvider>
         <AuthProvider sdk={auth}>
           <FirestoreProvider sdk={firestore}>
-            <StorageProvider sdk={storage}>
-              <RemoteConfigProvider sdk={remoteConfig}>
-                <FirebaseProvider>
-                  <Suspense fallback={<Loading />}>
-                    <Routing />
-                  </Suspense>
-                </FirebaseProvider>
-              </RemoteConfigProvider>
-            </StorageProvider>
+            <FunctionsProvider sdk={functions}>
+              <StorageProvider sdk={storage}>
+                <RemoteConfigProvider sdk={remoteConfig}>
+                  <FirebaseProvider>
+                    <Suspense fallback={<Loading />}>
+                      <Routing />
+                    </Suspense>
+                  </FirebaseProvider>
+                </RemoteConfigProvider>
+              </StorageProvider>
+            </FunctionsProvider>
           </FirestoreProvider>
         </AuthProvider>
       </NotificationProvider>
