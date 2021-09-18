@@ -1,5 +1,5 @@
-import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
+import functions from 'firebase-functions';
+import admin from 'firebase-admin';
 
 import renewCheckoutData from '@common/functions/renewCheckout';
 
