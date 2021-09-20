@@ -2,12 +2,12 @@ import React, { useContext, useRef, useState } from 'react';
 import { Button, TextField, ButtonGroup, Paper } from '@material-ui/core';
 import * as yup from 'yup';
 import { Formik, Form } from 'formik';
-import { useFirebaseApp, useFirestore } from 'reactfire';
+import { useFirestore, useFunctions } from 'reactfire';
 
 import Copy, { condition, status } from '@common/types/Copy';
 import checkinBookData from '@common/functions/checkinBook';
 import NotificationContext from 'src/contexts/NotificationContext';
-import { getFunctions, httpsCallable } from 'firebase/functions';
+import { httpsCallable } from 'firebase/functions';
 import { collectionGroup, getDocs, query, where } from 'firebase/firestore';
 
 const ScanBooksScheme = yup.object().shape({
@@ -17,8 +17,7 @@ const ScanBooksScheme = yup.object().shape({
 const CheckIn = () => {
   const NotificationHandler = useContext(NotificationContext);
 
-  const firebaseApp = useFirebaseApp();
-  const functions = getFunctions(firebaseApp, 'us-west2');
+  const functions = useFunctions();
   const firestore = useFirestore();
   const bookInput: any = useRef();
 

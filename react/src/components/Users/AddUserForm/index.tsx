@@ -11,20 +11,18 @@ import {
 } from '@material-ui/core';
 import { Form, Formik } from 'formik';
 import * as yup from 'yup';
-import { useAuth, useFirebaseApp } from 'reactfire';
+import { useAuth, useFunctions } from 'reactfire';
 import { useHistory } from 'react-router';
 
 import { addNewUserResult } from '@common/functions/addNewUser';
 import NotificationContext from 'src/contexts/NotificationContext';
-import { getFunctions, httpsCallable } from 'firebase/functions';
+import { httpsCallable } from 'firebase/functions';
 import { sendPasswordResetEmail } from 'firebase/auth';
 
 const AddUserForm = () => {
   const NotificationHandler = useContext(NotificationContext);
 
-  const firebaseApp = useFirebaseApp();
-
-  const functions = getFunctions(firebaseApp, 'us-west2');
+  const functions = useFunctions();
   const auth = useAuth();
 
   const history = useHistory();
