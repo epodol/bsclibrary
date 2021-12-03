@@ -133,7 +133,7 @@ const Home = () => {
         </Content>
       </Box>
       <AboutShort>
-        <h2>BASIS Scottsdale is getting a library!?</h2>
+        <h2>BASIS Scottsdale is getting a library?!</h2>
         <h6>
           Yes! BASIS Scottsdale is getting its own dedicated library! Our goal
           is to gather books and create an area where all BASIS Scottsdale
