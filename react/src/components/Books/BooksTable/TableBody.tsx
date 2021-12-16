@@ -19,7 +19,7 @@ import {
 } from '@material-ui/core';
 import { HelpOutline, Search } from '@material-ui/icons';
 
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import algoliasearch from 'algoliasearch';
 
 import Book from './Book';
@@ -34,15 +34,9 @@ import { useFirestore } from 'reactfire';
 
 const isDev = process.env.NODE_ENV !== 'production';
 
-interface location {
-  query: {
-    search: string;
-  };
-}
-
 const TableBody = () => {
-  const history = useHistory();
-  const location = useLocation<location>();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const firestore = useFirestore();
 
@@ -57,7 +51,7 @@ const TableBody = () => {
   const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false);
   useEffect(() => {
     let isSubscribed = true;
-    history.replace(location.pathname);
+    navigate(location.pathname, { replace: true });
 
     if (
       !isDev &&
@@ -97,6 +91,7 @@ const TableBody = () => {
     return () => {
       isSubscribed = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history, location.pathname, query, firestore]);
 
   const searchRef = useRef(search);

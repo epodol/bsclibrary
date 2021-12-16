@@ -14,7 +14,7 @@ import {
   KeyboardArrowUp,
   KeyboardArrowDown,
 } from '@material-ui/icons';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Book = ({
   id,
@@ -47,7 +47,7 @@ const Book = ({
   isbn13: string;
   image: string;
 }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
   return (
@@ -122,7 +122,7 @@ const Book = ({
           <Button
             size="small"
             variant="text"
-            onClick={() => history.push(`/books/${id}`)}
+            onClick={() => navigate(`/books/${id}`)}
           >
             View Book
           </Button>

@@ -23,7 +23,7 @@ import {
   indexedDBLocalPersistence,
   browserSessionPersistence,
 } from 'firebase/auth';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 
 const SignIn = () => {
   const SignInSchema = yup.object().shape({
@@ -42,7 +42,7 @@ const SignIn = () => {
   });
 
   const auth = useAuth();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const NotificationHandler = useContext(NotificationContext);
 
@@ -87,7 +87,7 @@ const SignIn = () => {
               )
                 .then(() => {
                   actions.setSubmitting(false);
-                  history.push('/account');
+                  navigate('/account');
                 })
                 .catch((err) => {
                   if (err.code === 'auth/wrong-password') {

@@ -12,7 +12,7 @@ import { ExitToApp, Home } from '@material-ui/icons';
 
 import { useAuth, useSigninCheck } from 'reactfire';
 
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 import FirebaseContext from 'src/contexts/FirebaseContext';
 import SignIn from 'src/components/Navigation/SignIn';
@@ -95,7 +95,7 @@ const NavBarItems = () => {
 const Navigation = () => {
   const firebaseContext = useContext(FirebaseContext);
   const auth = useAuth();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const signinCheck = useSigninCheck().data;
 
@@ -156,7 +156,7 @@ const Navigation = () => {
                 >
                   <MenuItem
                     onClick={() => {
-                      history.push('/account');
+                      navigate('/account');
                       setAnchorEl(null);
                     }}
                   >
@@ -165,7 +165,7 @@ const Navigation = () => {
                   <MenuItem
                     onClick={() => {
                       setAnchorEl(null);
-                      history.push('.');
+                      navigate('.');
                       auth.signOut().then(() => {
                         window.location.reload();
                       });

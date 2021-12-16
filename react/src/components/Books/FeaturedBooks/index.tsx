@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import Carousel from 'react-material-ui-carousel';
 
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useFirestore, useFirestoreCollectionData } from 'reactfire';
 
 import './featured.css';
@@ -24,7 +24,7 @@ interface BookWithID extends Book {
 }
 
 const FeaturedBooks = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const firestore = useFirestore();
 
   const featuredBooksRef = query(
@@ -49,7 +49,7 @@ const FeaturedBooks = () => {
             image = 'https://www.abbeville.com/assets/common/images/edition_placeholder.png',
           } = volumeInfo;
           return (
-            <Card key={id} onClick={() => history.push(`books/${id}`)}>
+            <Card key={id} onClick={() => navigate(`books/${id}`)}>
               <CardActionArea>
                 <CardMedia
                   component="img"

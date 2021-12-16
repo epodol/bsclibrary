@@ -28,6 +28,7 @@ import {
 import CheckoutRow from 'src/components/CheckOuts/CheckoutRow';
 import Checkout, { checkoutStatus } from '@common/types/Checkout';
 import WithID from '@common/types/WithID';
+import { Outlet } from 'react-router';
 
 const CheckOuts = () => {
   const firestore = useFirestore();
@@ -68,16 +69,16 @@ const CheckOuts = () => {
   return (
     <div className="text-center lead m-5">
       <h1>Check Outs</h1>
-      <p className="font-italic">This page is still a work in progress.</p>
+      <Outlet />
       <TableContainer component={Paper}>
         <div style={{ margin: '1%' }}>
           <FormControl>
-            <InputLabel shrink id="demo-simple-select-placeholder-label-label">
+            <InputLabel shrink id="status-label">
               Status
             </InputLabel>
             <Select
-              labelId="demo-simple-select-placeholder-label-label"
-              id="demo-simple-select-placeholder-label"
+              labelId="status-label"
+              id="status-label"
               value={query.checkoutStatus ?? ''}
               onChange={(e: ChangeEvent<{ value: unknown }>) => {
                 setQuery({

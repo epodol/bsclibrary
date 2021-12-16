@@ -4,7 +4,7 @@ import { useUser, useFirestore, useAuth } from 'reactfire';
 import * as yup from 'yup';
 import { Formik, Form } from 'formik';
 import { Link } from 'react-router-dom';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 // @ts-ignore
 import PhoneInput from 'react-phone-number-input/input';
 
@@ -31,6 +31,8 @@ const UserInfo = ({ userInfo }: { userInfo: userInfoInterface }) => {
   const firestore = useFirestore();
   const auth = useAuth();
   const { id } = useParams<any>();
+  if (id === undefined) throw new Error('No user defined.');
+
   const userDocRef = doc(firestore, 'users', id);
 
   const currentUser = useUser().data;

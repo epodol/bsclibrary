@@ -15,6 +15,9 @@
     "type": "git",
     "url": "git+https://github.com/epodol/bsclibrary.git"
   },
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "scripts": {
     "start": "npm-run-all --parallel dev:emulators dev:react tsc:watch",
     "start:export": "npm-run-all --parallel dev:emulators:export dev:react tsc:watch",
@@ -49,11 +52,11 @@
     "prettier:fix": "prettier --write .",
     "eslint": "eslint .",
     "deploy": "firebase deploy",
-    "deploy:hosting": "firebase depoloy --only hosting",
-    "deploy:storage": "firebase depoloy --only storage",
-    "deploy:firestore": "firebase depoloy --only firestore",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:storage": "firebase deploy --only storage",
+    "deploy:firestore": "firebase deploy --only firestore",
     "deploy:functions": "firebase deploy --only functions",
-    "outdated": "npm-run-all --parallel outdated:bsclibrary outdated:discord outdated:functions outdated:react outdated:common",
+    "outdated": "npm-run-all --parallel --continue-on-error outdated:bsclibrary outdated:discord outdated:functions outdated:react outdated:common",
     "outdated:bsclibrary": "npm outdated",
     "outdated:discord": "cd discord && npm outdated",
     "outdated:functions": "cd functions && npm outdated",
@@ -61,24 +64,24 @@
     "outdated:common": "cd common && npm outdated"
   },
   "devDependencies": {
-    "@types/node": "^16.10.2",
-    "@typescript-eslint/eslint-plugin": "^4.32.0",
-    "@typescript-eslint/parser": "^4.32.0",
-    "eslint": "^7.32.0",
-    "eslint-config-airbnb": "^18.2.1",
-    "eslint-config-airbnb-typescript": "^14.0.0",
+    "@types/node": "^16.11.14",
+    "@typescript-eslint/eslint-plugin": "^5.7.0",
+    "@typescript-eslint/parser": "^5.7.0",
+    "eslint": "^8.4.1",
+    "eslint-config-airbnb": "^19.0.2",
+    "eslint-config-airbnb-typescript": "^16.1.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.24.2",
-    "eslint-plugin-jest": "^24.5.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-jest": "^25.3.0",
     "eslint-plugin-jest-dom": "^3.9.2",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-react": "^7.26.1",
+    "eslint-plugin-react": "^7.27.1",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "firebase-tools": "^9.19.0",
+    "firebase-tools": "^9.23.3",
     "npm-run-all": "^4.1.5",
-    "prettier": "^2.4.1",
+    "prettier": "^2.5.1",
     "run-script-os": "^1.1.6",
-    "typescript": "^4.4.3"
+    "typescript": "^4.5.4"
   }
 }

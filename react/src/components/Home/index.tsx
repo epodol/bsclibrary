@@ -3,12 +3,12 @@ import { Typography, Button, Box, Container, Paper } from '@material-ui/core';
 import { Alert, AlertTitle, Color } from '@material-ui/lab';
 import { styled } from '@material-ui/core/styles';
 
-import { useHistory, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useRemoteConfig } from 'reactfire';
 import { getBoolean, getString } from 'firebase/remote-config';
 
 const Home = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const remoteConfig = useRemoteConfig();
 
   const home_banner_enabled = getBoolean(remoteConfig, 'home_banner_enabled');
@@ -121,11 +121,7 @@ const Home = () => {
             <Button
               style={{ marginTop: 4 }}
               variant="outlined"
-              onClick={() =>
-                history.push({
-                  pathname: '/about',
-                })
-              }
+              onClick={() => navigate('/about')}
             >
               Learn More
             </Button>

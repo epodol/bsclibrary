@@ -1,5 +1,5 @@
 import React, { useContext, useState, Suspense } from 'react';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useFirestoreDocData, useFirestore } from 'reactfire';
 import {
   Container,
@@ -29,9 +29,12 @@ interface BookInterfaceWithID extends BookInterface {
 const Book = () => {
   const NotificationHandler = useContext(NotificationContext);
 
-  const { id }: { id: string } = useParams();
+  const { id } = useParams();
+
+  if (id === undefined) throw new Error('No user defined.');
+
   const location: { state: { editing?: boolean } } = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const firestore = useFirestore();
   const ref = doc(firestore, 'books', id);
   const data = useFirestoreDocData(ref, {
@@ -60,9 +63,7 @@ const Book = () => {
                     className="m-2"
                     onClick={() => {
                       deleteDoc(ref);
-                      history.push({
-                        pathname: '/books',
-                      });
+                      navigate('/books');
                     }}
                   >
                     <Delete />

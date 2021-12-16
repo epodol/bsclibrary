@@ -1,12 +1,12 @@
 import React from 'react';
 import { Chip } from '@material-ui/core';
 
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { volumeInfo as volumeInfoInterface } from '@common/types/Book';
 
 const ViewBook = ({ volumeInfo }: { volumeInfo: volumeInfoInterface }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -43,8 +43,7 @@ const ViewBook = ({ volumeInfo }: { volumeInfo: volumeInfoInterface }) => {
                   style={{ cursor: 'pointer', marginLeft: 3, marginRight: 3 }}
                   label={author}
                   onClick={() =>
-                    history.push({
-                      pathname: '/books',
+                    navigate('/books', {
                       state: {
                         query: {
                           field: 'authors',
@@ -67,8 +66,7 @@ const ViewBook = ({ volumeInfo }: { volumeInfo: volumeInfoInterface }) => {
                   style={{ cursor: 'pointer', marginLeft: 3, marginRight: 3 }}
                   label={genre}
                   onClick={() =>
-                    history.push({
-                      pathname: '/books',
+                    navigate('/books', {
                       state: {
                         query: {
                           field: 'genres',

@@ -12,7 +12,7 @@ import {
 import { Form, Formik } from 'formik';
 import * as yup from 'yup';
 import { useAuth, useFunctions } from 'reactfire';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 
 import { addNewUserResult } from '@common/functions/addNewUser';
 import NotificationContext from 'src/contexts/NotificationContext';
@@ -25,7 +25,7 @@ const AddUserForm = () => {
   const functions = useFunctions();
   const auth = useAuth();
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const SetRoleSchema = yup.object().shape({
     email: yup
@@ -66,11 +66,7 @@ const AddUserForm = () => {
 
       {alert.show && (
         <SnackbarContent
-          onClick={() =>
-            history.push({
-              pathname: `/users/${alert.uid}`,
-            })
-          }
+          onClick={() => navigate(`/users/${alert.uid}`)}
           style={{ cursor: 'pointer', backgroundColor: '#6DB058' }}
           message={<>Successfully added a new user: {alert.user}</>}
           action={alert.email}
