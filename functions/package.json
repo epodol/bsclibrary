@@ -18,7 +18,7 @@
     ".": "./lib/index.js"
   },
   "dependencies": {
-    "firebase-admin": "^9.12.0",
+    "firebase-admin": "^10.0.1",
     "firebase-functions": "^3.15.7",
     "node-fetch": "^3.0.0"
   },
