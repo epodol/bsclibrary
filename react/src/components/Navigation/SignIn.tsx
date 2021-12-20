@@ -9,7 +9,7 @@ import {
   DialogActions,
   FormControlLabel,
   Checkbox,
-} from '@material-ui/core';
+} from '@mui/material';
 
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
@@ -55,7 +55,6 @@ const SignIn = () => {
       <Button
         size="large"
         variant="contained"
-        color="default"
         onClick={() => setDisplaySignInForm(true)}
       >
         Sign In
@@ -112,9 +111,7 @@ const SignIn = () => {
         >
           {({ values, errors, isSubmitting, handleChange, submitCount }) => (
             <Form noValidate>
-              <DialogTitle disableTypography>
-                <h2>Sign In</h2>
-              </DialogTitle>
+              <DialogTitle>Sign In</DialogTitle>
               <DialogContent>
                 <DialogContentText>
                   Welcome! If you already have registered for an account, please
@@ -122,6 +119,7 @@ const SignIn = () => {
                   library and register.
                 </DialogContentText>
                 <TextField
+                  variant="standard"
                   id="email"
                   type="email"
                   label="Email"
@@ -135,6 +133,7 @@ const SignIn = () => {
                 <br />
 
                 <TextField
+                  variant="standard"
                   id="password"
                   type="password"
                   label="Password"
@@ -160,7 +159,6 @@ const SignIn = () => {
                 <br />
                 <div style={{ float: 'right', paddingTop: 3 }}>
                   <Button
-                    className="text-dark"
                     size="small"
                     onClick={() => {
                       setDisplaySignInForm(false);
@@ -247,7 +245,7 @@ const SignIn = () => {
         >
           {({ values, errors, isSubmitting, handleChange, submitCount }) => (
             <Form noValidate>
-              <DialogTitle disableTypography>
+              <DialogTitle>
                 <h2>Reset Password</h2>
               </DialogTitle>
               <DialogContent>
@@ -258,6 +256,7 @@ const SignIn = () => {
                 </DialogContentText>
 
                 <TextField
+                  variant="standard"
                   id="email"
                   type="email"
                   label="Email"
@@ -272,7 +271,6 @@ const SignIn = () => {
                 <br />
                 <div style={{ float: 'right', paddingTop: 3 }}>
                   <Button
-                    className="text-dark"
                     size="small"
                     onClick={() => {
                       setDisplayResetPasswordForm(false);

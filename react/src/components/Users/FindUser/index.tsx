@@ -13,7 +13,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
-} from '@material-ui/core';
+} from '@mui/material';
 import User from '@common/types/User';
 
 import Loading from 'src/components/Loading';

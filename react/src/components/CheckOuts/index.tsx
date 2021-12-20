@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState } from 'react';
 import { useFirestore, useFirestoreCollectionData } from 'reactfire';
 import {
   Timestamp,
@@ -23,7 +23,7 @@ import {
   FormHelperText,
   FormControlLabel,
   Checkbox,
-} from '@material-ui/core';
+} from '@mui/material';
 
 import CheckoutRow from 'src/components/CheckOuts/CheckoutRow';
 import Checkout, { checkoutStatus } from '@common/types/Checkout';
@@ -80,7 +80,7 @@ const CheckOuts = () => {
               labelId="status-label"
               id="status-label"
               value={query.checkoutStatus ?? ''}
-              onChange={(e: ChangeEvent<{ value: unknown }>) => {
+              onChange={(e: any) => {
                 setQuery({
                   ...query,
                   checkoutStatus:

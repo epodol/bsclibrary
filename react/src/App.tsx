@@ -39,13 +39,12 @@ import {
 import { getPerformance } from 'firebase/performance';
 import { getAnalytics } from 'firebase/analytics';
 
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 
 import { FirebaseProvider } from 'src/contexts/FirebaseContext';
 import { NotificationProvider } from 'src/contexts/NotificationContext';
 
-import MUITheme from 'src/contexts/MUITheme';
+import { ThemeContextProvider } from 'src/contexts/MUITheme';
 import Routing from 'src/components/Routing';
 import Loading from 'src/components/Loading';
 
@@ -195,7 +194,7 @@ const AppWithFirebase = () => {
     return <Loading />;
 
   return (
-    <ThemeProvider theme={MUITheme}>
+    <ThemeContextProvider>
       <CssBaseline />
       <NotificationProvider>
         <AuthProvider sdk={auth}>
@@ -214,7 +213,7 @@ const AppWithFirebase = () => {
           </FirestoreProvider>
         </AuthProvider>
       </NotificationProvider>
-    </ThemeProvider>
+    </ThemeContextProvider>
   );
 };
 

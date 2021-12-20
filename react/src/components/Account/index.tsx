@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 
-import { Button, Grid, Paper, Collapse, Chip } from '@material-ui/core';
+import { Button, Grid, Paper, Collapse, Chip } from '@mui/material';
 
 import FirebaseContext from 'src/contexts/FirebaseContext';
 import Checkouts from 'src/components/Account/Checkouts';

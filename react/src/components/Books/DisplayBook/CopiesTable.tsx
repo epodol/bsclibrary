@@ -24,13 +24,13 @@ import {
   TableRow,
   TextField,
   Tooltip,
-} from '@material-ui/core';
+} from '@mui/material';
 import {
   Add,
   CheckCircleOutlined,
   Delete,
   HighlightOff,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 
 import CopyInterface, {
   status as statusType,
@@ -260,7 +260,6 @@ const EditCopy = ({
       <TableCell className="text-center">
         <ButtonGroup size="small">
           <Button
-            color="default"
             disabled={statusValue === 0 || statusValue === 2}
             className="px-2"
             onClick={() => setStatusValue(0)}
@@ -269,7 +268,6 @@ const EditCopy = ({
             {determineStatus(0)}
           </Button>
           <Button
-            color="default"
             disabled={statusValue === 1 || statusValue === 2}
             className="px-2"
             onClick={() => setStatusValue(1)}
@@ -286,7 +284,7 @@ const EditCopy = ({
               the Check Out tool.`}
           >
             <Button
-              color={statusValue === 2 ? 'primary' : 'default'}
+              color={statusValue === 2 ? 'primary' : 'inherit'}
               disabled={statusValue === 2}
               className="px-2"
               variant="contained"
@@ -295,7 +293,6 @@ const EditCopy = ({
             </Button>
           </Tooltip>
           <Button
-            color="default"
             disabled={statusValue === 3 || statusValue === 2}
             className="px-2"
             onClick={() => setStatusValue(3)}
@@ -306,7 +303,6 @@ const EditCopy = ({
         </ButtonGroup>
         <br />
         <Button
-          color="default"
           size="small"
           disabled={statusValue === 4 || statusValue === 2}
           className="px-2"
@@ -319,7 +315,6 @@ const EditCopy = ({
       <TableCell className="text-center">
         <ButtonGroup size="small">
           <Button
-            color="default"
             disabled={conditionValue === 1}
             className="px-2"
             onClick={() => setConditionValue(1)}
@@ -328,7 +323,6 @@ const EditCopy = ({
             New
           </Button>
           <Button
-            color="default"
             disabled={conditionValue === 2}
             className="px-2"
             onClick={() => setConditionValue(2)}
@@ -339,7 +333,6 @@ const EditCopy = ({
         </ButtonGroup>
         <br />
         <Button
-          color="default"
           size="small"
           disabled={conditionValue === 3}
           className="px-2"
@@ -351,7 +344,6 @@ const EditCopy = ({
         <br />
         <ButtonGroup size="small">
           <Button
-            color="default"
             disabled={conditionValue === 4}
             className="px-2"
             onClick={() => setConditionValue(4)}
@@ -360,7 +352,6 @@ const EditCopy = ({
             Poor
           </Button>
           <Button
-            color="default"
             disabled={conditionValue === 5}
             className="px-2"
             onClick={() => setConditionValue(5)}

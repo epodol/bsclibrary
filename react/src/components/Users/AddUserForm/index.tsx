@@ -8,7 +8,7 @@ import {
   ButtonGroup,
   SnackbarContent,
   Grid,
-} from '@material-ui/core';
+} from '@mui/material';
 import { Form, Formik } from 'formik';
 import * as yup from 'yup';
 import { useAuth, useFunctions } from 'reactfire';

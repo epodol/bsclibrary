@@ -1,27 +1,10 @@
 import React, { useState } from 'react';
-import {
-  Tabs,
-  Tab,
-  Box,
-  Container,
-  makeStyles,
-  Paper,
-} from '@material-ui/core';
+import { Tabs, Tab, Box, Container, Paper } from '@mui/material';
 
 import Introduction from 'src/components/About/Introduction';
 import DueDates from 'src/components/About/DueDates';
 import MissingBooks from 'src/components/About/MissingBooks';
 import Renewing from 'src/components/About/Renewing';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-    display: 'flex',
-  },
-  tabs: {
-    borderRight: `1px solid ${theme.palette.divider}`,
-  },
-}));
 
 interface TabPanelProps {
   children: React.ReactNode;
@@ -48,21 +31,21 @@ const TabPanel = ({ children, value, index, ...other }: TabPanelProps) => (
 
 const About = () => {
   const [value, setValue] = useState(0);
-  const classes = useStyles();
 
   return (
     <>
       <h1 className="text-center m-4">About</h1>
       <Container>
-        <Paper className={classes.root}>
-          <div className={classes.tabs}>
+        <Paper sx={{ flexGrow: 1, display: 'flex' }}>
+          <div>
             <Tabs
               orientation="vertical"
               variant="scrollable"
               value={value}
               onChange={(e, newValue) => setValue(newValue)}
-              scrollButtons="on"
+              scrollButtons
               style={{ overflowWrap: 'anywhere' }}
+              allowScrollButtonsMobile
             >
               <Tab wrapped label="Introduction" />
               <Tab wrapped label="Due Dates" />

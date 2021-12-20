@@ -1,6 +1,6 @@
 import React from 'react';
-import { AppBar, Tooltip } from '@material-ui/core';
-import { GitHub, Instagram, Email } from '@material-ui/icons';
+import { AppBar, Tooltip } from '@mui/material';
+import { GitHub, Instagram, Email } from '@mui/icons-material';
 
 const Footer = () => (
   <div className="footer">

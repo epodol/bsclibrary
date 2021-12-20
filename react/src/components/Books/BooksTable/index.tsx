@@ -7,8 +7,8 @@ import {
   Paper,
   Toolbar,
   Container,
-} from '@material-ui/core';
-import { Add } from '@material-ui/icons';
+} from '@mui/material';
+import { Add } from '@mui/icons-material';
 
 import { useFirestore, useUser } from 'reactfire';
 import { collection, serverTimestamp, addDoc } from 'firebase/firestore';
@@ -94,6 +94,7 @@ const BooksTable = () => {
                           });
                         });
                     }}
+                    size="large"
                   >
                     <Add />
                   </IconButton>

@@ -16,8 +16,8 @@ import {
   FormControlLabel,
   Grid,
   CircularProgress,
-} from '@material-ui/core';
-import { VpnKey, Lock, LockOpen } from '@material-ui/icons';
+} from '@mui/material';
+import { VpnKey, Lock, LockOpen } from '@mui/icons-material';
 
 import FirebaseContext from 'src/contexts/FirebaseContext';
 import { userInfo as userInfoInterface } from '@common/types/User';

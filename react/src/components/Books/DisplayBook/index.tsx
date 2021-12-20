@@ -9,8 +9,8 @@ import {
   Paper,
   AppBar,
   Collapse,
-} from '@material-ui/core';
-import { Delete, Edit, Star, StarBorder } from '@material-ui/icons';
+} from '@mui/material';
+import { Delete, Edit, Star, StarBorder } from '@mui/icons-material';
 
 import FirebaseContext from 'src/contexts/FirebaseContext';
 import ViewBook from 'src/components/Books/DisplayBook/ViewBook';
@@ -33,7 +33,7 @@ const Book = () => {
 
   if (id === undefined) throw new Error('No user defined.');
 
-  const location: { state: { editing?: boolean } } = useLocation();
+  const location: { state: { editing?: boolean } } = useLocation() as any;
   const navigate = useNavigate();
   const firestore = useFirestore();
   const ref = doc(firestore, 'books', id);

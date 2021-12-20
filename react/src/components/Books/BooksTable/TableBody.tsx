@@ -16,8 +16,8 @@ import {
   DialogContentText,
   DialogActions,
   Tooltip,
-} from '@material-ui/core';
-import { HelpOutline, Search } from '@material-ui/icons';
+} from '@mui/material';
+import { HelpOutline, Search } from '@mui/icons-material';
 
 import { useNavigate, useLocation } from 'react-router-dom';
 import algoliasearch from 'algoliasearch';
@@ -41,7 +41,7 @@ const TableBody = () => {
   const firestore = useFirestore();
 
   const [query, setQuery] = useState({
-    search: location?.state?.query?.search || '',
+    search: (location?.state as any)?.query?.search || '',
     limit: 30,
   });
   const [search, setSearch] = useState('');
@@ -152,7 +152,7 @@ const TableBody = () => {
                 ),
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton type="submit" aria-label="search">
+                    <IconButton type="submit" aria-label="search" size="large">
                       <Search />
                     </IconButton>
                   </InputAdornment>

@@ -7,14 +7,14 @@ import {
   Button,
   CardMedia,
   CardActions,
-} from '@material-ui/core';
+} from '@mui/material';
 import Carousel from 'react-material-ui-carousel';
 
 import { useNavigate } from 'react-router-dom';
 import { useFirestore, useFirestoreCollectionData } from 'reactfire';
 
 import './featured.css';
-import { ArrowLeft, ArrowRight } from '@material-ui/icons';
+import { ArrowLeft, ArrowRight } from '@mui/icons-material';
 
 import Book from '@common/types/Book';
 import { collection, query, where } from 'firebase/firestore';

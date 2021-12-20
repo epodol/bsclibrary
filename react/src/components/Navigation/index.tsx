@@ -7,8 +7,9 @@ import {
   IconButton,
   Menu,
   MenuItem,
-} from '@material-ui/core';
-import { ExitToApp, Home } from '@material-ui/icons';
+} from '@mui/material';
+import { Brightness7, ExitToApp, Home, ModeNight } from '@mui/icons-material';
+import { useTheme } from '@mui/material/styles';
 
 import { useAuth, useSigninCheck } from 'reactfire';
 
@@ -16,6 +17,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 import FirebaseContext from 'src/contexts/FirebaseContext';
 import SignIn from 'src/components/Navigation/SignIn';
+
+import ThemeContext from 'src/contexts/MUITheme';
 
 const NavBarItems = () => {
   const firebaseContext = useContext(FirebaseContext);
@@ -97,6 +100,9 @@ const Navigation = () => {
   const auth = useAuth();
   const navigate = useNavigate();
 
+  const theme = useTheme();
+  const toggleTheme = useContext(ThemeContext);
+
   const signinCheck = useSigninCheck().data;
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -124,9 +130,15 @@ const Navigation = () => {
           </Link>
           <NavBarItems />
           <div style={{ marginLeft: 'auto', marginRight: 0 }}>
+            <IconButton
+              style={{ marginInline: 10 }}
+              onClick={() => toggleTheme()}
+            >
+              {theme.palette.mode === 'dark' ? <Brightness7 /> : <ModeNight />}
+            </IconButton>
             {signinCheck.signedIn && (
               <div>
-                <IconButton onClick={handleMenu} color="inherit">
+                <IconButton onClick={handleMenu} color="inherit" size="large">
                   <Avatar
                     alt={`${firebaseContext?.claims?.firstName || ''} ${
                       firebaseContext?.claims?.lastName || ''

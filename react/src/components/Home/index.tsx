@@ -1,7 +1,7 @@
 import React from 'react';
-import { Typography, Button, Box, Container, Paper } from '@material-ui/core';
-import { Alert, AlertTitle, Color } from '@material-ui/lab';
-import { styled } from '@material-ui/core/styles';
+import { Typography, Button, Box, Container, Paper } from '@mui/material';
+import { Alert, AlertTitle, AlertColor } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 import { useNavigate, Link } from 'react-router-dom';
 import { useRemoteConfig } from 'reactfire';
@@ -87,7 +87,7 @@ const Home = () => {
           style={{ marginInline: '20%', marginTop: '2%' }}
           icon={home_banner_icon_enabled ? undefined : false}
           variant="filled"
-          severity={home_banner_severity as Color}
+          severity={home_banner_severity as AlertColor}
           action={
             home_banner_button_enabled ? (
               <Button
@@ -107,14 +107,14 @@ const Home = () => {
         </Alert>
       )}
 
-      <Box sx={{ pt: 0, color: 'primary.main' }}>
+      <Box sx={{ pt: 0 }}>
         <Content maxWidth="md">
           <Logo
             src={`${process.env.PUBLIC_URL}/assets/logos/BASIS Scottsdale Library Logo.svg`}
             alt="BASIS Scottsdale Library Logo"
           />
           <div>
-            <Title color="inherit">BASIS Scottsdale Library</Title>
+            <Title>BASIS Scottsdale Library</Title>
             <Typography variant="h5" component="p" color="inherit">
               Coming Soon
             </Typography>

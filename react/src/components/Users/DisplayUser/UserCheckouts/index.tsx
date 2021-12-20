@@ -3,7 +3,7 @@ import * as yup from 'yup';
 import { Formik, Form } from 'formik';
 import { useFirestore, useUser } from 'reactfire';
 import { useParams } from 'react-router-dom';
-import { TextField, Grid, Button, CircularProgress } from '@material-ui/core';
+import { TextField, Grid, Button, CircularProgress } from '@mui/material';
 
 import user, { checkoutInfo } from '@common/types/User';
 import RecursivePartial from '@common/types/RecursivePartial';

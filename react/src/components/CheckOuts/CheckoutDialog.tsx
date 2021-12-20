@@ -12,7 +12,7 @@ import {
   DialogActions,
   Button,
   Chip,
-} from '@material-ui/core';
+} from '@mui/material';
 
 import CheckoutType, { checkoutStatus } from '@common/types/Checkout';
 import Copy, { condition } from '@common/types/Copy';

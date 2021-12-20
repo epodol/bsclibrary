@@ -16,8 +16,8 @@ import {
   FormControl,
   Select,
   IconButton,
-} from '@material-ui/core';
-import { Delete } from '@material-ui/icons';
+} from '@mui/material';
+import { Delete } from '@mui/icons-material';
 import * as yup from 'yup';
 import { Formik, Form } from 'formik';
 
@@ -519,6 +519,7 @@ const ScanBooks = ({
                         });
                         bookInput?.current?.focus();
                       }}
+                      size="large"
                     >
                       <Delete />
                     </IconButton>

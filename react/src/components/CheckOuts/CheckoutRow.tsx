@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { TableRow, TableCell, IconButton } from '@material-ui/core';
-import { Launch } from '@material-ui/icons';
+import { TableRow, TableCell, IconButton } from '@mui/material';
+import { Launch } from '@mui/icons-material';
 
 import CheckoutType, { checkoutStatus } from '@common/types/Checkout';
 import { condition } from '@common/types/Copy';

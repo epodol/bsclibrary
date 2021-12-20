@@ -7,13 +7,13 @@ import {
   Collapse,
   Button,
   Grid,
-} from '@material-ui/core';
+} from '@mui/material';
 import {
   CheckCircleOutlined,
   HighlightOff,
   KeyboardArrowUp,
   KeyboardArrowDown,
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
 const Book = ({

@@ -7,7 +7,7 @@ import {
   TableCell,
   TableBody,
   Button,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useFirestore, useFirestoreDocData, useFunctions } from 'reactfire';
 
 import Checkout from '@common/types/Checkout';
