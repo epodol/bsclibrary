@@ -114,7 +114,7 @@ const Footer = () => (
               rel="noopener noreferrer"
               style={{ color: '#fff', textDecoration: 'none' }}
             >
-              Copyright &copy; 2021 BASIS Scottsdale Library
+              Copyright &copy; 2022 BASIS Scottsdale Library
             </a>
           </Tooltip>
         </div>
