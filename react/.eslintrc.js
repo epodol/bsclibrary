@@ -11,7 +11,6 @@ module.exports = {
       2,
       { extensions: ['.js', '.jsx', '.ts', '.tsx'] },
     ],
-    'no-console': ['warn', { allow: ['warn', 'error'] }],
     'import/no-extraneous-dependencies': 0,
     'react/prop-types': 0,
     'react/jsx-props-no-spreading': 0,

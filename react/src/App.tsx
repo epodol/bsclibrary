@@ -233,7 +233,6 @@ class ErrorBoundary extends Component<{}, any> {
 
     console.error(error);
     console.error(errorInfo);
-    console.trace();
     // Log error messages to an error reporting service here
   }
 

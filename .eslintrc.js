@@ -41,6 +41,7 @@ module.exports = {
     '@typescript-eslint/naming-convention': 'off',
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': ['error'],
+    'no-console': ['warn', { allow: ['warn', 'error'] }],
   },
   settings: {
     jest: {

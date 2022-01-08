@@ -61,7 +61,6 @@ function determineStatus(checkoutStatusArg: checkoutStatus) {
 
 const CheckoutDialog = () => {
   const params = useParams() as any;
-  console.log(params);
 
   if (params === null) throw new Error('No checkout specified.');
 

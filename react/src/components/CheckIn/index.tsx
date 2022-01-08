@@ -109,7 +109,6 @@ const CheckIn = () => {
                 actions.resetForm();
               })
               .catch((err) => {
-                console.table(err);
                 console.error(err);
                 NotificationHandler.addNotification({
                   message: `An unexpected error occurred: ${err.message} (${err.code})`,
