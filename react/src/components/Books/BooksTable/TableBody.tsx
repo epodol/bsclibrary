@@ -22,7 +22,6 @@ import { HelpOutline, Search } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import algoliasearch from 'algoliasearch';
 
-import Book from './Book';
 import {
   collection,
   query as firestoreQuery,
@@ -31,6 +30,7 @@ import {
   getDocs,
 } from 'firebase/firestore';
 import { useFirestore } from 'reactfire';
+import Book from 'src/components/Books/BooksTable/Book';
 
 const isDev = process.env.NODE_ENV !== 'production';
 
@@ -92,7 +92,7 @@ const TableBody = () => {
       isSubscribed = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history, location.pathname, query, firestore]);
+  }, [navigate, location.pathname, query, firestore]);
 
   const searchRef = useRef(search);
   searchRef.current = search;

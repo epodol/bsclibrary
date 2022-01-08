@@ -220,9 +220,7 @@ const SignIn = () => {
                 setDisplayResetPasswordForm(false);
               })
               .catch((err) => {
-                if (err.code === 'auth/invalid-email') {
-                  actions.setFieldError('email', 'Invalid email');
-                } else if (err.code === 'auth/user-not-found') {
+                if (err.code === 'auth/user-not-found') {
                   actions.setFieldError('email', 'User not Found');
                 } else if (err.code === 'auth/user-disabled') {
                   actions.setFieldError('email', 'This user has been disabled');

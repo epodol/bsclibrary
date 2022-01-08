@@ -3,8 +3,7 @@ import React, { useContext } from 'react';
 import { useUser, useFirestore, useAuth } from 'reactfire';
 import * as yup from 'yup';
 import { Formik, Form } from 'formik';
-import { Link } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 // @ts-ignore
 import PhoneInput from 'react-phone-number-input/input';
 

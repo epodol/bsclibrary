@@ -227,19 +227,21 @@ class ErrorBoundary extends Component<{}, any> {
   componentDidCatch(error: any, errorInfo: any) {
     // Catch errors in any components below and re-render with error message
     this.setState({
-      error: error,
-      errorInfo: errorInfo,
+      error,
+      errorInfo,
     });
 
     console.error(error);
     console.error(errorInfo);
     console.trace();
-    // You can also log error messages to an error reporting service here
+    // Log error messages to an error reporting service here
   }
 
   render() {
-    if (this.state.errorInfo) {
-      // Error path
+    const { error, errorInfo } = this.state;
+    const { children } = this.props;
+
+    if (errorInfo) {
       return (
         <div>
           <h2
@@ -259,9 +261,9 @@ class ErrorBoundary extends Component<{}, any> {
             }}
           >
             <details style={{ whiteSpace: 'pre-wrap' }}>
-              {this.state.error && this.state.error.toString()}
+              {error && error.toString()}
               <br />
-              {this.state.errorInfo.componentStack}
+              {errorInfo.componentStack}
             </details>
           </div>
           <br />
@@ -285,8 +287,7 @@ class ErrorBoundary extends Component<{}, any> {
         </div>
       );
     }
-    // Normally, just render children
-    return this.props.children;
+    return children;
   }
 }
 

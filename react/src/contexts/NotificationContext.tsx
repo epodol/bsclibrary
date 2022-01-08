@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { Snackbar, SnackbarOrigin } from '@mui/material';
-import { Alert, AlertColor } from '@mui/material';
+import { Snackbar, SnackbarOrigin, Alert, AlertColor } from '@mui/material';
 
 const NotificationContext = createContext<NotificationHandler>(
   null as unknown as NotificationHandler

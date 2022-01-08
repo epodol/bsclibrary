@@ -1,5 +1,11 @@
 import React, { lazy, Suspense, useContext, useEffect } from 'react';
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+  Navigate,
+  useLocation,
+} from 'react-router-dom';
 
 import { useFirebaseApp, useSigninCheck } from 'reactfire';
 import { getAnalytics, logEvent } from 'firebase/analytics';
@@ -37,16 +43,17 @@ const DocumentTitle = ({
   children: any;
 }) => {
   const app = useFirebaseApp();
+  const location = useLocation();
   useEffect(() => {
     if (!isDev) {
       const analytics = getAnalytics(app);
-      logEvent(analytics, 'page_view', { page_location: location.href });
+      logEvent(analytics, 'page_view', { page_location: location.pathname });
     }
     document.title = title;
     return () => {
       document.title = 'BASIS Scottsdale Library';
     };
-  }, [title, app]);
+  }, [title, app, location.pathname]);
   return children;
 };
 
