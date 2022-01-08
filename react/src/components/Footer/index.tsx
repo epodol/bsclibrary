@@ -1,6 +1,6 @@
 import React from 'react';
-import { AppBar, Tooltip } from '@material-ui/core';
-import { GitHub, Instagram, Email } from '@material-ui/icons';
+import { AppBar, Tooltip } from '@mui/material';
+import { GitHub, Instagram, Email } from '@mui/icons-material';
 
 const Footer = () => (
   <div className="footer">
@@ -114,7 +114,7 @@ const Footer = () => (
               rel="noopener noreferrer"
               style={{ color: '#fff', textDecoration: 'none' }}
             >
-              Copyright &copy; 2021 BASIS Scottsdale Library
+              Copyright &copy; 2022 BASIS Scottsdale Library
             </a>
           </Tooltip>
         </div>

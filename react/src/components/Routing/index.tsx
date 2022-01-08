@@ -1,9 +1,10 @@
 import React, { lazy, Suspense, useContext, useEffect } from 'react';
 import {
-  BrowserRouter as Router,
-  Switch,
+  BrowserRouter,
   Route,
-  Redirect,
+  Routes,
+  Navigate,
+  useLocation,
 } from 'react-router-dom';
 
 import { useFirebaseApp, useSigninCheck } from 'reactfire';
@@ -27,6 +28,9 @@ const DisplayBook = lazy(() => import('src/components/Books/DisplayBook'));
 const CheckOut = lazy(() => import('src/components/CheckOut'));
 const CheckIn = lazy(() => import('src/components/CheckIn'));
 const CheckOuts = lazy(() => import('src/components/CheckOuts'));
+const CheckOutDialog = lazy(
+  () => import('src/components/CheckOuts/CheckoutDialog')
+);
 const Footer = lazy(() => import('src/components/Footer'));
 
 const isDev = process.env.NODE_ENV !== 'production';
@@ -39,16 +43,17 @@ const DocumentTitle = ({
   children: any;
 }) => {
   const app = useFirebaseApp();
+  const location = useLocation();
   useEffect(() => {
     if (!isDev) {
       const analytics = getAnalytics(app);
-      logEvent(analytics, 'page_view', { page_location: location.href });
+      logEvent(analytics, 'page_view', { page_location: location.pathname });
     }
     document.title = title;
     return () => {
       document.title = 'BASIS Scottsdale Library';
     };
-  }, [title, app]);
+  }, [title, app, location.pathname]);
   return children;
 };
 
@@ -85,7 +90,7 @@ const ProtectedRoute = ({
     },
   }).data;
 
-  if (!signInCheck.hasRequiredClaims) return <Redirect to="/" />;
+  if (!signInCheck.hasRequiredClaims) return <Navigate to="/" />;
 
   return title ? (
     <DocumentTitle title={title}>
@@ -114,117 +119,162 @@ const Routing = () => {
       });
       console.warn('The page you are looking for does not exist.');
     }, []);
-    return <Redirect to="/" exact />;
+    return <Navigate to="/" />;
   };
 
   return (
     <div className="page">
-      <Router>
+      <BrowserRouter>
         <main>
           <div className="content">
             <Navigation />
 
             <Suspense fallback={<Loading />}>
-              <Switch>
-                <Route exact path="/">
-                  <DocumentTitle title="BASIS Scottsdale Library">
-                    <Home />
-                  </DocumentTitle>
-                </Route>
-                <Route exact path="/about">
-                  <DocumentTitle title="About – BASIS Scottsdale Library">
-                    <About />
-                  </DocumentTitle>
-                </Route>
-                <Route exact path="/contribute">
-                  <DocumentTitle title="Contribute – BASIS Scottsdale Library">
-                    <Contribute />
-                  </DocumentTitle>
-                </Route>
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <DocumentTitle title="BASIS Scottsdale Library">
+                      <Home />
+                    </DocumentTitle>
+                  }
+                />
+                <Route
+                  path="/about"
+                  element={
+                    <DocumentTitle title="About – BASIS Scottsdale Library">
+                      <About />
+                    </DocumentTitle>
+                  }
+                />
+                <Route
+                  path="/contribute"
+                  element={
+                    <DocumentTitle title="Contribute – BASIS Scottsdale Library">
+                      <Contribute />
+                    </DocumentTitle>
+                  }
+                />
                 {signinCheck.signedIn && (
-                  <Switch>
-                    <Route path="/account" exact>
-                      <Suspense fallback={<Loading />}>
-                        <DocumentTitle title="Account – BASIS Scottsdale Library">
-                          <Account />
-                        </DocumentTitle>
-                      </Suspense>
+                  <>
+                    <Route
+                      path="/account"
+                      element={
+                        <Suspense fallback={<Loading />}>
+                          <DocumentTitle title="Account – BASIS Scottsdale Library">
+                            <Account />
+                          </DocumentTitle>
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="/books"
+                      element={
+                        <Suspense fallback={<Loading />}>
+                          <ProtectedRoute
+                            Component={Books}
+                            permission="VIEW_BOOKS"
+                            title="Books – BASIS Scottsdale Library"
+                          />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="/books/:id"
+                      element={
+                        <Suspense fallback={<Loading />}>
+                          <ProtectedRoute
+                            Component={DisplayBook}
+                            permission="VIEW_BOOKS"
+                            title="View Book – BASIS Scottsdale Library"
+                          />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="/checkout"
+                      element={
+                        <Suspense fallback={<Loading />}>
+                          <ProtectedRoute
+                            Component={CheckOut}
+                            permission="CHECK_OUT"
+                            title="Check Out – BASIS Scottsdale Library"
+                          />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="/checkin"
+                      element={
+                        <Suspense fallback={<Loading />}>
+                          <ProtectedRoute
+                            Component={CheckIn}
+                            permission="CHECK_IN"
+                            title="Check In – BASIS Scottsdale Library"
+                          />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="/checkouts"
+                      element={
+                        <Suspense fallback={<Loading />}>
+                          <ProtectedRoute
+                            Component={CheckOuts}
+                            permission="MANAGE_CHECKOUTS"
+                            title="Manage Checkouts – BASIS Scottsdale Library"
+                          />
+                        </Suspense>
+                      }
+                    >
+                      <Route
+                        path="/checkouts/:id"
+                        element={
+                          <Suspense fallback={<Loading />}>
+                            <ProtectedRoute
+                              Component={CheckOutDialog}
+                              permission="MANAGE_CHECKOUTS"
+                              title="Manage Checkouts – BASIS Scottsdale Library"
+                            />
+                          </Suspense>
+                        }
+                      />
                     </Route>
-                    <Route path="/books" exact>
-                      <Suspense fallback={<Loading />}>
-                        <ProtectedRoute
-                          Component={Books}
-                          permission="VIEW_BOOKS"
-                          title="Books – BASIS Scottsdale Library"
-                        />
-                      </Suspense>
-                    </Route>
-                    <Route path="/books/:id">
-                      <Suspense fallback={<Loading />}>
-                        <ProtectedRoute
-                          Component={DisplayBook}
-                          permission="VIEW_BOOKS"
-                          title="View Book – BASIS Scottsdale Library"
-                        />
-                      </Suspense>
-                    </Route>
-                    <Route path="/checkout">
-                      <Suspense fallback={<Loading />}>
-                        <ProtectedRoute
-                          Component={CheckOut}
-                          permission="CHECK_OUT"
-                          title="Check Out – BASIS Scottsdale Library"
-                        />
-                      </Suspense>
-                    </Route>
-                    <Route path="/checkin">
-                      <Suspense fallback={<Loading />}>
-                        <ProtectedRoute
-                          Component={CheckIn}
-                          permission="CHECK_IN"
-                          title="Check In – BASIS Scottsdale Library"
-                        />
-                      </Suspense>
-                    </Route>
-                    <Route path="/checkouts/:id?">
-                      <Suspense fallback={<Loading />}>
-                        <ProtectedRoute
-                          Component={CheckOuts}
-                          permission="MANAGE_CHECKOUTS"
-                          title="Manage Checkouts – BASIS Scottsdale Library"
-                        />
-                      </Suspense>
-                    </Route>
-                    <Route path="/users" exact>
-                      <Suspense fallback={<Loading />}>
-                        <ProtectedRoute
-                          Component={Users}
-                          permission="MANAGE_USERS"
-                          title="Users – BASIS Scottsdale Library"
-                        />
-                      </Suspense>
-                    </Route>
-                    <Route path="/users/:id">
-                      <Suspense fallback={<Loading />}>
-                        <ProtectedRoute
-                          Component={DisplayUser}
-                          permission="MANAGE_USERS"
-                          title="Display User – BASIS Scottsdale Library"
-                        />
-                      </Suspense>
-                    </Route>
-                    <UnknownPage />
-                  </Switch>
+                    <Route
+                      path="/users"
+                      element={
+                        <Suspense fallback={<Loading />}>
+                          <ProtectedRoute
+                            Component={Users}
+                            permission="MANAGE_USERS"
+                            title="Users – BASIS Scottsdale Library"
+                          />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="/users/:id"
+                      element={
+                        <Suspense fallback={<Loading />}>
+                          <ProtectedRoute
+                            Component={DisplayUser}
+                            permission="MANAGE_USERS"
+                            title="Display User – BASIS Scottsdale Library"
+                          />
+                        </Suspense>
+                      }
+                    />
+                  </>
                 )}
-                {!signinCheck.signedIn && <UnknownPage />}
-              </Switch>
+                <Route element={<UnknownPage />} />
+              </Routes>
             </Suspense>
           </div>
         </main>
         <div className="mt-auto py-3">
           <Footer />
         </div>
-      </Router>
+      </BrowserRouter>
     </div>
   );
 };

@@ -3,8 +3,7 @@ import React, { useContext } from 'react';
 import { useUser, useFirestore, useAuth } from 'reactfire';
 import * as yup from 'yup';
 import { Formik, Form } from 'formik';
-import { Link } from 'react-router-dom';
-import { useParams } from 'react-router';
+import { Link, useParams } from 'react-router-dom';
 // @ts-ignore
 import PhoneInput from 'react-phone-number-input/input';
 
@@ -16,8 +15,8 @@ import {
   FormControlLabel,
   Grid,
   CircularProgress,
-} from '@material-ui/core';
-import { VpnKey, Lock, LockOpen } from '@material-ui/icons';
+} from '@mui/material';
+import { VpnKey, Lock, LockOpen } from '@mui/icons-material';
 
 import FirebaseContext from 'src/contexts/FirebaseContext';
 import { userInfo as userInfoInterface } from '@common/types/User';
@@ -31,6 +30,8 @@ const UserInfo = ({ userInfo }: { userInfo: userInfoInterface }) => {
   const firestore = useFirestore();
   const auth = useAuth();
   const { id } = useParams<any>();
+  if (id === undefined) throw new Error('No user defined.');
+
   const userDocRef = doc(firestore, 'users', id);
 
   const currentUser = useUser().data;

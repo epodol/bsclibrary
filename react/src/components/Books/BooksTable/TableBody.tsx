@@ -16,13 +16,12 @@ import {
   DialogContentText,
   DialogActions,
   Tooltip,
-} from '@material-ui/core';
-import { HelpOutline, Search } from '@material-ui/icons';
+} from '@mui/material';
+import { HelpOutline, Search } from '@mui/icons-material';
 
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import algoliasearch from 'algoliasearch';
 
-import Book from './Book';
 import {
   collection,
   query as firestoreQuery,
@@ -31,23 +30,18 @@ import {
   getDocs,
 } from 'firebase/firestore';
 import { useFirestore } from 'reactfire';
+import Book from 'src/components/Books/BooksTable/Book';
 
 const isDev = process.env.NODE_ENV !== 'production';
 
-interface location {
-  query: {
-    search: string;
-  };
-}
-
 const TableBody = () => {
-  const history = useHistory();
-  const location = useLocation<location>();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const firestore = useFirestore();
 
   const [query, setQuery] = useState({
-    search: location?.state?.query?.search || '',
+    search: (location?.state as any)?.query?.search || '',
     limit: 30,
   });
   const [search, setSearch] = useState('');
@@ -57,7 +51,7 @@ const TableBody = () => {
   const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false);
   useEffect(() => {
     let isSubscribed = true;
-    history.replace(location.pathname);
+    navigate(location.pathname, { replace: true });
 
     if (
       !isDev &&
@@ -97,7 +91,8 @@ const TableBody = () => {
     return () => {
       isSubscribed = false;
     };
-  }, [history, location.pathname, query, firestore]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigate, location.pathname, query, firestore]);
 
   const searchRef = useRef(search);
   searchRef.current = search;
@@ -157,7 +152,7 @@ const TableBody = () => {
                 ),
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton type="submit" aria-label="search">
+                    <IconButton type="submit" aria-label="search" size="large">
                       <Search />
                     </IconButton>
                   </InputAdornment>

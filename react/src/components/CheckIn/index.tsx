@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState } from 'react';
-import { Button, TextField, ButtonGroup, Paper } from '@material-ui/core';
+import { Button, TextField, ButtonGroup, Paper } from '@mui/material';
 import * as yup from 'yup';
 import { Formik, Form } from 'formik';
 import { useFirestore, useFunctions } from 'reactfire';
@@ -109,7 +109,6 @@ const CheckIn = () => {
                 actions.resetForm();
               })
               .catch((err) => {
-                console.table(err);
                 console.error(err);
                 NotificationHandler.addNotification({
                   message: `An unexpected error occurred: ${err.message} (${err.code})`,

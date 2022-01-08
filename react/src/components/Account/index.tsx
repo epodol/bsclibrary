@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 
-import { Button, Grid, Paper, Collapse, Chip } from '@material-ui/core';
+import { Button, Grid, Paper, Collapse, Chip } from '@mui/material';
 
 import FirebaseContext from 'src/contexts/FirebaseContext';
 import Checkouts from 'src/components/Account/Checkouts';
@@ -12,9 +12,6 @@ const Account = () => {
   return (
     <div className="lead m-5">
       <h1 className="text-center">Account</h1>
-      <p className="text-center font-italic">
-        This page is still a work in progress.
-      </p>
       <Grid container spacing={3}>
         <Grid item xs={4}>
           <Paper style={{ padding: '5%' }} className="text-center">

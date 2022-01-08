@@ -1,25 +1,9 @@
 import React, { useState } from 'react';
-import {
-  Tabs,
-  Tab,
-  makeStyles,
-  Box,
-  Paper,
-  Container,
-} from '@material-ui/core';
+import { Tabs, Tab, Box, Paper, Container } from '@mui/material';
+
 import Donate from 'src/components/Contribute/Donate';
 import Volunteer from 'src/components/Contribute/Volunteer';
 import Code from 'src/components/Contribute/Code';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-    display: 'flex',
-  },
-  tabs: {
-    borderRight: `1px solid ${theme.palette.divider}`,
-  },
-}));
 
 interface TabPanelProps {
   children: React.ReactNode;
@@ -46,21 +30,21 @@ const TabPanel = ({ children, value, index, ...other }: TabPanelProps) => (
 
 const Contribute = () => {
   const [value, setValue] = useState(0);
-  const classes = useStyles();
 
   return (
     <>
       <h1 className="text-center m-4">Contribute</h1>
       <Container>
-        <Paper className={classes.root}>
-          <div className={classes.tabs}>
+        <Paper sx={{ flexGrow: 1, display: 'flex' }}>
+          <div>
             <Tabs
               orientation="vertical"
               variant="scrollable"
               value={value}
               onChange={(e, newValue) => setValue(newValue)}
-              scrollButtons="on"
+              scrollButtons
               style={{ overflowWrap: 'anywhere' }}
+              allowScrollButtonsMobile
             >
               <Tab wrapped label="Donate" />
               <Tab wrapped label="Volunteer" />

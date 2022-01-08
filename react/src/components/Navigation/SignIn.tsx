@@ -9,7 +9,7 @@ import {
   DialogActions,
   FormControlLabel,
   Checkbox,
-} from '@material-ui/core';
+} from '@mui/material';
 
 import { Formik, Form } from 'formik';
 import * as yup from 'yup';
@@ -23,7 +23,7 @@ import {
   indexedDBLocalPersistence,
   browserSessionPersistence,
 } from 'firebase/auth';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 
 const SignIn = () => {
   const SignInSchema = yup.object().shape({
@@ -42,7 +42,7 @@ const SignIn = () => {
   });
 
   const auth = useAuth();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const NotificationHandler = useContext(NotificationContext);
 
@@ -55,7 +55,6 @@ const SignIn = () => {
       <Button
         size="large"
         variant="contained"
-        color="default"
         onClick={() => setDisplaySignInForm(true)}
       >
         Sign In
@@ -87,7 +86,7 @@ const SignIn = () => {
               )
                 .then(() => {
                   actions.setSubmitting(false);
-                  history.push('/account');
+                  navigate('/account');
                 })
                 .catch((err) => {
                   if (err.code === 'auth/wrong-password') {
@@ -112,9 +111,7 @@ const SignIn = () => {
         >
           {({ values, errors, isSubmitting, handleChange, submitCount }) => (
             <Form noValidate>
-              <DialogTitle disableTypography>
-                <h2>Sign In</h2>
-              </DialogTitle>
+              <DialogTitle>Sign In</DialogTitle>
               <DialogContent>
                 <DialogContentText>
                   Welcome! If you already have registered for an account, please
@@ -122,6 +119,7 @@ const SignIn = () => {
                   library and register.
                 </DialogContentText>
                 <TextField
+                  variant="standard"
                   id="email"
                   type="email"
                   label="Email"
@@ -135,6 +133,7 @@ const SignIn = () => {
                 <br />
 
                 <TextField
+                  variant="standard"
                   id="password"
                   type="password"
                   label="Password"
@@ -160,7 +159,6 @@ const SignIn = () => {
                 <br />
                 <div style={{ float: 'right', paddingTop: 3 }}>
                   <Button
-                    className="text-dark"
                     size="small"
                     onClick={() => {
                       setDisplaySignInForm(false);
@@ -222,9 +220,7 @@ const SignIn = () => {
                 setDisplayResetPasswordForm(false);
               })
               .catch((err) => {
-                if (err.code === 'auth/invalid-email') {
-                  actions.setFieldError('email', 'Invalid email');
-                } else if (err.code === 'auth/user-not-found') {
+                if (err.code === 'auth/user-not-found') {
                   actions.setFieldError('email', 'User not Found');
                 } else if (err.code === 'auth/user-disabled') {
                   actions.setFieldError('email', 'This user has been disabled');
@@ -247,7 +243,7 @@ const SignIn = () => {
         >
           {({ values, errors, isSubmitting, handleChange, submitCount }) => (
             <Form noValidate>
-              <DialogTitle disableTypography>
+              <DialogTitle>
                 <h2>Reset Password</h2>
               </DialogTitle>
               <DialogContent>
@@ -258,6 +254,7 @@ const SignIn = () => {
                 </DialogContentText>
 
                 <TextField
+                  variant="standard"
                   id="email"
                   type="email"
                   label="Email"
@@ -272,7 +269,6 @@ const SignIn = () => {
                 <br />
                 <div style={{ float: 'right', paddingTop: 3 }}>
                   <Button
-                    className="text-dark"
                     size="small"
                     onClick={() => {
                       setDisplayResetPasswordForm(false);

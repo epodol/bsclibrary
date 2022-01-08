@@ -1,7 +1,7 @@
 import React from 'react';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import { useFirestore, useFirestoreDocData } from 'reactfire';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 
 import 'src/components/Users/users.css';
 import UserInfo from 'src/components/Users/DisplayUser/UserInfo';
@@ -15,7 +15,9 @@ interface UserInterfaceWithID extends UserInterface {
 }
 const DisplayUser = () => {
   const firestore = useFirestore();
-  const { id }: { id: string } = useParams();
+  const { id } = useParams();
+  if (id === undefined) throw new Error('No user defined.');
+
   const ref = doc(firestore, 'users', id);
   const data = useFirestoreDocData(ref, {
     idField: 'id',

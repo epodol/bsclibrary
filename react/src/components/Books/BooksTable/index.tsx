@@ -1,5 +1,5 @@
 import React, { Suspense, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   AppBar,
   IconButton,
@@ -7,8 +7,8 @@ import {
   Paper,
   Toolbar,
   Container,
-} from '@material-ui/core';
-import { Add } from '@material-ui/icons';
+} from '@mui/material';
+import { Add } from '@mui/icons-material';
 
 import { useFirestore, useUser } from 'reactfire';
 import { collection, serverTimestamp, addDoc } from 'firebase/firestore';
@@ -27,7 +27,7 @@ const BooksTable = () => {
   const user = useUser().data;
   if (user === null) throw new Error('No user exists.');
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <Paper className="p-3 my-4 mx-5 mb-5">
@@ -79,7 +79,7 @@ const BooksTable = () => {
                         lastEdited: serverTimestamp(),
                       })
                         .then((book) => {
-                          history.push(book.path, { editing: true });
+                          navigate(book.path, { state: { editing: true } });
                           NotificationHandler.addNotification({
                             message: `New book created.`,
                             severity: 'success',
@@ -94,6 +94,7 @@ const BooksTable = () => {
                           });
                         });
                     }}
+                    size="large"
                   >
                     <Add />
                   </IconButton>

@@ -39,13 +39,12 @@ import {
 import { getPerformance } from 'firebase/performance';
 import { getAnalytics } from 'firebase/analytics';
 
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 
 import { FirebaseProvider } from 'src/contexts/FirebaseContext';
 import { NotificationProvider } from 'src/contexts/NotificationContext';
 
-import MUITheme from 'src/contexts/MUITheme';
+import { ThemeContextProvider } from 'src/contexts/MUITheme';
 import Routing from 'src/components/Routing';
 import Loading from 'src/components/Loading';
 
@@ -195,7 +194,7 @@ const AppWithFirebase = () => {
     return <Loading />;
 
   return (
-    <ThemeProvider theme={MUITheme}>
+    <ThemeContextProvider>
       <CssBaseline />
       <NotificationProvider>
         <AuthProvider sdk={auth}>
@@ -214,7 +213,7 @@ const AppWithFirebase = () => {
           </FirestoreProvider>
         </AuthProvider>
       </NotificationProvider>
-    </ThemeProvider>
+    </ThemeContextProvider>
   );
 };
 
@@ -228,19 +227,20 @@ class ErrorBoundary extends Component<{}, any> {
   componentDidCatch(error: any, errorInfo: any) {
     // Catch errors in any components below and re-render with error message
     this.setState({
-      error: error,
-      errorInfo: errorInfo,
+      error,
+      errorInfo,
     });
 
     console.error(error);
     console.error(errorInfo);
-    console.trace();
-    // You can also log error messages to an error reporting service here
+    // Log error messages to an error reporting service here
   }
 
   render() {
-    if (this.state.errorInfo) {
-      // Error path
+    const { error, errorInfo } = this.state;
+    const { children } = this.props;
+
+    if (errorInfo) {
       return (
         <div>
           <h2
@@ -260,9 +260,9 @@ class ErrorBoundary extends Component<{}, any> {
             }}
           >
             <details style={{ whiteSpace: 'pre-wrap' }}>
-              {this.state.error && this.state.error.toString()}
+              {error && error.toString()}
               <br />
-              {this.state.errorInfo.componentStack}
+              {errorInfo.componentStack}
             </details>
           </div>
           <br />
@@ -286,8 +286,7 @@ class ErrorBoundary extends Component<{}, any> {
         </div>
       );
     }
-    // Normally, just render children
-    return this.props.children;
+    return children;
   }
 }
 

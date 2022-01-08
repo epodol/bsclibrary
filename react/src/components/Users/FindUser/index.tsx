@@ -1,6 +1,6 @@
 import React, { useState, Suspense } from 'react';
 import { useFirestore, useFirestoreCollectionData } from 'reactfire';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 
 import {
   FormControl,
@@ -13,7 +13,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
-} from '@material-ui/core';
+} from '@mui/material';
 import User from '@common/types/User';
 
 import Loading from 'src/components/Loading';
@@ -50,7 +50,7 @@ const FindUserTable = ({
     idField: 'id',
   }).data as unknown as User[];
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <div className="text-center">
@@ -73,7 +73,7 @@ const FindUserTable = ({
                   key={userInfo.uid}
                   style={{ cursor: 'pointer' }}
                   hover
-                  onClick={() => history.push(`/users/${userInfo.uid}`)}
+                  onClick={() => navigate(`/users/${userInfo.uid}`)}
                 >
                   <TableCell component="th" scope="row">
                     {userInfo.firstName} {userInfo.lastName}

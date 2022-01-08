@@ -2,8 +2,8 @@ import React, { useContext } from 'react';
 import * as yup from 'yup';
 import { Formik, Form } from 'formik';
 import { useFirestore, useUser } from 'reactfire';
-import { useParams } from 'react-router';
-import { TextField, Grid, Button, CircularProgress } from '@material-ui/core';
+import { useParams } from 'react-router-dom';
+import { TextField, Grid, Button, CircularProgress } from '@mui/material';
 
 import user, { checkoutInfo } from '@common/types/User';
 import RecursivePartial from '@common/types/RecursivePartial';
@@ -29,6 +29,8 @@ const UserCheckouts = ({ checkouts }: { checkouts: checkoutInfo }) => {
   const firebaseContext = useContext(FirebaseContext);
 
   const { id } = useParams<any>();
+  if (id === undefined) throw new Error('No user defined.');
+
   const userDocRef = doc(firestore, 'users', id);
   return (
     <div className="text-center">

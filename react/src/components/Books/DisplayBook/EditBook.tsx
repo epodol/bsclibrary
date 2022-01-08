@@ -10,7 +10,7 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
-} from '@material-ui/core';
+} from '@mui/material';
 
 import { volumeInfo as volumeInfoType } from '@common/types/Book';
 import NotificationContext from 'src/contexts/NotificationContext';

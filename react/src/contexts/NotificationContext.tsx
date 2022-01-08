@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { Snackbar, SnackbarOrigin } from '@material-ui/core';
-import { Alert, Color } from '@material-ui/lab';
+import { Snackbar, SnackbarOrigin, Alert, AlertColor } from '@mui/material';
 
 const NotificationContext = createContext<NotificationHandler>(
   null as unknown as NotificationHandler
@@ -23,7 +22,7 @@ const Notification = ({
     setOpen(true);
   }, [remove, message, severity, timeout, position]);
 
-  const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
+  const handleClose = (event?: any, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -53,7 +52,7 @@ const Notification = ({
 
 interface notification {
   message: string;
-  severity: Color;
+  severity: AlertColor;
   timeout?: number;
   position?: SnackbarOrigin;
 }
