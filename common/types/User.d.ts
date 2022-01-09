@@ -1,4 +1,4 @@
-import { firestore } from 'firebase-admin';
+import { Timestamp } from 'firebase-admin/firestore';
 
 /**
  * Firestore Location: `/users/{User}`
@@ -9,11 +9,11 @@ export default interface User {
 }
 export interface userInfo {
   createdBy: string;
-  createdTime: firestore.Timestamp | null;
+  createdTime: Timestamp | null;
   disabled: boolean;
   displayName: string;
   editedBy: string;
-  editedTime: firestore.Timestamp | null;
+  editedTime: Timestamp | null;
   email: string;
   firstName: string;
   lastName: string;

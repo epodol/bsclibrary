@@ -19,7 +19,7 @@
     "node": ">=16.0.0"
   },
   "scripts": {
-    "start": "npm-run-all --parallel dev:emulators dev:react tsc:watch",
+    "start": "echo 'Loading.... This will take a few minutes.' && npm run tsc && npm-run-all --parallel dev:emulators dev:react tsc:watch",
     "start:export": "npm-run-all --parallel dev:emulators:export dev:react tsc:watch",
     "dev:react": "cd react && npm run start",
     "dev:emulators": "firebase emulators:start --import=./emulator-data",

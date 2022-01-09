@@ -1,5 +1,6 @@
 import functions from 'firebase-functions';
-import admin from 'firebase-admin';
+import { getAuth } from 'firebase-admin/auth';
+import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import User from '@common/types/User';
 
 import addNewUserData from '@common/functions/addNewUser';
@@ -7,6 +8,9 @@ import addNewUserData from '@common/functions/addNewUser';
 const addNewUser = functions
   .region('us-west2')
   .https.onCall(async (data: addNewUserData, context) => {
+    const auth = getAuth();
+    const firestore = getFirestore();
+
     // App Check Verification
     if (!context.app && process.env.NODE_ENV === 'production') {
       throw new functions.https.HttpsError(
@@ -63,8 +67,7 @@ const addNewUser = functions
       );
     }
 
-    const newUser = await admin
-      .auth()
+    const newUser = await auth
       .createUser({
         email: data.email,
         emailVerified: false,
@@ -91,8 +94,7 @@ const addNewUser = functions
       );
     }
 
-    await admin
-      .auth()
+    await auth
       .setCustomUserClaims(newUser.uid, {
         role: data.role,
         firstName: data.first_name,
@@ -118,11 +120,11 @@ const addNewUser = functions
         phoneNumber: newUser.phoneNumber ?? null,
         disabled: newUser.disabled,
         createdBy: context.auth.uid,
-        createdTime: admin.firestore.Timestamp.fromMillis(
+        createdTime: Timestamp.fromMillis(
           Date.parse(newUser.metadata.creationTime)
         ),
         editedBy: context.auth.uid,
-        editedTime: admin.firestore.Timestamp.fromMillis(
+        editedTime: Timestamp.fromMillis(
           Date.parse(newUser.metadata.creationTime)
         ),
         role: data.role,
@@ -135,8 +137,7 @@ const addNewUser = functions
       },
     };
 
-    await admin
-      .firestore()
+    await firestore
       .collection('users')
       .doc(newUser.uid)
       .set(newUserDoc)

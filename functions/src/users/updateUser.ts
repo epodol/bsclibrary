@@ -1,5 +1,6 @@
 import functions from 'firebase-functions';
-import admin from 'firebase-admin';
+import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
 import User from '@common/types/User';
 import RecursivePartial from '@common/types/RecursivePartial';
 
@@ -7,14 +8,16 @@ const updateUser = functions
   .region('us-west2')
   .firestore.document('users/{docId}')
   .onUpdate(async ({ before, after }) => {
+    const auth = getAuth();
+    const firestore = getFirestore();
+
     const afterData: User = after.data() as User;
 
     const beforeUser: User = before.data() as User;
 
     // Update email if it has changed
     if (beforeUser?.userInfo?.email !== afterData.userInfo?.email)
-      await admin
-        .auth()
+      await auth
         .updateUser(after.id, {
           email: afterData.userInfo?.email,
         })
@@ -29,8 +32,7 @@ const updateUser = functions
                 email: beforeUser?.userInfo?.email,
               },
             };
-            await admin
-              .firestore()
+            await firestore
               .collection('users')
               .doc(after.id)
               .set(userDoc, { merge: true });
@@ -39,8 +41,7 @@ const updateUser = functions
 
     // Update phone number if it has changed
     if (beforeUser?.userInfo?.phoneNumber !== afterData.userInfo?.phoneNumber)
-      await admin
-        .auth()
+      await auth
         .updateUser(after.id, {
           phoneNumber: afterData.userInfo?.phoneNumber,
         })
@@ -48,7 +49,7 @@ const updateUser = functions
           console.error(err);
         });
 
-    await admin.auth().updateUser(after.id, {
+    await auth.updateUser(after.id, {
       displayName: afterData.userInfo?.displayName,
       photoURL: afterData.userInfo?.photoURL,
       disabled: afterData.userInfo?.disabled,
@@ -68,15 +69,14 @@ const updateUser = functions
         userDoc.userInfo?.queryFirstName ||
       beforeUser?.userInfo?.queryLastName !== userDoc.userInfo?.queryLastName
     ) {
-      await admin
-        .firestore()
+      await firestore
         .collection('users')
         .doc(after.id)
         .set(userDoc, { merge: true });
     }
 
     // Update the user's custom claims
-    return admin.auth().setCustomUserClaims(after.id, {
+    return auth.setCustomUserClaims(after.id, {
       role: afterData.userInfo?.role,
       firstName: afterData.userInfo?.firstName,
       lastName: afterData.userInfo?.lastName,

@@ -1,15 +1,15 @@
 import functions from 'firebase-functions';
-import admin from 'firebase-admin';
-
+import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import renewCheckoutData from '@common/functions/renewCheckout';
 
 import Checkout from '@common/types/Checkout';
 import RecursivePartial from '@common/types/RecursivePartial';
-// import RecursivePartial from '@common/types/RecursivePartial';
 
 const renewCheckout = functions
   .region('us-west2')
   .https.onCall(async (data: renewCheckoutData, context) => {
+    const firestore = getFirestore();
+
     // App Check Verification
     if (!context.app && process.env.NODE_ENV === 'production') {
       throw new functions.https.HttpsError(
@@ -68,8 +68,7 @@ const renewCheckout = functions
       );
     }
 
-    const checkoutDoc = await admin
-      .firestore()
+    const checkoutDoc = await firestore
       .collection('checkouts')
       .doc(data.checkoutID)
       .get();
@@ -94,17 +93,13 @@ const renewCheckout = functions
     }
 
     const newCheckout: RecursivePartial<Checkout> = {
-      dueDate: admin.firestore.Timestamp.fromMillis(
+      dueDate: Timestamp.fromMillis(
         checkout.dueDate.toDate().valueOf() + 7 * 24 * 60 * 60 * 1000
       ),
       // Since we can not increment the dueDate, we will not increment the renewsUsed
       renewsUsed: checkout.renewsUsed + 1,
     };
-    admin
-      .firestore()
-      .collection('checkouts')
-      .doc(data.checkoutID)
-      .update(newCheckout);
+    firestore.collection('checkouts').doc(data.checkoutID).update(newCheckout);
   });
 
 export default renewCheckout;
