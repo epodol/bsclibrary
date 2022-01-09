@@ -1,5 +1,5 @@
 import functions from 'firebase-functions';
-import admin from 'firebase-admin';
+import { getFirestore, Timestamp, FieldValue } from 'firebase-admin/firestore';
 
 import checkinBookData from '@common/functions/checkinBook';
 
@@ -10,6 +10,8 @@ import RecursivePartial from '@common/types/RecursivePartial';
 const checkinBook = functions
   .region('us-west2')
   .https.onCall(async (data: checkinBookData, context) => {
+    const firestore = getFirestore();
+
     // App Check Verification
     if (!context.app && process.env.NODE_ENV === 'production') {
       throw new functions.https.HttpsError(
@@ -69,8 +71,7 @@ const checkinBook = functions
     }
 
     // Get the checkout from the database
-    const checkoutDocs = await admin
-      .firestore()
+    const checkoutDocs = await firestore
       .collection('checkouts')
       .where('bookID', '==', data.bookID)
       .where('copyID', '==', data.copyID)
@@ -90,7 +91,7 @@ const checkinBook = functions
     const checkoutData = checkoutDoc.data() as Checkout;
 
     // Create a batched update
-    const batch = admin.firestore().batch();
+    const batch = firestore.batch();
 
     if (checkoutData.dueDate === null) {
       // If the checkout has no due date, set it to the current date
@@ -106,24 +107,20 @@ const checkinBook = functions
       checkoutStatus:
         checkoutData.dueDate.toMillis() > new Date().getTime() ? 1 : 2,
       conditionIn: data.condition,
-      timeIn: admin.firestore.FieldValue.serverTimestamp(),
+      timeIn: FieldValue.serverTimestamp(),
     };
 
-    const userRef = admin
-      .firestore()
-      .collection('users')
-      .doc(checkoutData.userID);
+    const userRef = firestore.collection('users').doc(checkoutData.userID);
 
     const user = {
       // Dot notation required to avoid overriding the entire checkoutInfo object
-      'checkoutInfo.activeCheckouts': admin.firestore.FieldValue.arrayRemove(
+      'checkoutInfo.activeCheckouts': FieldValue.arrayRemove(
         checkoutDoc.id
       ) as unknown as string[],
     };
 
     const copy: RecursivePartial<Copy> = {
-      lastEdited:
-        admin.firestore.FieldValue.serverTimestamp() as admin.firestore.Timestamp,
+      lastEdited: FieldValue.serverTimestamp() as Timestamp,
       lastEditedBy: context.auth?.uid,
       condition: data.condition,
       status: data.status,
@@ -132,7 +129,7 @@ const checkinBook = functions
     batch.update(checkoutDoc.ref, updatedCheckoutDocData);
     batch.update(userRef, user);
     batch.update(
-      admin.firestore().doc(`/books/${data.bookID}/copies/${data.copyID}`),
+      firestore.doc(`/books/${data.bookID}/copies/${data.copyID}`),
       copy
     );
 

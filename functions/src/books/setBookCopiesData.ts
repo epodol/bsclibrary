@@ -1,5 +1,5 @@
 import functions from 'firebase-functions';
-import admin from 'firebase-admin';
+import { FieldValue } from 'firebase-admin/firestore';
 import Book from '@common/types/Book';
 import RecursivePartial from '@common/types/RecursivePartial';
 
@@ -8,7 +8,7 @@ const setBookCopiesData = functions
   .firestore.document('books/{bookId}/copies/{copyID}')
   .onWrite(({ before, after }) => {
     const increment = (val: number) =>
-      admin.firestore.FieldValue.increment(val) as unknown as number;
+      FieldValue.increment(val) as unknown as number;
     const newVal: RecursivePartial<Book> = {};
 
     const beforeStatus = before?.data()?.status ?? 4;

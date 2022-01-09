@@ -1,9 +1,9 @@
-import { firestore } from 'firebase-admin';
+import { Timestamp } from 'firebase-admin/firestore';
 
 export default interface Copy {
   barcode: string;
   condition: condition;
-  lastEdited: firestore.Timestamp | null;
+  lastEdited: Timestamp | null;
   lastEditedBy: string;
   notes: string;
   status: status;

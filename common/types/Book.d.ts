@@ -1,10 +1,10 @@
-import { firestore } from 'firebase-admin';
+import { Timestamp } from 'firebase-admin/firestore';
 
 export default interface Book {
   copiesAvailable: number;
   copiesCount: number;
   featured: boolean;
-  lastEdited: firestore.Timestamp | null;
+  lastEdited: Timestamp | null;
   lastEditedBy: string;
   volumeInfo: volumeInfo;
 }

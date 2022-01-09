@@ -1,5 +1,5 @@
 import functions from 'firebase-functions';
-import admin from 'firebase-admin';
+import { FieldValue } from 'firebase-admin/firestore';
 import fetch from 'node-fetch';
 
 const addBookReview = functions
@@ -48,7 +48,7 @@ const addBookReview = functions
 
     const reviewData = {
       author: context.auth.uid,
-      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      timestamp: FieldValue.serverTimestamp(),
       perspectiveResults: {
         raw: {
           TOXICITY: 0,

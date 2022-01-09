@@ -1,4 +1,4 @@
-import { firestore } from 'firebase-admin';
+import { Timestamp } from 'firebase-admin/firestore';
 import { condition } from './Copy';
 
 export default interface Checkout {
@@ -25,15 +25,15 @@ export default interface Checkout {
   /**
    * A Firestore Timestamp of the date and time this book is due.
    */
-  dueDate: firestore.Timestamp;
+  dueDate: Timestamp;
   /**
    * The Firestore ID of the actual time the book was checked out.
    */
-  timeOut: firestore.Timestamp | null;
+  timeOut: Timestamp | null;
   /**
    * The Firestore ID of the actual time the book was checked in.
    */
-  timeIn: firestore.Timestamp | null;
+  timeIn: Timestamp | null;
   /**
    * The condition of the copy when it was checked out.
    */
