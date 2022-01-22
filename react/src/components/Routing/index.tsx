@@ -15,22 +15,20 @@ import Loading from 'src/components/Loading';
 import Navigation from 'src/components/Navigation';
 import NotificationContext from 'src/contexts/NotificationContext';
 
-const Home = lazy(() => import('src/components/Home'));
-const Account = lazy(() => import('src/components/Account'));
+const Home = lazy(() => import('src/pages/Home'));
+const Account = lazy(() => import('src/pages/Account'));
 
-const Contribute = lazy(() => import('src/components/Contribute'));
-const About = lazy(() => import('src/components/About'));
+const Contribute = lazy(() => import('src/pages/Contribute'));
+const About = lazy(() => import('src/pages/About'));
 
-const Users = lazy(() => import('src/components/Users'));
-const DisplayUser = lazy(() => import('src/components/Users/DisplayUser'));
-const Books = lazy(() => import('src/components/Books'));
-const DisplayBook = lazy(() => import('src/components/Books/DisplayBook'));
-const CheckOut = lazy(() => import('src/components/CheckOut'));
-const CheckIn = lazy(() => import('src/components/CheckIn'));
-const CheckOuts = lazy(() => import('src/components/CheckOuts'));
-const CheckOutDialog = lazy(
-  () => import('src/components/CheckOuts/CheckoutDialog')
-);
+const Users = lazy(() => import('src/pages/Users'));
+const DisplayUser = lazy(() => import('src/pages/Users/DisplayUser'));
+const Books = lazy(() => import('src/pages/Books'));
+const DisplayBook = lazy(() => import('src/pages/Books/DisplayBook'));
+const CheckOut = lazy(() => import('src/pages/CheckOut'));
+const CheckIn = lazy(() => import('src/pages/CheckIn'));
+const CheckOuts = lazy(() => import('src/pages/CheckOuts'));
+const CheckOutDialog = lazy(() => import('src/pages/CheckOuts/CheckoutDialog'));
 const Footer = lazy(() => import('src/components/Footer'));
 
 const isDev = process.env.NODE_ENV !== 'production';
@@ -64,7 +62,6 @@ const ProtectedRoute = ({
 }: {
   Component: any;
   permission: string;
-  // eslint-disable-next-line react/require-default-props
   title?: string;
 }) => {
   const NotificationHandler = useContext(NotificationContext);
@@ -271,9 +268,7 @@ const Routing = () => {
             </Suspense>
           </div>
         </main>
-        <div className="mt-auto py-3">
-          <Footer />
-        </div>
+        <Footer />
       </BrowserRouter>
     </div>
   );

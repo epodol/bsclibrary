@@ -27,24 +27,6 @@ const addNewUser = functions
       );
     }
 
-    if (typeof context.auth.token.role === 'undefined') {
-      throw new functions.https.HttpsError(
-        'permission-denied',
-        'The caller must already have a set role.'
-      );
-    }
-
-    if (
-      (context.auth.token.role <= data.role &&
-        context.auth.token.role !== 1000) ||
-      data.role > 1000
-    ) {
-      throw new functions.https.HttpsError(
-        'permission-denied',
-        'The user calling the function must have a higher role than the claim they are assigning or be an admin.'
-      );
-    }
-
     if (!context.auth.token.permissions.MANAGE_USERS) {
       throw new functions.https.HttpsError(
         'permission-denied',
@@ -56,7 +38,6 @@ const addNewUser = functions
       typeof data.email !== 'string' ||
       typeof data.first_name !== 'string' ||
       typeof data.last_name !== 'string' ||
-      typeof data.role !== 'number' ||
       typeof data.permissions !== 'object' ||
       typeof data.maxCheckouts !== 'number' ||
       typeof data.maxRenews !== 'number'
@@ -96,7 +77,6 @@ const addNewUser = functions
 
     await auth
       .setCustomUserClaims(newUser.uid, {
-        role: data.role,
         firstName: data.first_name,
         lastName: data.last_name,
         permissions: data.permissions,
@@ -127,7 +107,6 @@ const addNewUser = functions
         editedTime: Timestamp.fromMillis(
           Date.parse(newUser.metadata.creationTime)
         ),
-        role: data.role,
         permissions: data.permissions,
       },
       checkoutInfo: {

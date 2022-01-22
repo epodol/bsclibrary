@@ -7,25 +7,30 @@ service cloud.firestore {
         allow get: if request.auth.token.permissions.VIEW_BOOKS || request.auth.token.permissions.CHECK_OUT;
         allow list: if request.auth.token.permissions.VIEW_BOOKS;
         allow create, update: if request.auth.token.permissions.MANAGE_BOOKS;
-        allow delete: if request.auth.token.role >= 1000 && request.auth.token.permissions.MANAGE_BOOKS;
+        allow delete: if false;
       }
 
       match /{path=**}/copies/{copy} {
         allow read: if request.auth.token.permissions.VIEW_BOOKS || request.auth.token.permissions.CHECK_IN || request.auth.token.permissions.CHECK_OUT;
-        allow create, update: if request.auth.token.permissions.MANAGE_BOOKS;
-        allow delete: if request.auth.token.role >= 1000 && request.auth.token.permissions.MANAGE_BOOKS;
+        allow create, update, delete: if request.auth.token.permissions.MANAGE_BOOKS;
       }
 
       match /{path=**}/reviews/{review} {
         allow read: if request.auth.token.permissions.VIEW_BOOKS;
-        allow write: if request.auth.token.role >= 1000 && request.auth.token.permissions.MANAGE_BOOKS;
+        allow delete: if request.auth.token.permissions.MANAGE_BOOKS;
+      }
+
+      match /libraries/{library} {
+        allow create, delete, list: if false;
+        allow get: if library in request.auth.token.libraries;
+        allow update: if library in request.auth.token.permissions.MANAGE_LIBRARY;
       }
 
       match /users/{user} {
         allow get: if request.auth.token.permissions.MANAGE_USERS || request.auth.token.permissions.CHECK_OUT || request.auth.uid == user;
         allow list: if request.auth.token.permissions.MANAGE_USERS || request.auth.token.permissions.CHECK_OUT;
         allow create, delete: if false;
-        allow update: if (request.auth.token.permissions.MANAGE_USERS) && (user != request.auth.uid || request.auth.token.role >= 1000);
+        allow update: if request.auth.token.permissions.MANAGE_USERS && user != request.auth.uid;
   }
 
       match /checkouts/{checkout} {

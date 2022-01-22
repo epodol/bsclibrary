@@ -6,7 +6,7 @@ import checkoutBookData from '@common/functions/checkoutBook';
 
 import Checkout from '@common/types/Checkout';
 import Copy from '@common/types/Copy';
-import RecursivePartial from '@common/types/RecursivePartial';
+import RecursivePartial from '@common/types/util/RecursivePartial';
 
 const checkoutBook = functions
   .region('us-west2')
@@ -27,13 +27,6 @@ const checkoutBook = functions
       throw new functions.https.HttpsError(
         'unauthenticated',
         'The function must be called while authenticated.'
-      );
-    }
-
-    if (typeof context.auth.token.role === 'undefined') {
-      throw new functions.https.HttpsError(
-        'permission-denied',
-        'The caller must already have a set role.'
       );
     }
 

@@ -4,7 +4,11 @@ import { GitHub, Instagram, Email } from '@mui/icons-material';
 
 const Footer = () => (
   <div className="footer">
-    <AppBar className="font-small pt-3" position="absolute">
+    <AppBar
+      className="font-small"
+      position="absolute"
+      sx={{ paddingTop: 3, marginTop: 3 }}
+    >
       <div className="text-center">
         <ul className="list-unstyled list-inline">
           <li className="list-inline-item">

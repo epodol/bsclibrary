@@ -3,7 +3,7 @@ import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import renewCheckoutData from '@common/functions/renewCheckout';
 
 import Checkout from '@common/types/Checkout';
-import RecursivePartial from '@common/types/RecursivePartial';
+import RecursivePartial from '@common/types/util/RecursivePartial';
 
 const renewCheckout = functions
   .region('us-west2')
@@ -23,14 +23,6 @@ const renewCheckout = functions
       throw new functions.https.HttpsError(
         'unauthenticated',
         'The function must be called while authenticated.'
-      );
-    }
-
-    // Role Verification
-    if (typeof context.auth.token.role === 'undefined') {
-      throw new functions.https.HttpsError(
-        'permission-denied',
-        'The caller must already have a set role.'
       );
     }
 

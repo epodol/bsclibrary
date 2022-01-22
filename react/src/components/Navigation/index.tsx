@@ -63,9 +63,6 @@ const NavBarItems = () => {
           <Button
             color="inherit"
             disabled={location.pathname.startsWith('/checkin')}
-            // variant={
-            //   location.pathname.startsWith('/checkin') ? 'contained' : 'text'
-            // }
           >
             Check In
           </Button>
@@ -137,7 +134,7 @@ const Navigation = () => {
               {theme.palette.mode === 'dark' ? <Brightness7 /> : <ModeNight />}
             </IconButton>
             {signinCheck.signedIn && (
-              <div>
+              <>
                 <IconButton onClick={handleMenu} color="inherit" size="large">
                   <Avatar
                     alt={`${firebaseContext?.claims?.firstName || ''} ${
@@ -154,15 +151,7 @@ const Navigation = () => {
                 </IconButton>
                 <Menu
                   anchorEl={anchorEl}
-                  // anchorOrigin={{
-                  //   vertical: 'top',
-                  //   horizontal: 'right',
-                  // }}
                   keepMounted
-                  // transformOrigin={{
-                  //   vertical: 'top',
-                  //   horizontal: 'right',
-                  // }}
                   open={open}
                   onClose={handleClose}
                 >
@@ -186,7 +175,7 @@ const Navigation = () => {
                     <ExitToApp /> Sign out
                   </MenuItem>
                 </Menu>
-              </div>
+              </>
             )}
             {!signinCheck.signedIn && <SignIn />}
           </div>

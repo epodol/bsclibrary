@@ -21,13 +21,6 @@ const addBookReview = functions
       );
     }
 
-    if (typeof context.auth.token.role === 'undefined') {
-      throw new functions.https.HttpsError(
-        'permission-denied',
-        'The caller must already have a set role.'
-      );
-    }
-
     if (!context.auth.token.permissions.REVIEW_BOOKS) {
       throw new functions.https.HttpsError(
         'permission-denied',

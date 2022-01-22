@@ -119,7 +119,6 @@ const SignIn = () => {
                   library and register.
                 </DialogContentText>
                 <TextField
-                  variant="standard"
                   id="email"
                   type="email"
                   label="Email"
@@ -133,7 +132,6 @@ const SignIn = () => {
                 <br />
 
                 <TextField
-                  variant="standard"
                   id="password"
                   type="password"
                   label="Password"
@@ -254,7 +252,6 @@ const SignIn = () => {
                 </DialogContentText>
 
                 <TextField
-                  variant="standard"
                   id="email"
                   type="email"
                   label="Email"

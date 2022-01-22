@@ -2,7 +2,7 @@ import functions from 'firebase-functions';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import User from '@common/types/User';
-import RecursivePartial from '@common/types/RecursivePartial';
+import RecursivePartial from '@common/types/util/RecursivePartial';
 
 const updateUser = functions
   .region('us-west2')
@@ -77,7 +77,6 @@ const updateUser = functions
 
     // Update the user's custom claims
     return auth.setCustomUserClaims(after.id, {
-      role: afterData.userInfo?.role,
       firstName: afterData.userInfo?.firstName,
       lastName: afterData.userInfo?.lastName,
       permissions: afterData.userInfo?.permissions,

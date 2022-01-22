@@ -1,7 +1,7 @@
 import functions from 'firebase-functions';
 import { FieldValue } from 'firebase-admin/firestore';
 import Book from '@common/types/Book';
-import RecursivePartial from '@common/types/RecursivePartial';
+import RecursivePartial from '@common/types/util/RecursivePartial';
 
 const setBookCopiesData = functions
   .region('us-west2')
