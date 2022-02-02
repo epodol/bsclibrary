@@ -1,5 +1,5 @@
 import React, { useContext, useState, Suspense } from 'react';
-import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { useFirestoreDocData, useFirestore } from 'reactfire';
 import {
   Container,
@@ -34,7 +34,6 @@ const Book = () => {
   if (id === undefined) throw new Error('No user defined.');
 
   const location: { state: { editing?: boolean } } = useLocation() as any;
-  const navigate = useNavigate();
   const firestore = useFirestore();
   const ref = doc(firestore, 'books', id);
   const data = useFirestoreDocData(ref, {
