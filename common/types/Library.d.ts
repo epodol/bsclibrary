@@ -1,10 +1,9 @@
-/**
- * Location: /libraries/{library}
- */
-
 import { Timestamp } from 'firebase-admin/firestore';
 
-export interface Library {
+/**
+ * Location: `/libraries/{library}`
+ */
+export default interface Library {
   id: string;
   name: string;
   description: string;
@@ -13,7 +12,10 @@ export interface Library {
   createdBy: string;
   updatedAt: Timestamp | null;
   updatedBy: string;
-  logoURL: string;
+  logos: {
+    png: string;
+    svg?: string;
+  };
   theme: Theme;
 }
 

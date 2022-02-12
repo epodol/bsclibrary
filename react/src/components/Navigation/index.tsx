@@ -15,9 +15,10 @@ import { useAuth, useSigninCheck } from 'reactfire';
 
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
-import FirebaseContext from 'src/contexts/FirebaseContext';
 import SignIn from 'src/components/Navigation/SignIn';
+import ChooseLibrary from 'src/components/Navigation/ChooseLibrary';
 
+import FirebaseContext from 'src/contexts/FirebaseContext';
 import ThemeContext from 'src/contexts/MUITheme';
 
 const NavBarItems = () => {
@@ -116,15 +117,7 @@ const Navigation = () => {
     <div style={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar variant="regular">
-          <Link to="/">
-            <img
-              src={`${process.env.PUBLIC_URL}/assets/logos/BASIS Scottsdale Library Logo.svg`}
-              height="50"
-              width="50"
-              alt="BASIS Scottsdale Library Logo"
-            />
-            <strong className="white-text"> BASIS Scottsdale Library</strong>
-          </Link>
+          <ChooseLibrary />
           <NavBarItems />
           <div style={{ marginLeft: 'auto', marginRight: 0 }}>
             <IconButton
