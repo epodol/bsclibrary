@@ -12,6 +12,7 @@ import {
   StorageProvider,
   AuthProvider,
   RemoteConfigProvider,
+  useSigninCheck,
 } from 'reactfire';
 
 import {
@@ -43,6 +44,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 
 import { FirebaseProvider } from 'src/contexts/FirebaseContext';
 import { NotificationProvider } from 'src/contexts/NotificationContext';
+import { ActiveLibraryIDProvider } from 'src/contexts/ActiveLibraryID';
 
 import { ThemeContextProvider } from 'src/contexts/MUITheme';
 import Routing from 'src/components/Routing';
@@ -50,6 +52,7 @@ import Loading from 'src/components/Loading';
 
 import 'bootstrap-css-only/css/bootstrap.min.css';
 import 'src/index.css';
+import HomeRouting from 'src/components/Routing/HomeRouting';
 
 const isDev = process.env.NODE_ENV !== 'production';
 
@@ -203,9 +206,7 @@ const AppWithFirebase = () => {
               <StorageProvider sdk={storage}>
                 <RemoteConfigProvider sdk={remoteConfig}>
                   <FirebaseProvider>
-                    <Suspense fallback={<Loading />}>
-                      <Routing />
-                    </Suspense>
+                    <HomePageAuthCheck />
                   </FirebaseProvider>
                 </RemoteConfigProvider>
               </StorageProvider>
@@ -215,6 +216,34 @@ const AppWithFirebase = () => {
       </NotificationProvider>
     </ThemeContextProvider>
   );
+};
+
+const HomePageAuthCheck = () => {
+  const { status, data: signInCheckResult } = useSigninCheck({
+    validateCustomClaims: (userClaims) => ({
+      hasRequiredClaims:
+        Array.isArray(userClaims.libraries) && userClaims.libraries.length > 0,
+      errors: {},
+    }),
+  });
+
+  if (status === 'loading') {
+    return <Loading />;
+  }
+
+  if (signInCheckResult.hasRequiredClaims === true) {
+    return (
+      <ActiveLibraryIDProvider>
+        <Suspense fallback={<Loading />}>
+          <Routing />
+        </Suspense>
+      </ActiveLibraryIDProvider>
+    );
+  }
+  if (signInCheckResult.signedIn === true) {
+    return null; // Join first library
+  }
+  return <HomeRouting />;
 };
 
 // Have to use class because componentDidCatch is not supported in hooks
