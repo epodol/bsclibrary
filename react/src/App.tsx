@@ -1,4 +1,4 @@
-import React, { Suspense, Component, useEffect } from 'react';
+import React, { Suspense, Component, useEffect, lazy } from 'react';
 import {
   useFirebaseApp,
   useInitFirestore,
@@ -52,7 +52,11 @@ import Loading from 'src/components/Loading';
 
 import 'bootstrap-css-only/css/bootstrap.min.css';
 import 'src/index.css';
+
 import HomeRouting from 'src/components/Routing/HomeRouting';
+import JoinLibrary from './pages/JoinLibrary';
+
+const Footer = lazy(() => import('src/components/Footer'));
 
 const isDev = process.env.NODE_ENV !== 'production';
 
@@ -205,9 +209,14 @@ const AppWithFirebase = () => {
             <FunctionsProvider sdk={functions}>
               <StorageProvider sdk={storage}>
                 <RemoteConfigProvider sdk={remoteConfig}>
-                  <FirebaseProvider>
-                    <HomePageAuthCheck />
-                  </FirebaseProvider>
+                  <div className="page">
+                    <main>
+                      <div className="content">
+                        <HomePageAuthCheck />
+                      </div>
+                    </main>
+                    <Footer />
+                  </div>
                 </RemoteConfigProvider>
               </StorageProvider>
             </FunctionsProvider>
@@ -219,19 +228,10 @@ const AppWithFirebase = () => {
 };
 
 const HomePageAuthCheck = () => {
-  const { status, data: signInCheckResult } = useSigninCheck({
-    validateCustomClaims: (userClaims) => ({
-      hasRequiredClaims:
-        Array.isArray(userClaims.libraries) && userClaims.libraries.length > 0,
-      errors: {},
-    }),
-  });
+  const signInCheckResult = useSigninCheck().data;
 
-  if (status === 'loading') {
-    return <Loading />;
-  }
-
-  if (signInCheckResult.hasRequiredClaims === true) {
+  // User is in a library
+  if (signInCheckResult.signedIn === true) {
     return (
       <ActiveLibraryIDProvider>
         <Suspense fallback={<Loading />}>
@@ -240,9 +240,13 @@ const HomePageAuthCheck = () => {
       </ActiveLibraryIDProvider>
     );
   }
-  if (signInCheckResult.signedIn === true) {
-    return null; // Join first library
-  }
+
+  // // User is in no library
+  // if (signInCheckResult.signedIn === true) {
+  //   return <JoinLibrary />; // Join first library
+  // }
+
+  // User is not signed in
   return <HomeRouting />;
 };
 

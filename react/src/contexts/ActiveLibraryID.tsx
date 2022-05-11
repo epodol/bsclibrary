@@ -15,6 +15,9 @@ export const ActiveLibraryIDProvider = ({ children }: any) => {
     previousLibraryID || ''
   );
 
+  if (activeLibraryID !== '')
+    localStorage.setItem('activeLibrary', activeLibraryID);
+
   return (
     <ActiveLibraryID.Provider value={activeLibraryID}>
       <SetActiveLibraryID.Provider value={setActiveLibraryID}>

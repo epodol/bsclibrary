@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   ButtonBase,
   Dialog,
@@ -15,19 +15,50 @@ import {
 import { Add } from '@mui/icons-material';
 // import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
 import Library from '@common/types/Library';
-import { useFirestore } from 'reactfire';
-import { doc, getDoc } from 'firebase/firestore';
+import { useUser, useFirestore, useFirestoreCollection } from 'reactfire';
+import { doc, getDoc, query, collectionGroup, where } from 'firebase/firestore';
+import RecursivePartial from '@common/types/util/RecursivePartial';
 
-export const ChooseLibraryDialog = ({
-  libraries,
+export const ChooseLibrary = ({
   open,
   setOpen,
 }: {
-  libraries: string[];
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const firestore = useFirestore();
+  const user = useUser().data;
+
+  if (!user) throw new Error('No user is signed in.');
+
+  const userInLibrariesQuery = query(
+    collectionGroup(firestore, 'users'),
+    where('uid', '==', user.uid)
+  );
+
+  const userInLibraries = useFirestoreCollection(userInLibrariesQuery).data;
+
+  const libraries: RecurrsivePartial<Library>[] = [];
+
+  userInLibraries.forEach(async (value) => {
+    console.log(value.ref.parent.parent?.id);
+    if (value.ref.parent.parent?.id === undefined) return null;
+
+    const libraryDoc = await getDoc(
+      doc(firestore, 'libraries', value.ref.parent.parent?.id)
+    ).catch(console.error);
+
+    if (!libraryDoc || !libraryDoc.exists()) {
+      console.error('Unknown library in user account', value);
+      return null;
+    }
+
+    const library = libraryDoc.data() as RecursivePartial<Library>;
+
+    libraries.push(library);
+  });
+
+  // const libraries = ['RYPf8grIv9OKxaHQoMc0'];
   return (
     <Dialog open={open} onClose={() => setOpen(false)}>
       <DialogTitle>Choose Library</DialogTitle>
@@ -38,16 +69,8 @@ export const ChooseLibraryDialog = ({
           columnSpacing={{ xs: 1, sm: 2, md: 3 }}
           sx={{ mt: 0.5 }}
         >
-          {libraries.forEach(async (value) => {
-            const libraryDoc = await getDoc(doc(firestore, 'libraries', value));
-
-            if (!libraryDoc.exists()) {
-              console.error('Unknown library in user account', value);
-              return null;
-            }
-
-            const library = libraryDoc.data() as Library;
-
+          {libraries.forEach((library) => {
+            console.log('library', library);
             return (
               <Grid item xs={3} key={library.id}>
                 <ButtonBase>
@@ -55,10 +78,10 @@ export const ChooseLibraryDialog = ({
                     <CardMedia
                       component="img"
                       height="100"
-                      image={library.logos.svg ?? library.logos.png}
-                      alt={library.name}
+                      image={library?.logos?.svg ?? library?.logos?.png}
+                      alt={library?.name}
                     />
-                    <CardContent>{library.name}</CardContent>
+                    <CardContent>{library?.name}aaa</CardContent>
                   </Card>
                 </ButtonBase>
               </Grid>
@@ -82,26 +105,6 @@ export const ChooseLibraryDialog = ({
         <Button onClick={() => setOpen(false)}>Cancel</Button>
       </DialogActions>
     </Dialog>
-  );
-};
-
-const ChooseLibrary = () => {
-  const [open, setOpen] = useState(false);
-
-  // const activeLibraryID = useContext(ActiveLibraryID);
-  return (
-    <>
-      <ButtonBase onClick={() => setOpen((currentOpen) => !currentOpen)}>
-        <img
-          src={`${process.env.PUBLIC_URL}/assets/logos/BASIS Scottsdale Library Logo.svg`}
-          height="50"
-          width="50"
-          alt="BASIS Scottsdale Library Logo"
-        />
-        <strong className="white-text"> BASIS Scottsdale Library</strong>
-      </ButtonBase>
-      <ChooseLibraryDialog libraries={['1']} open={open} setOpen={setOpen} />
-    </>
   );
 };
 

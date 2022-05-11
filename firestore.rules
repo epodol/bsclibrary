@@ -22,12 +22,12 @@ service cloud.firestore {
 
       match /libraries/{library} {
         allow create, delete, list: if false;
-        allow get: if library in request.auth.token.libraries;
+        allow get;
         allow update: if library in request.auth.token.permissions.MANAGE_LIBRARY;
       }
 
-      match /users/{user} {
-        allow get: if request.auth.token.permissions.MANAGE_USERS || request.auth.token.permissions.CHECK_OUT || request.auth.uid == user;
+      match /{path=**}/users/{user} {
+        allow get: if request.auth.uid == user;
         allow list: if request.auth.token.permissions.MANAGE_USERS || request.auth.token.permissions.CHECK_OUT;
         allow create, delete: if false;
         allow update: if request.auth.token.permissions.MANAGE_USERS && user != request.auth.uid;

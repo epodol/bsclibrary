@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   Button,
   AppBar,
@@ -7,8 +7,16 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Divider,
+  ButtonBase,
 } from '@mui/material';
-import { Brightness7, ExitToApp, Home, ModeNight } from '@mui/icons-material';
+import {
+  Brightness7,
+  ExitToApp,
+  Home,
+  LocalLibrary,
+  ModeNight,
+} from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 
 import { useAuth, useSigninCheck } from 'reactfire';
@@ -102,9 +110,12 @@ const Navigation = () => {
   const toggleTheme = useContext(ThemeContext);
 
   const signinCheck = useSigninCheck().data;
+  console.log(signinCheck);
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+
+  const [chooseLibraryOpen, setChooseLibraryOpen] = useState(false);
 
   const handleMenu = (event: any) => {
     setAnchorEl(event.currentTarget);
@@ -116,8 +127,16 @@ const Navigation = () => {
   return (
     <div style={{ flexGrow: 1 }}>
       <AppBar position="static">
-        <Toolbar variant="regular">
-          <ChooseLibrary />
+        <Toolbar>
+          <ButtonBase onClick={() => navigate('/')}>
+            <img
+              src={`${process.env.PUBLIC_URL}/assets/logos/BASIS Scottsdale Library Logo.svg`}
+              height="50"
+              width="50"
+              alt="BASIS Scottsdale Library Logo"
+            />
+            <strong className="white-text"> BASIS Scottsdale Library</strong>
+          </ButtonBase>
           <NavBarItems />
           <div style={{ marginLeft: 'auto', marginRight: 0 }}>
             <IconButton
@@ -128,6 +147,11 @@ const Navigation = () => {
             </IconButton>
             {signinCheck.signedIn && (
               <>
+                <ChooseLibrary
+                  open={chooseLibraryOpen}
+                  setOpen={setChooseLibraryOpen}
+                />
+
                 <IconButton onClick={handleMenu} color="inherit" size="large">
                   <Avatar
                     alt={`${firebaseContext?.claims?.firstName || ''} ${
@@ -156,6 +180,17 @@ const Navigation = () => {
                   >
                     <Home /> My Account
                   </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      setChooseLibraryOpen(
+                        (oldChooseLibraryOpen) => !oldChooseLibraryOpen
+                      );
+                      setAnchorEl(null);
+                    }}
+                  >
+                    <LocalLibrary /> Libraries
+                  </MenuItem>
+                  <Divider />
                   <MenuItem
                     onClick={() => {
                       setAnchorEl(null);

@@ -4,10 +4,8 @@ import { Timestamp } from 'firebase-admin/firestore';
  * Location: `/libraries/{library}`
  */
 export default interface Library {
-  id: string;
   name: string;
-  description: string;
-  email: string;
+  supportEmail: string;
   createdAt: Timestamp | null;
   createdBy: string;
   updatedAt: Timestamp | null;
@@ -17,6 +15,34 @@ export default interface Library {
     svg?: string;
   };
   theme: Theme;
+  pageGroups: [
+    {
+      name: string;
+      pages: [
+        {
+          id: string;
+          name: string;
+          description: string;
+        }
+      ];
+    }
+  ];
+  userPermissions: {
+    MANAGE_LIBRARY: [];
+    MANAGE_PAGES: [];
+    MANAGE_USERS: [];
+    CHECK_OUT: [];
+    CHECK_IN: [];
+  };
+  ownerUserID: string;
+  userInfo: [
+    {
+      fieldName: string;
+      fieldType: 'string' | 'number' | 'date' | 'boolean';
+      fieldLabel: string;
+      fieldPlaceholder: string;
+    }
+  ];
 }
 
 export interface Theme {}

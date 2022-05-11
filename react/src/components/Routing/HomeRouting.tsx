@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useContext, useEffect } from 'react';
+import React, { lazy, useContext, useEffect } from 'react';
 import {
   BrowserRouter,
   Route,
@@ -7,21 +7,13 @@ import {
   useLocation,
 } from 'react-router-dom';
 
-import { useFirebaseApp, useSigninCheck } from 'reactfire';
+import { useFirebaseApp } from 'reactfire';
 import { getAnalytics, logEvent } from 'firebase/analytics';
-
-import Loading from 'src/components/Loading';
 
 import Navigation from 'src/components/Navigation';
 import NotificationContext from 'src/contexts/NotificationContext';
 
 const Home = lazy(() => import('src/pages/Home'));
-const Account = lazy(() => import('src/pages/Account'));
-
-const Contribute = lazy(() => import('src/pages/Contribute'));
-const About = lazy(() => import('src/pages/About'));
-
-const Footer = lazy(() => import('src/components/Footer'));
 
 const isDev = process.env.NODE_ENV !== 'production';
 
@@ -50,8 +42,6 @@ const DocumentTitle = ({
 const HomeRouting = () => {
   const NotificationHandler = useContext(NotificationContext);
 
-  const signinCheck = useSigninCheck().data;
-
   const UnknownPage = () => {
     useEffect(() => {
       NotificationHandler.addNotification({
@@ -71,56 +61,18 @@ const HomeRouting = () => {
   return (
     <div className="page">
       <BrowserRouter>
-        <main>
-          <div className="content">
-            <Navigation />
-
-            <Suspense fallback={<Loading />}>
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <DocumentTitle title="BASIS Scottsdale Library">
-                      <Home />
-                    </DocumentTitle>
-                  }
-                />
-                <Route
-                  path="/about"
-                  element={
-                    <DocumentTitle title="About – BASIS Scottsdale Library">
-                      <About />
-                    </DocumentTitle>
-                  }
-                />
-                <Route
-                  path="/contribute"
-                  element={
-                    <DocumentTitle title="Contribute – BASIS Scottsdale Library">
-                      <Contribute />
-                    </DocumentTitle>
-                  }
-                />
-                {signinCheck.signedIn && (
-                  <>
-                    <Route
-                      path="/account"
-                      element={
-                        <Suspense fallback={<Loading />}>
-                          <DocumentTitle title="Account – BASIS Scottsdale Library">
-                            <Account />
-                          </DocumentTitle>
-                        </Suspense>
-                      }
-                    />
-                  </>
-                )}
-                <Route element={<UnknownPage />} />
-              </Routes>
-            </Suspense>
-          </div>
-        </main>
-        <Footer />
+        <Navigation />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <DocumentTitle title="BASIS Scottsdale Library">
+                <Home />
+              </DocumentTitle>
+            }
+          />
+          <Route element={<UnknownPage />} />
+        </Routes>
       </BrowserRouter>
     </div>
   );
