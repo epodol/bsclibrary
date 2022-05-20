@@ -65,7 +65,7 @@
     "outdated:common": "cd common && npm outdated"
   },
   "devDependencies": {
-    "@types/node": "^16.11.22",
+    "@types/node": "^16.11.36",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
     "@typescript-eslint/parser": "^5.10.2",
     "eslint": "^8.8.0",
