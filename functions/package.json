@@ -20,7 +20,7 @@
   "dependencies": {
     "firebase-admin": "^10.0.2",
     "firebase-functions": "^3.15.7",
-    "node-fetch": "^3.2.0"
+    "node-fetch": "^3.2.6"
   },
   "devDependencies": {
     "firebase-functions-test": "^0.3.3",
