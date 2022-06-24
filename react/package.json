@@ -18,7 +18,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-material-ui-carousel": "^3.1.1",
-    "react-phone-number-input": "^3.1.45",
+    "react-phone-number-input": "^3.2.3",
     "react-router-dom": "^6.2.1",
     "reactfire": "^4.2.1",
     "yup": "^0.32.9"
@@ -50,7 +50,7 @@
     "@types/jest": "^27.4.0",
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.9",
-    "@types/react-phone-number-input": "^3.0.13",
+    "@types/react-phone-number-input": "^3.0.14",
     "@types/react-router": "^5.1.18",
     "@types/react-router-dom": "^5.3.3",
     "eslint-plugin-flowtype": "^8.0.3",
