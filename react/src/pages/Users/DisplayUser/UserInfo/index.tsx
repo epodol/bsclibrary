@@ -17,7 +17,6 @@ import {
 } from '@mui/material';
 import { VpnKey, Lock, LockOpen } from '@mui/icons-material';
 
-import FirebaseContext from 'src/contexts/FirebaseContext';
 import { userInfo as userInfoInterface } from '@common/types/User';
 import NotificationContext from 'src/contexts/NotificationContext';
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore';

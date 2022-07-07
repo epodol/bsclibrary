@@ -126,7 +126,11 @@ const Home = () => {
             <Typography variant="h5" component="p" color="inherit">
               Coming Soon
             </Typography>
-            <Button style={{ marginTop: 4 }} onClick={() => navigate('/about')}>
+            <Button
+              style={{ marginTop: 4 }}
+              onClick={() => navigate('/about')}
+              variant="contained"
+            >
               Learn More
             </Button>
           </div>

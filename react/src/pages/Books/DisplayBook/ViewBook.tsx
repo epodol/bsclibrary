@@ -95,36 +95,6 @@ const ViewBook = ({ volumeInfo }: { volumeInfo: volumeInfoInterface }) => {
               </>
             )}
         </h3>
-
-        <>
-          {volumeInfo.grades && (
-            <h3>
-              {Object.values(volumeInfo.grades).includes(true) && <>Grades:</>}
-              {volumeInfo.grades.grade0 && <Chip className="mx-1" label="<1" />}
-              {volumeInfo.grades.grade1 && <Chip className="mx-1" label="1" />}
-              {volumeInfo.grades.grade2 && <Chip className="mx-1" label="2" />}
-              {volumeInfo.grades.grade3 && <Chip className="mx-1" label="3" />}
-              {volumeInfo.grades.grade4 && <Chip className="mx-1" label="4" />}
-              {volumeInfo.grades.grade5 && <Chip className="mx-1" label="5" />}
-              {volumeInfo.grades.grade6 && <Chip className="mx-1" label="6" />}
-              {volumeInfo.grades.grade7 && <Chip className="mx-1" label="7" />}
-              {volumeInfo.grades.grade8 && <Chip className="mx-1" label="8" />}
-              {volumeInfo.grades.grade9 && <Chip className="mx-1" label="9" />}
-              {volumeInfo.grades.grade10 && (
-                <Chip className="mx-1" label="10" />
-              )}
-              {volumeInfo.grades.grade11 && (
-                <Chip className="mx-1" label="11" />
-              )}
-              {volumeInfo.grades.grade12 && (
-                <Chip className="mx-1" label="12" />
-              )}
-              {volumeInfo.grades.grade13 && (
-                <Chip className="mx-1" label="12+" />
-              )}
-            </h3>
-          )}
-        </>
       </div>
     </>
   );

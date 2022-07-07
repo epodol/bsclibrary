@@ -1,4 +1,4 @@
-import React, { Suspense, Component, useEffect, lazy } from 'react';
+import React, { Suspense, Component, useEffect, useContext } from 'react';
 import {
   useFirebaseApp,
   useInitFirestore,
@@ -42,9 +42,10 @@ import { getAnalytics } from 'firebase/analytics';
 
 import CssBaseline from '@mui/material/CssBaseline';
 
-import { FirebaseProvider } from 'src/contexts/FirebaseContext';
 import { NotificationProvider } from 'src/contexts/NotificationContext';
-import { ActiveLibraryIDProvider } from 'src/contexts/ActiveLibraryID';
+import ActiveLibraryID, {
+  ActiveLibraryIDProvider,
+} from 'src/contexts/ActiveLibraryID';
 
 import { ThemeContextProvider } from 'src/contexts/MUITheme';
 import Routing from 'src/components/Routing';
@@ -55,8 +56,6 @@ import 'src/index.css';
 
 import HomeRouting from 'src/components/Routing/HomeRouting';
 import JoinLibrary from './pages/JoinLibrary';
-
-const Footer = lazy(() => import('src/components/Footer'));
 
 const isDev = process.env.NODE_ENV !== 'production';
 
@@ -209,14 +208,9 @@ const AppWithFirebase = () => {
             <FunctionsProvider sdk={functions}>
               <StorageProvider sdk={storage}>
                 <RemoteConfigProvider sdk={remoteConfig}>
-                  <div className="page">
-                    <main>
-                      <div className="content">
-                        <HomePageAuthCheck />
-                      </div>
-                    </main>
-                    <Footer />
-                  </div>
+                  <ActiveLibraryIDProvider>
+                    <HomePageAuthCheck />
+                  </ActiveLibraryIDProvider>
                 </RemoteConfigProvider>
               </StorageProvider>
             </FunctionsProvider>
@@ -229,22 +223,18 @@ const AppWithFirebase = () => {
 
 const HomePageAuthCheck = () => {
   const signInCheckResult = useSigninCheck().data;
+  const activeLibraryID = useContext(ActiveLibraryID);
 
-  // User is in a library
+  // User is signed in
   if (signInCheckResult.signedIn === true) {
-    return (
-      <ActiveLibraryIDProvider>
+    if (activeLibraryID)
+      return (
         <Suspense fallback={<Loading />}>
           <Routing />
         </Suspense>
-      </ActiveLibraryIDProvider>
-    );
+      );
+    return <JoinLibrary />;
   }
-
-  // // User is in no library
-  // if (signInCheckResult.signedIn === true) {
-  //   return <JoinLibrary />; // Join first library
-  // }
 
   // User is not signed in
   return <HomeRouting />;
@@ -275,8 +265,8 @@ class ErrorBoundary extends Component<{}, any> {
 
     if (errorInfo) {
       return (
-        <div>
-          <h2
+        <div style={{ margin: '4rem' }}>
+          <h1
             style={{
               display: 'flex',
               justifyContent: 'center',
@@ -284,7 +274,8 @@ class ErrorBoundary extends Component<{}, any> {
             }}
           >
             Something went wrong.
-          </h2>
+          </h1>
+          <br />
           <div
             style={{
               display: 'flex',
@@ -292,10 +283,12 @@ class ErrorBoundary extends Component<{}, any> {
               alignContent: 'center',
             }}
           >
-            <details style={{ whiteSpace: 'pre-wrap' }}>
-              {error && error.toString()}
-              <br />
-              {errorInfo.componentStack}
+            <details style={{ whiteSpace: 'pre-wrap', cursor: 'pointer' }}>
+              <div style={{ cursor: 'auto' }}>
+                <h3>{error && error.toString()}</h3>
+                <br />
+                {errorInfo.componentStack}
+              </div>
             </details>
           </div>
           <br />
@@ -308,7 +301,7 @@ class ErrorBoundary extends Component<{}, any> {
             }}
           >
             <a
-              href="https://github.com/epodol/bsclibrary"
+              href="https://github.com/epodol/bsclibrary/issues"
               target="_blank"
               rel="noopener noreferrer"
             >

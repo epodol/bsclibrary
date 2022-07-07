@@ -97,8 +97,6 @@ const checkinBook = functions
     // Updated checkout data
     const updatedCheckoutDocData: RecursivePartial<Checkout> = {
       checkedInBy: context.auth.uid,
-      checkoutStatus:
-        checkoutData.dueDate.toMillis() > new Date().getTime() ? 1 : 2,
       conditionIn: data.condition,
       timeIn: FieldValue.serverTimestamp(),
     };

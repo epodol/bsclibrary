@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   Card,
   CardActionArea,
@@ -18,6 +18,7 @@ import { ArrowLeft, ArrowRight } from '@mui/icons-material';
 
 import Book from '@common/types/Book';
 import { collection, query, where } from 'firebase/firestore';
+import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
 
 interface BookWithID extends Book {
   id?: string;
@@ -25,10 +26,13 @@ interface BookWithID extends Book {
 
 const FeaturedBooks = () => {
   const navigate = useNavigate();
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library found!');
+
   const firestore = useFirestore();
 
   const featuredBooksRef = query(
-    collection(firestore, 'books'),
+    collection(firestore, 'libraries', activeLibraryID, 'books'),
     where('featured', '==', true)
   );
 
@@ -49,7 +53,7 @@ const FeaturedBooks = () => {
             image = 'https://www.abbeville.com/assets/common/images/edition_placeholder.png',
           } = volumeInfo;
           return (
-            <Card key={id} onClick={() => navigate(`books/${id}`)}>
+            <Card key={id} onClick={() => navigate(`/books/${id}`)}>
               <CardActionArea>
                 <CardMedia
                   component="img"

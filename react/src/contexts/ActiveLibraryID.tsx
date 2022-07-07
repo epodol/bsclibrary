@@ -1,22 +1,21 @@
 import React, { createContext, useState } from 'react';
 
-const ActiveLibraryID = createContext<string>(null as any);
+const ActiveLibraryID = createContext<string | null>(null);
 
-const SetActiveLibraryID = createContext<
-  React.Dispatch<React.SetStateAction<string>>
->(null as unknown as React.Dispatch<React.SetStateAction<string>>);
+export const SetActiveLibraryID = createContext<
+  React.Dispatch<React.SetStateAction<string | null>>
+>(null as unknown as React.Dispatch<React.SetStateAction<string | null>>);
 
 export const ActiveLibraryIDProvider = ({ children }: any) => {
   const { localStorage } = window;
 
   const previousLibraryID = localStorage.getItem('activeLibrary');
 
-  const [activeLibraryID, setActiveLibraryID] = useState<string>(
-    previousLibraryID || ''
+  const [activeLibraryID, setActiveLibraryID] = useState<string | null>(
+    previousLibraryID || 'bsclibrary'
   );
 
-  if (activeLibraryID !== '')
-    localStorage.setItem('activeLibrary', activeLibraryID);
+  if (activeLibraryID) localStorage.setItem('activeLibrary', activeLibraryID);
 
   return (
     <ActiveLibraryID.Provider value={activeLibraryID}>

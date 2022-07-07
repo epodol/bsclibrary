@@ -10,10 +10,15 @@ import {
 import { useFirebaseApp } from 'reactfire';
 import { getAnalytics, logEvent } from 'firebase/analytics';
 
-import Navigation from 'src/components/Navigation';
 import NotificationContext from 'src/contexts/NotificationContext';
+import SignIn from 'src/pages/SignIn';
+import Footer from 'src/components/Footer';
 
-const Home = lazy(() => import('src/pages/Home'));
+// const Home = lazy(() => import('src/pages/Home'));
+const LibraryNavigation = lazy(
+  () => import('src/components/LibraryNavigation')
+);
+const LibraryHome = lazy(() => import('src/pages/LibraryHome'));
 
 const isDev = process.env.NODE_ENV !== 'production';
 
@@ -33,7 +38,7 @@ const DocumentTitle = ({
     }
     document.title = title;
     return () => {
-      document.title = 'Modern Library Management System';
+      document.title = 'BASIS Scottsdale Library';
     };
   }, [title, app, location.pathname]);
   return children;
@@ -61,17 +66,42 @@ const HomeRouting = () => {
   return (
     <div className="page">
       <BrowserRouter>
-        <Navigation />
         <Routes>
           <Route
             path="/"
             element={
               <DocumentTitle title="BASIS Scottsdale Library">
-                <Home />
+                {/* <Home /> */}
+                <div className="page">
+                  <LibraryNavigation />
+                  <main>
+                    <div className="content">
+                      <LibraryHome />
+                    </div>
+                  </main>
+                  <Footer />
+                </div>
               </DocumentTitle>
             }
           />
-          <Route element={<UnknownPage />} />
+          <Route
+            path="/signin"
+            element={
+              <DocumentTitle title="BASIS Scottsdale Library">
+                {/* <Home /> */}
+                <div className="page">
+                  <LibraryNavigation />
+                  <main>
+                    <div className="content">
+                      <SignIn />
+                    </div>
+                  </main>
+                  <Footer />
+                </div>
+              </DocumentTitle>
+            }
+          />
+          <Route path="*" element={<UnknownPage />} />
         </Routes>
       </BrowserRouter>
     </div>

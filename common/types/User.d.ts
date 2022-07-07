@@ -1,3 +1,5 @@
+import { Timestamp } from 'firebase-admin/firestore';
+
 /**
  * Firestore Location: `libraries/{Library}/users/{User}`
  */
@@ -7,11 +9,9 @@ export default interface User {
    */
   activeCheckouts: string[];
   /**
-   * User information collected by the Library as defined in the Library document
+   * When the user was approved
    */
-  userInfo: {
-    [key: string]: string;
-  };
+  approvedTime: Timestamp;
   /**
    * The maximum number of checkouts the user is allowed to have
    */
@@ -20,4 +20,28 @@ export default interface User {
    * The maximum number of renews the user is allowed to have
    */
   maxRenews: number;
+  /**
+   * The user's first name
+   */
+  firstName: string;
+  /**
+   * The user's first name
+   */
+  lastName: string;
+  /**
+   * The user's email address
+   */
+  email: string;
+  /**
+   * User lookup identifiers, such as Library Card numbers
+   */
+  identifiers: string[];
+  /**
+   * The day when a user's account expires, rounded down to 00:00:00 America/Los_Angeles
+   */
+  expiration: Timestamp | null;
+  /**
+   * The user's unique Firebase ID
+   */
+  uid: string;
 }

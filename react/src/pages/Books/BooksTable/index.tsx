@@ -10,24 +10,37 @@ import {
 } from '@mui/material';
 import { Add } from '@mui/icons-material';
 
-import { useFirestore, useUser } from 'reactfire';
-import { collection, serverTimestamp, addDoc } from 'firebase/firestore';
+import { useFirestore, useFirestoreDocData, useUser } from 'reactfire';
+import {
+  collection,
+  serverTimestamp,
+  doc,
+  addDoc,
+  Timestamp,
+} from 'firebase/firestore';
 
 import TableBody from 'src/pages/Books/BooksTable/TableBody';
 import Loading from 'src/components/Loading';
-import FirebaseContext from 'src/contexts/FirebaseContext';
 import NotificationContext from 'src/contexts/NotificationContext';
+import Library from '@common/types/Library';
+import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
+import Book from '@common/types/Book';
 
 const BooksTable = () => {
   const NotificationHandler = useContext(NotificationContext);
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library found!');
 
   const firestore = useFirestore();
-  const firebaseContext = useContext(FirebaseContext);
 
   const user = useUser().data;
   if (user === null) throw new Error('No user exists.');
 
   const navigate = useNavigate();
+
+  const libraryDoc: Library = useFirestoreDocData(
+    doc(firestore, 'libraries', activeLibraryID)
+  ).data as Library;
 
   return (
     <Paper className="p-3 my-4 mx-5 mb-5">
@@ -42,12 +55,13 @@ const BooksTable = () => {
                 <h2 className="white-text">Books</h2>
               </Grid>
               <Grid item xs={1} className="text-right">
-                {firebaseContext.claims?.permissions?.MANAGE_BOOKS && (
+                {(libraryDoc.userPermissions.MANAGE_BOOKS.includes(user.uid) ||
+                  libraryDoc.ownerUserID === user.uid) && (
                   <IconButton
                     className="px-3 white-text"
                     color="inherit"
                     onClick={() => {
-                      addDoc(collection(firestore, 'books'), {
+                      const newData: Book = {
                         featured: false,
                         volumeInfo: {
                           authors: [],
@@ -56,30 +70,27 @@ const BooksTable = () => {
                           image: '',
                           isbn10: '',
                           isbn13: '',
-                          grades: {
-                            grade0: false,
-                            grade1: false,
-                            grade2: false,
-                            grade3: false,
-                            grade4: false,
-                            grade5: false,
-                            grade6: false,
-                            grade7: false,
-                            grade8: false,
-                            grade9: false,
-                            grade10: false,
-                            grade11: false,
-                            grade12: false,
-                            grade13: false,
-                          },
                           subtitle: '',
                           title: '',
                         },
                         lastEditedBy: user.uid,
-                        lastEdited: serverTimestamp(),
-                      })
+                        lastEdited: serverTimestamp() as Timestamp,
+                        copiesAvailable: 0,
+                        copiesCount: 0,
+                      };
+                      addDoc(
+                        collection(
+                          firestore,
+                          'libraries',
+                          activeLibraryID,
+                          'books'
+                        ),
+                        newData
+                      )
                         .then((book) => {
-                          navigate(book.path, { state: { editing: true } });
+                          navigate(`/books/${book.id}`, {
+                            state: { editing: true },
+                          });
                           NotificationHandler.addNotification({
                             message: `New book created.`,
                             severity: 'success',

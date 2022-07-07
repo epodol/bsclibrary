@@ -1,4 +1,4 @@
-import React, { useState, Suspense } from 'react';
+import React, { useState, Suspense, useContext } from 'react';
 import { useFirestore, useFirestoreCollectionData } from 'reactfire';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -16,12 +16,13 @@ import User from '@common/types/User';
 
 import Loading from 'src/components/Loading';
 import { collection, limit, query, where } from '@firebase/firestore';
+import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
 
 function determineSearchField(searchField: 1 | 2 | 3) {
   let res = 'userInfo.queryFirstName';
-  if (searchField === 1) res = 'userInfo.queryFirstName';
-  if (searchField === 2) res = 'userInfo.queryLastName';
-  if (searchField === 3) res = 'userInfo.queryEmail';
+  if (searchField === 1) res = 'firstName';
+  if (searchField === 2) res = 'lastName';
+  if (searchField === 3) res = 'email';
 
   return res;
 }
@@ -36,9 +37,11 @@ const FindUserTable = ({
   const textSearchField = determineSearchField(searchField);
 
   const firestore = useFirestore();
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library!');
 
   const userQueryRef = query(
-    collection(firestore, 'users'),
+    collection(firestore, 'libraries', activeLibraryID, 'users'),
     where(textSearchField, '>=', searchTerm.toLowerCase()),
     where(textSearchField, '<=', `${searchTerm.toLowerCase()}~`),
     limit(25)
@@ -58,12 +61,12 @@ const FindUserTable = ({
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
-              <TableCell>Creation Date</TableCell>
-              <TableCell>Disabled</TableCell>
+              <TableCell>Approved</TableCell>
+              <TableCell>Expires</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {userData.map(({ userInfo }) => {
+            {userData.map((userInfo) => {
               if (!userInfo) return <></>;
               return (
                 <TableRow
@@ -77,9 +80,11 @@ const FindUserTable = ({
                   </TableCell>
                   <TableCell>{userInfo.email}</TableCell>
                   <TableCell>
-                    {userInfo.createdTime?.toDate().toLocaleDateString()}
+                    {userInfo.approvedTime?.toDate().toLocaleDateString()}
                   </TableCell>
-                  <TableCell>{userInfo.disabled ? 'Yes' : 'No'}</TableCell>
+                  <TableCell>
+                    {userInfo.expiration?.toDate().toLocaleDateString()}
+                  </TableCell>
                 </TableRow>
               );
             })}

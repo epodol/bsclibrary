@@ -9,13 +9,15 @@ import checkinBookData from '@common/functions/checkinBook';
 import NotificationContext from 'src/contexts/NotificationContext';
 import { httpsCallable } from 'firebase/functions';
 import { collectionGroup, getDocs, query, where } from 'firebase/firestore';
+import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
 
 const ScanBooksScheme = yup.object().shape({
-  book: yup.string().required('You need to enter the Barcode'),
+  book: yup.string().required('You need to enter the Identifier'),
 });
 
 const CheckIn = () => {
   const NotificationHandler = useContext(NotificationContext);
+  const activeLibraryID = useContext(ActiveLibraryID);
 
   const functions = useFunctions();
   const firestore = useFirestore();
@@ -31,7 +33,7 @@ const CheckIn = () => {
   return (
     <div className="text-center lead m-5">
       <h1>Check In</h1>
-      <p>Select the condition, then scan the barcode.</p>
+      <p>Select the condition, then scan the identifier.</p>
       <Paper style={{ padding: '2rem' }}>
         <Formik
           initialValues={initialValues}
@@ -47,8 +49,9 @@ const CheckIn = () => {
             }
 
             const bookQuery = query(
-              collectionGroup(firestore, 'copies'),
-              where('barcode', '==', values.book)
+              collectionGroup(firestore, `copies`),
+              where('identifier', '==', values.book),
+              where('libraryID', '==', activeLibraryID)
             );
 
             const bookResults = await getDocs(bookQuery);
@@ -61,7 +64,7 @@ const CheckIn = () => {
             if (bookResults.size !== 1) {
               actions.setFieldError(
                 'book',
-                'I found more than one book with this barcode.'
+                'I found more than one book with this identifier.'
               );
               actions.setSubmitting(false);
               return bookInput?.current?.focus() || null;
@@ -221,7 +224,7 @@ const CheckIn = () => {
                 inputRef={bookInput}
                 id="book"
                 type="text"
-                label="Barcode"
+                label="Identifier"
                 size="medium"
                 variant="filled"
                 error={!!errors.book && submitCount > 0}

@@ -35,7 +35,6 @@ import checkoutBookData, {
   checkoutBookDataBooks,
 } from '@common/functions/checkoutBook';
 
-import FirebaseContext from 'src/contexts/FirebaseContext';
 import Loading from 'src/components/Loading';
 import NotificationContext from 'src/contexts/NotificationContext';
 import {
@@ -51,6 +50,7 @@ import {
   startAt,
   where,
 } from 'firebase/firestore';
+import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
 
 interface checkoutData {
   user: User | null;
@@ -106,8 +106,11 @@ const FindUserTable = ({
 
   const firestore = useFirestore();
 
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library found!');
+
   const userQueryRef = query(
-    collection(firestore, 'users'),
+    collection(firestore, 'libraries', activeLibraryID, 'users'),
     orderBy(textSearchField),
     startAt(searchTerm.toLowerCase()),
     endAt(`${searchTerm.toLowerCase()}\uf8ff`),
@@ -115,9 +118,9 @@ const FindUserTable = ({
     limit(10)
   );
 
-  const userData: User[] = useFirestoreCollectionData(userQueryRef, {
+  const userData = useFirestoreCollectionData(userQueryRef, {
     idField: 'id',
-  }).data as unknown as User[];
+  }).data as unknown as (User & { id: string })[];
 
   return (
     <div className="text-center">
@@ -132,10 +135,10 @@ const FindUserTable = ({
           </TableHead>
           <TableBody>
             {userData.map((user) => {
-              if (!user?.userInfo) return <></>;
+              if (!user) return <></>;
               return (
                 <TableRow
-                  key={user.userInfo.uid}
+                  key={user.id}
                   style={{ cursor: 'pointer' }}
                   hover
                   onClick={() => {
@@ -147,12 +150,11 @@ const FindUserTable = ({
                   }}
                 >
                   <TableCell component="th" scope="row">
-                    {user.userInfo?.firstName} {user.userInfo?.lastName}
+                    {user.firstName} {user.lastName}
                   </TableCell>
-                  <TableCell>{user?.userInfo?.email}</TableCell>
+                  <TableCell>{user.email}</TableCell>
                   <TableCell>
-                    {user?.checkoutInfo?.activeCheckouts?.length} /{' '}
-                    {user?.checkoutInfo?.maxCheckouts}
+                    {user.activeCheckouts?.length} / {user.maxCheckouts}
                   </TableCell>
                 </TableRow>
               );
@@ -268,7 +270,7 @@ const EnterUser = ({
             }
 
             // Check if user is disabled
-            if (user.userInfo?.disabled ?? true) {
+            if (user.expiration) {
               actions.setFieldError('userID', 'This User is disabled');
               return actions.setSubmitting(false);
             }
@@ -331,7 +333,7 @@ const ScanBooks = ({
           const bookResults = await getDocs(
             query(
               collectionGroup(firestore, 'copies'),
-              where('barcode', '==', values.book)
+              where('identifier', '==', values.book)
             )
           );
 
@@ -343,7 +345,7 @@ const ScanBooks = ({
           if (bookResults.size !== 1) {
             actions.setFieldError(
               'book',
-              'I found more than one book with this barcode.'
+              'I found more than one book with this identifier.'
             );
             actions.setSubmitting(false);
             return bookInput?.current?.focus() || null;
@@ -353,7 +355,9 @@ const ScanBooks = ({
           const data = bookResults.docs[0].data() as Copy;
 
           if (
-            checkoutData.books.some((book) => book.data.barcode === values.book)
+            checkoutData.books.some(
+              (book) => book.data.identifier === values.book
+            )
           ) {
             actions.setFieldError(
               'book',
@@ -412,7 +416,7 @@ const ScanBooks = ({
               inputRef={bookInput}
               id="book"
               type="text"
-              label="Barcode"
+              label="Identifier"
               error={!!errors.book && submitCount > 0}
               helperText={submitCount > 0 ? errors.book : ''}
               value={values.book}
@@ -463,7 +467,7 @@ const ScanBooks = ({
           <Table aria-label="copy table">
             <TableHead>
               <TableRow>
-                <TableCell>Barcode</TableCell>
+                <TableCell>Identifier</TableCell>
                 <TableCell>Title</TableCell>
                 <TableCell>Copy Condition</TableCell>
                 <TableCell>Copy Notes</TableCell>
@@ -474,7 +478,7 @@ const ScanBooks = ({
               {checkoutData.books.map((book, index) => (
                 <TableRow key={book.id}>
                   <TableCell component="th" scope="row">
-                    {book.data.barcode}
+                    {book.data.identifier}
                   </TableCell>
                   <TableCell>
                     <b>{book.parentData?.volumeInfo?.title || ''}</b>{' '}
@@ -622,7 +626,7 @@ const Submit = ({
           <Table aria-label="copy table">
             <TableHead>
               <TableRow>
-                <TableCell>Barcode</TableCell>
+                <TableCell>Identifier</TableCell>
                 <TableCell>Title</TableCell>
                 <TableCell>Due Date</TableCell>
               </TableRow>
@@ -631,7 +635,7 @@ const Submit = ({
               {checkoutData.books.map((book, index) => (
                 <TableRow key={book.id}>
                   <TableCell component="th" scope="row">
-                    {book.data.barcode}
+                    {book.data.identifier}
                   </TableCell>
                   <TableCell>
                     <b>{book.parentData?.volumeInfo?.title || ''}</b>{' '}

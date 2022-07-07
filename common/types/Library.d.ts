@@ -12,14 +12,17 @@ export default interface Library {
   updatedBy: string;
   logos: {
     png: string;
+    jpg?: string;
     svg?: string;
   };
   theme: Theme;
   pageGroups: [
     {
+      order: number;
       name: string;
       pages: [
         {
+          order: number;
           id: string;
           name: string;
           description: string;
@@ -28,21 +31,22 @@ export default interface Library {
     }
   ];
   userPermissions: {
-    MANAGE_LIBRARY: [];
-    MANAGE_PAGES: [];
-    MANAGE_USERS: [];
-    CHECK_OUT: [];
-    CHECK_IN: [];
+    CHECK_IN: string[];
+    CHECK_OUT: string[];
+    MANAGE_CHECKOUTS: string[];
+    MANAGE_LIBRARY: string[];
+    MANAGE_PAGES: string[];
+    MANAGE_USERS: string[];
+    MANAGE_BOOKS: string[];
+  };
+  conditionOptions: {
+    1: string;
+    2: string;
+    3: string;
+    4: string;
+    5: string;
   };
   ownerUserID: string;
-  userInfo: [
-    {
-      fieldName: string;
-      fieldType: 'string' | 'number' | 'date' | 'boolean';
-      fieldLabel: string;
-      fieldPlaceholder: string;
-    }
-  ];
 }
 
 export interface Theme {}

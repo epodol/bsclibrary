@@ -8,19 +8,35 @@ import {
   TableBody,
   Button,
 } from '@mui/material';
-import { useFirestore, useFirestoreDocData, useFunctions } from 'reactfire';
-
-import Checkout from '@common/types/Checkout';
-import FirebaseContext from 'src/contexts/FirebaseContext';
-import NotificationContext from 'src/contexts/NotificationContext';
+import {
+  useFirestore,
+  useFirestoreDocData,
+  useFunctions,
+  useUser,
+} from 'reactfire';
 import { httpsCallable } from 'firebase/functions';
 import { doc } from 'firebase/firestore';
 
+import Checkout from '@common/types/Checkout';
+import NotificationContext from 'src/contexts/NotificationContext';
+import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
+import User from '@common/types/User';
+
 const CheckoutRow = ({ checkoutID }: { checkoutID: string }) => {
   const NotificationHandler = useContext(NotificationContext);
-  const firebaseContext = useContext(FirebaseContext);
   const functions = useFunctions();
   const firestore = useFirestore();
+
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library found!');
+
+  const user = useUser().data;
+  if (!user) throw new Error('No user signed in!');
+
+  const userDoc: User = useFirestoreDocData(
+    doc(firestore, 'libraries', activeLibraryID, 'users', user.uid)
+  ).data as User;
+
   const checkoutRef = doc(firestore, 'checkouts', checkoutID);
   const checkout = useFirestoreDocData(checkoutRef).data as unknown as Checkout;
   return (
@@ -34,19 +50,14 @@ const CheckoutRow = ({ checkoutID }: { checkoutID: string }) => {
         {checkout?.dueDate?.toDate()?.toDateString() ?? 'Loading'}
       </TableCell>
       <TableCell>
-        {checkout.renewsUsed} /{' '}
-        {firebaseContext.userDoc?.checkoutInfo?.maxRenews ?? 0}
+        {checkout.renewsUsed} / {userDoc?.maxRenews ?? 0}
         <Button
           style={{
             marginLeft: '1rem',
           }}
           variant="contained"
           color="inherit"
-          disabled={
-            (firebaseContext.userDoc?.checkoutInfo?.maxRenews ?? 0) -
-              checkout.renewsUsed <=
-            0
-          }
+          disabled={(userDoc?.maxRenews ?? 0) - checkout.renewsUsed <= 0}
           onClick={() => {
             httpsCallable(
               functions,

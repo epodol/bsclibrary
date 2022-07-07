@@ -38,6 +38,7 @@ import CopyInterface, {
 } from '@common/types/Copy';
 import NotificationContext from 'src/contexts/NotificationContext';
 import WithID from '@common/types/util/WithID';
+import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
 
 function determineStatus(status: statusType | undefined) {
   switch (status) {
@@ -57,16 +58,16 @@ function determineStatus(status: statusType | undefined) {
 }
 
 function isCopySame(
-  barcode: string,
+  identifier: string,
   status: statusType,
   condition: conditionType,
   notes: string,
-  barcodeValue: string,
+  identifierValue: string,
   statusValue: statusType,
   conditionValue: conditionType,
   notesValue: string
 ) {
-  if (barcode !== barcodeValue) return false;
+  if (identifier !== identifierValue) return false;
   if (status !== statusValue) return false;
   if (condition !== conditionValue) return false;
   if (notes !== notesValue) return false;
@@ -81,10 +82,14 @@ const CopiesTable = ({
   editing: boolean;
 }) => {
   const firestore = useFirestore();
+  const activeLibraryID = useContext(ActiveLibraryID);
   const user = useUser().data;
   if (user === null) throw new Error('No user exists.');
 
-  const copiesInitRef = collection(firestore, `books/${bookID}/copies`);
+  const copiesInitRef = collection(
+    firestore,
+    `libraries/${activeLibraryID}/books/${bookID}/copies`
+  );
 
   const copiesRef = editing
     ? query(copiesInitRef, limit(25))
@@ -113,7 +118,7 @@ const CopiesTable = ({
                 className={editing ? 'h4 text-center' : 'h4'}
                 style={editing ? { width: 1 } : {}}
               >
-                Barcode
+                Identifier
               </TableCell>
               <TableCell className={editing ? 'h4 text-center' : 'h4'}>
                 Status
@@ -131,7 +136,7 @@ const CopiesTable = ({
                     className="px-3"
                     onClick={() => {
                       addDoc(collection(firestore, `books/${bookID}/copies`), {
-                        barcode: '',
+                        identifier: '',
                         status: 4,
                         condition: 3,
                         notes: '',
@@ -147,20 +152,25 @@ const CopiesTable = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {copies.map(({ ID, barcode, status, condition, notes }) =>
+            {copies.map(({ ID, identifier, status, condition, notes }) =>
               editing ? (
                 <EditCopy
                   key={ID}
                   id={ID}
                   bookID={bookID}
-                  barcode={barcode || ''}
+                  identifier={identifier || ''}
                   status={status}
                   condition={condition}
                   notes={notes}
                 />
               ) : (
                 status !== 4 && (
-                  <Copy key={ID} id={ID} barcode={barcode} status={status} />
+                  <Copy
+                    key={ID}
+                    id={ID}
+                    identifier={identifier}
+                    status={status}
+                  />
                 )
               )
             )}
@@ -178,11 +188,11 @@ const CopiesTable = ({
 
 const Copy = ({
   id,
-  barcode,
+  identifier,
   status,
 }: {
   id: string | undefined;
-  barcode: string | undefined;
+  identifier: string | undefined;
   status: statusType | undefined;
 }) => (
   <tr key={id} className="font-weight-bold">
@@ -195,7 +205,7 @@ const Copy = ({
       )}
     </TableCell>
     <TableCell>
-      <h5>{barcode}</h5>
+      <h5>{identifier}</h5>
     </TableCell>
     <TableCell>
       <h5>{determineStatus(status)}</h5>
@@ -206,21 +216,21 @@ const Copy = ({
 const EditCopy = ({
   id,
   bookID,
-  barcode,
+  identifier,
   status,
   condition,
   notes,
 }: {
   id: string | undefined;
   bookID: string | undefined;
-  barcode: string | undefined;
+  identifier: string | undefined;
   status: statusType | undefined;
   condition: conditionType | undefined;
   notes: string | undefined;
 }) => {
   const NotificationHandler = useContext(NotificationContext);
 
-  const [barcodeValue, setBarcodeValue] = useState(barcode || '');
+  const [identifierValue, setIdentifierValue] = useState(identifier || '');
   const [statusValue, setStatusValue] = useState(status);
   const [conditionValue, setConditionValue] = useState(condition || 3);
   const [notesValue, setNotesValue] = useState(notes || '');
@@ -252,9 +262,9 @@ const EditCopy = ({
       </TableCell>
       <TableCell>
         <TextField
-          label="Barcode"
-          value={barcodeValue}
-          onChange={(event) => setBarcodeValue(event.target.value)}
+          label="Identifier"
+          value={identifierValue}
+          onChange={(event) => setIdentifierValue(event.target.value)}
         />
       </TableCell>
       <TableCell className="text-center">
@@ -374,11 +384,11 @@ const EditCopy = ({
         <ButtonGroup>
           <Button
             disabled={isCopySame(
-              barcode || '',
+              identifier || '',
               status || 0,
               condition || 1,
               notes || '',
-              barcodeValue || '',
+              identifierValue || '',
               statusValue || 0,
               conditionValue || 1,
               notesValue || ''
@@ -390,7 +400,7 @@ const EditCopy = ({
               await updateDoc(
                 doc(firestore, 'books', bookID ?? '', 'copies', id ?? ''),
                 {
-                  barcode: barcodeValue,
+                  identifier: identifierValue,
                   status: statusValue,
                   condition: conditionValue,
                   notes: notesValue,

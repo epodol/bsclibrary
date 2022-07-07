@@ -1,6 +1,6 @@
 import React, { useContext, useState, Suspense } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-import { useFirestoreDocData, useFirestore } from 'reactfire';
+import { useFirestoreDocData, useFirestore, useUser } from 'reactfire';
 import {
   Container,
   Grid,
@@ -11,8 +11,8 @@ import {
   Collapse,
 } from '@mui/material';
 import { Edit, Star, StarBorder } from '@mui/icons-material';
+import { doc, updateDoc } from 'firebase/firestore';
 
-import FirebaseContext from 'src/contexts/FirebaseContext';
 import ViewBook from 'src/pages/Books/DisplayBook/ViewBook';
 import EditBook from 'src/pages/Books/DisplayBook/EditBook';
 import CopiesTable from 'src/pages/Books/DisplayBook/CopiesTable';
@@ -20,7 +20,8 @@ import Loading from 'src/components/Loading';
 
 import BookInterface from '@common/types/Book';
 import NotificationContext from 'src/contexts/NotificationContext';
-import { doc, updateDoc } from 'firebase/firestore';
+import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
+import Library from '@common/types/Library';
 
 interface BookInterfaceWithID extends BookInterface {
   id?: string;
@@ -35,12 +36,21 @@ const Book = () => {
 
   const location: { state: { editing?: boolean } } = useLocation() as any;
   const firestore = useFirestore();
-  const ref = doc(firestore, 'books', id);
+  const user = useUser().data;
+  if (!user) throw new Error('No user signed in!');
+
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library found!');
+
+  const libraryDoc: Library = useFirestoreDocData(
+    doc(firestore, 'libraries', activeLibraryID)
+  ).data as Library;
+
+  const ref = doc(firestore, 'libraries', activeLibraryID, 'books', id);
   const data = useFirestoreDocData(ref, {
     idField: 'id',
   }).data as unknown as BookInterfaceWithID;
   const { volumeInfo, featured } = data;
-  const firebaseContext = useContext(FirebaseContext);
 
   const [editing, setEditing] = useState(location?.state?.editing || false);
 
@@ -63,12 +73,17 @@ const Book = () => {
             </Grid>
             <Grid className="text-right" item xs={2}>
               {(data.featured ||
-                firebaseContext?.claims?.permissions?.MANAGE_BOOKS) && (
+                libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
+                libraryDoc.ownerUserID === user.uid) && (
                 <Tooltip placement="bottom" title="Featured Book">
                   <Button
                     className="m-2"
                     disabled={
-                      !firebaseContext?.claims?.permissions?.MANAGE_BOOKS
+                      !(
+                        libraryDoc.userPermissions.MANAGE_BOOKS.includes(
+                          user.uid
+                        ) || libraryDoc.ownerUserID === user.uid
+                      )
                     }
                     onClick={() => {
                       updateDoc(ref, {
@@ -89,12 +104,12 @@ const Book = () => {
                         });
                     }}
                   >
-                    {featured && <Star />}
-                    {!featured && <StarBorder />}
+                    {featured && <Star htmlColor="white" />}
+                    {!featured && <StarBorder htmlColor="white" />}
                   </Button>
                 </Tooltip>
               )}
-              {firebaseContext?.claims?.role >= 500 && (
+              {libraryDoc.userPermissions.MANAGE_BOOKS.includes(user.uid) && (
                 <Tooltip placement="bottom" title="Edit Book">
                   <Button
                     className="m-2"

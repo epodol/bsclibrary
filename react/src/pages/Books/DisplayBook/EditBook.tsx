@@ -2,19 +2,13 @@ import React, { useContext, useState } from 'react';
 import { Formik, Form, FieldArray } from 'formik';
 import * as yup from 'yup';
 import { useFirestore, useUser } from 'reactfire';
-import {
-  Button,
-  Chip,
-  TextField,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-} from '@mui/material';
+import { Button, Chip, TextField } from '@mui/material';
 
-import { volumeInfo as volumeInfoType } from '@common/types/Book';
+import Book, { volumeInfo as volumeInfoType } from '@common/types/Book';
 import NotificationContext from 'src/contexts/NotificationContext';
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import RecursivePartial from '@common/types/util/RecursivePartial';
+import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
 
 const EditBook = ({
   volumeInfo,
@@ -31,6 +25,9 @@ const EditBook = ({
   const user = useUser().data;
   if (user === null) throw new Error('No user exists.');
 
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library found!');
+
   const EditBookSchema = yup.object().shape({
     authors: yup.array().of(yup.string()),
     genres: yup.array().of(yup.string()),
@@ -38,20 +35,6 @@ const EditBook = ({
     image: yup.string().url(),
     isbn10: yup.string(),
     isbn13: yup.string(),
-    grade0: yup.boolean(),
-    grade1: yup.boolean(),
-    grade2: yup.boolean(),
-    grade3: yup.boolean(),
-    grade4: yup.boolean(),
-    grade5: yup.boolean(),
-    grade6: yup.boolean(),
-    grade7: yup.boolean(),
-    grade8: yup.boolean(),
-    grade9: yup.boolean(),
-    grade10: yup.boolean(),
-    grade11: yup.boolean(),
-    grade12: yup.boolean(),
-    grade13: yup.boolean(),
     subtitle: yup.string(),
     title: yup.string().required('Books must have a title'),
   });
@@ -60,8 +43,7 @@ const EditBook = ({
 
   const [newAuthor, setNewAuthor] = useState('');
 
-  // const bookRef = useFirestore().collection('books').doc(bookID);
-  const bookRef = doc(firestore, 'books', bookID);
+  const bookRef = doc(firestore, 'libraries', activeLibraryID, 'books', bookID);
 
   return (
     <div>
@@ -73,20 +55,6 @@ const EditBook = ({
           image: volumeInfo.image || '',
           isbn10: volumeInfo.isbn10 || '',
           isbn13: volumeInfo.isbn13 || '',
-          grade0: volumeInfo?.grades?.grade0 || false,
-          grade1: volumeInfo?.grades?.grade1 || false,
-          grade2: volumeInfo?.grades?.grade2 || false,
-          grade3: volumeInfo?.grades?.grade3 || false,
-          grade4: volumeInfo?.grades?.grade4 || false,
-          grade5: volumeInfo?.grades?.grade5 || false,
-          grade6: volumeInfo?.grades?.grade6 || false,
-          grade7: volumeInfo?.grades?.grade7 || false,
-          grade8: volumeInfo?.grades?.grade8 || false,
-          grade9: volumeInfo?.grades?.grade9 || false,
-          grade10: volumeInfo?.grades?.grade10 || false,
-          grade11: volumeInfo?.grades?.grade11 || false,
-          grade12: volumeInfo?.grades?.grade12 || false,
-          grade13: volumeInfo?.grades?.grade13 || false,
           subtitle: volumeInfo.subtitle || '',
           title: volumeInfo.title || '',
         }}
@@ -94,40 +62,22 @@ const EditBook = ({
         onSubmit={async (values, actions) => {
           actions.setSubmitting(true);
           actions.setSubmitting(false);
-          await setDoc(
-            bookRef,
-            {
-              volumeInfo: {
-                authors: values.authors,
-                genres: values.genres,
-                description: values.description.trim(),
-                image: values.image.trim(),
-                isbn10: values.isbn10.trim(),
-                isbn13: values.isbn13.trim(),
-                grades: {
-                  grade0: values.grade0,
-                  grade1: values.grade1,
-                  grade2: values.grade2,
-                  grade3: values.grade3,
-                  grade4: values.grade4,
-                  grade5: values.grade5,
-                  grade6: values.grade6,
-                  grade7: values.grade7,
-                  grade8: values.grade8,
-                  grade9: values.grade9,
-                  grade10: values.grade10,
-                  grade11: values.grade11,
-                  grade12: values.grade12,
-                  grade13: values.grade13,
-                },
-                subtitle: values.subtitle.trim(),
-                title: values.title.trim(),
-              },
-              lastEditedBy: user.uid,
-              lastEdited: serverTimestamp(),
+          const newData: RecursivePartial<Book> = {
+            volumeInfo: {
+              authors: values.authors,
+              genres: values.genres,
+              description: values.description.trim(),
+              image: values.image.trim(),
+              isbn10: values.isbn10.trim(),
+              isbn13: values.isbn13.trim(),
+              subtitle: values.subtitle.trim(),
+              title: values.title.trim(),
             },
-            { merge: true }
-          )
+            lastEditedBy: user.uid,
+            lastEdited: serverTimestamp(),
+          };
+
+          await setDoc(bookRef, newData, { merge: true })
             .then(() => {
               NotificationHandler.addNotification({
                 message: 'Book updated.',
@@ -290,165 +240,6 @@ const EditBook = ({
               value={values.isbn13}
               onChange={handleChange}
             />
-            <br />
-            <br />
-            <FormLabel>Grades</FormLabel>
-            <FormGroup row>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="grade0"
-                    color="primary"
-                    checked={values.grade0}
-                    onChange={handleChange}
-                  />
-                }
-                label="<1"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="grade1"
-                    color="primary"
-                    checked={values.grade1}
-                    onChange={handleChange}
-                  />
-                }
-                label="1"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="grade2"
-                    color="primary"
-                    checked={values.grade2}
-                    onChange={handleChange}
-                  />
-                }
-                label="2"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="grade3"
-                    color="primary"
-                    checked={values.grade3}
-                    onChange={handleChange}
-                  />
-                }
-                label="3"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="grade4"
-                    color="primary"
-                    checked={values.grade4}
-                    onChange={handleChange}
-                  />
-                }
-                label="4"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="grade5"
-                    color="primary"
-                    checked={values.grade5}
-                    onChange={handleChange}
-                  />
-                }
-                label="5"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="grade6"
-                    color="primary"
-                    checked={values.grade6}
-                    onChange={handleChange}
-                  />
-                }
-                label="6"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="grade7"
-                    color="primary"
-                    checked={values.grade7}
-                    onChange={handleChange}
-                  />
-                }
-                label="7"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="grade8"
-                    color="primary"
-                    checked={values.grade8}
-                    onChange={handleChange}
-                  />
-                }
-                label="8"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="grade9"
-                    color="primary"
-                    checked={values.grade9}
-                    onChange={handleChange}
-                  />
-                }
-                label="9"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="grade10"
-                    color="primary"
-                    checked={values.grade10}
-                    onChange={handleChange}
-                  />
-                }
-                label="10"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="grade11"
-                    color="primary"
-                    checked={values.grade11}
-                    onChange={handleChange}
-                  />
-                }
-                label="11"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="grade12"
-                    color="primary"
-                    checked={values.grade12}
-                    onChange={handleChange}
-                  />
-                }
-                label="12"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="grade13"
-                    color="primary"
-                    checked={values.grade13}
-                    onChange={handleChange}
-                  />
-                }
-                label="12+"
-              />
-            </FormGroup>
             <hr className="hr-dark" />
             <div className="text-center mt-4 black-text">
               <Button

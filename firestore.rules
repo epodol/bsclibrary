@@ -3,47 +3,43 @@ service cloud.firestore {
   match /databases/{database}/documents {
       allow read, write: if false;
 
-      match /books/{book} {
-        allow get: if request.auth.token.permissions.VIEW_BOOKS || request.auth.token.permissions.CHECK_OUT;
-        allow list: if request.auth.token.permissions.VIEW_BOOKS;
-        allow create, update: if request.auth.token.permissions.MANAGE_BOOKS;
+      match /libraries/{library} {
+        allow create, delete, list: if false;
+        allow get;
+        allow update: if library in request.auth.token.permissions.MANAGE_LIBRARY || library in request.auth.token.librariesOwned;
+      }
+
+      match /libraries/{library}/books/{book} {
+        allow get: if library in request.auth.token.permissions.VIEW_BOOKS || library in request.auth.token.permissions.CHECK_OUT || library in request.auth.token.librariesOwned;
+        allow list: if library in request.auth.token.permissions.VIEW_BOOKS || library in request.auth.token.librariesOwned;
+        allow create, update: if library in request.auth.token.permissions.MANAGE_BOOKS || library in request.auth.token.librariesOwned;
         allow delete: if false;
       }
 
       match /{path=**}/copies/{copy} {
-        allow read: if request.auth.token.permissions.VIEW_BOOKS || request.auth.token.permissions.CHECK_IN || request.auth.token.permissions.CHECK_OUT;
-        allow create, update, delete: if request.auth.token.permissions.MANAGE_BOOKS;
+      // match /libraries/{library}/books/{book}/copies/{copy} {
+        allow read: if resource.data.libraryID in request.auth.token.permissions.VIEW_BOOKS || resource.data.libraryID in request.auth.token.permissions.CHECK_IN || resource.data.libraryID in request.auth.token.permissions.CHECK_OUT || resource.data.libraryID in request.auth.token.librariesOwned;
+        allow create, update, delete: if resource.data.libraryID in request.auth.token.permissions.MANAGE_BOOKS || resource.data.libraryID in request.auth.token.librariesOwned;
       }
 
-      match /{path=**}/reviews/{review} {
-        allow read: if request.auth.token.permissions.VIEW_BOOKS;
-        allow delete: if request.auth.token.permissions.MANAGE_BOOKS;
+      // match /{path=**}/reviews/{review} {
+      match /libraries/{library}/books/{book}/reviews/{review} {
+        allow read: if library in request.auth.token.permissions.VIEW_BOOKS;
+        allow delete: if library in request.auth.token.permissions.MANAGE_BOOKS;
       }
 
-      match /libraries/{library} {
-        allow create, delete, list: if false;
-        allow get;
-        allow update: if library in request.auth.token.permissions.MANAGE_LIBRARY;
-      }
-
-      match /{path=**}/users/{user} {
-        allow get: if request.auth.uid == user;
-        allow list: if request.auth.token.permissions.MANAGE_USERS || request.auth.token.permissions.CHECK_OUT;
+      match /libraries/{library}/users/{user} {
+        allow get: if request.auth.uid == user || library in request.auth.token.permissions.MANAGE_USERS || library in request.auth.token.librariesOwned;
+        allow list: if resource.data.uid == request.auth.uid || library in request.auth.token.permissions.MANAGE_USERS || library in request.auth.token.librariesOwned;
         allow create, delete: if false;
-        allow update: if request.auth.token.permissions.MANAGE_USERS && user != request.auth.uid;
+        allow update: if (library in request.auth.token.permissions.MANAGE_USERS && user != request.auth.uid) || library in request.auth.token.librariesOwned;
   }
 
-      match /checkouts/{checkout} {
-        allow get: if request.auth.token.permissions.CHECK_OUT || request.auth.token.permissions.MANAGE_CHECKOUTS;
-        allow list: if request.auth.token.permissions.CHECK_OUT || request.auth.token.permissions.MANAGE_CHECKOUTS;
-        allow update: if request.auth.token.permissions.MANAGE_CHECKOUTS;
+      match /libraries/{library}/checkouts/{checkout} {
+        allow get: if library in request.auth.token.permissions.CHECK_OUT || library in request.auth.token.permissions.MANAGE_CHECKOUTS || library in request.auth.token.librariesOwned;
+        allow list: if library in request.auth.token.permissions.CHECK_OUT || library in request.auth.token.permissions.MANAGE_CHECKOUTS || library in request.auth.token.librariesOwned;
+        allow update: if library in request.auth.token.permissions.MANAGE_CHECKOUTS || library in request.auth.token.librariesOwned;
         allow create, delete: if false;
       }
-
-      match /book_requests/{book_request} {
-        allow get, list: if request.auth.token.permissions.MANAGE_BOOKS;
-        allow create: if request.auth.token.permissions.VIEW_BOOKS;
-        allow update, delete: if false;
-    }
   }
 }

@@ -11,6 +11,7 @@ import { styled } from '@mui/material/styles';
 
 import { useRemoteConfig } from 'reactfire';
 import { getBoolean, getString } from 'firebase/remote-config';
+import SignIn from 'src/pages/SignIn';
 
 const Home = () => {
   const remoteConfig = useRemoteConfig();
@@ -112,6 +113,7 @@ const Home = () => {
           <div>
             <Title>Super Fancy Free Library Software</Title>
           </div>
+          <SignIn />
         </Content>
       </Box>
     </div>

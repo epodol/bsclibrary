@@ -61,7 +61,6 @@ const checkoutBook = functions
         conditionOut: book.condition,
         conditionIn: null,
         renewsUsed: 0,
-        checkoutStatus: 0,
       };
 
       const newCheckout = firestore.collection('checkouts').doc();

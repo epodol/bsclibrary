@@ -30,7 +30,6 @@ module.exports = {
       './react/tsconfig.json',
       './functions/tsconfig.json',
       './common/tsconfig.json',
-      './discord/tsconfig.json',
     ],
     tsconfigRootDir: __dirname,
   },

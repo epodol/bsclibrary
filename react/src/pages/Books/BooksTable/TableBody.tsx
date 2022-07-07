@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import {
   Table,
   TableCell,
@@ -31,12 +31,16 @@ import {
 } from 'firebase/firestore';
 import { useFirestore } from 'reactfire';
 import Book from 'src/pages/Books/BooksTable/Book';
+import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
 
 const isDev = process.env.NODE_ENV !== 'production';
 
 const TableBody = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library found!');
 
   const firestore = useFirestore();
 
@@ -68,7 +72,12 @@ const TableBody = () => {
         .then(({ hits }) => setBooks(hits));
     } else {
       // ONLY EXECUTED IN A DEVELOPMENT ENVIRONMENT
-      const booksRef = collection(firestore, 'books');
+      const booksRef = collection(
+        firestore,
+        'libraries',
+        activeLibraryID,
+        'books'
+      );
 
       const ref =
         query.search !== ''

@@ -8,7 +8,6 @@ import { TextField, Grid, Button, CircularProgress } from '@mui/material';
 import user, { checkoutInfo } from '@common/types/User';
 import RecursivePartial from '@common/types/util/RecursivePartial';
 
-import FirebaseContext from 'src/contexts/FirebaseContext';
 import NotificationContext from 'src/contexts/NotificationContext';
 import { doc, setDoc } from 'firebase/firestore';
 import { serverTimestamp } from 'firebase/database';

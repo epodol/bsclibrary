@@ -46,19 +46,4 @@ export default interface Checkout {
    * The number of times that this book has been renewed.
    */
   renewsUsed: number;
-  /**
-   * The current status of the checkout
-   */
-  checkoutStatus: checkoutStatus;
 }
-
-/**
- * 0: Active
- *
- * 1: Returned
- *
- * 2: Returned Overdue
- *
- * 3: Missing
- */
-export type checkoutStatus = 0 | 1 | 2 | 3;

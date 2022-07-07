@@ -20,7 +20,6 @@ import Copy, { condition } from '@common/types/Copy';
 import Book from '@common/types/Book';
 import User from '@common/types/User';
 import WithID from '@common/types/util/WithID';
-import FirebaseContext from 'src/contexts/FirebaseContext';
 import NotificationContext from 'src/contexts/NotificationContext';
 import { doc, setDoc, Timestamp } from 'firebase/firestore';
 import { useParams } from 'react-router';
@@ -134,7 +133,7 @@ const CheckoutDialog = () => {
             {book.volumeInfo.title} <i>{book.volumeInfo.subtitle}</i>
           </Link>
           <br />
-          Copy: #{copy.barcode}
+          Copy: #{copy.identifier}
         </DialogContentText>
         <hr />
         <div>
