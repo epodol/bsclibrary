@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useFirestore, useFirestoreCollectionData } from 'reactfire';
 import {
   Timestamp,
@@ -26,11 +26,15 @@ import {
 } from '@mui/material';
 
 import CheckoutRow from 'src/pages/CheckOuts/CheckoutRow';
-import Checkout, { checkoutStatus } from '@common/types/Checkout';
+import Checkout from '@common/types/Checkout';
 import WithID from '@common/types/util/WithID';
 import { Outlet } from 'react-router';
+import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
 
 const CheckOuts = () => {
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library ID!');
+
   const firestore = useFirestore();
   const now = Timestamp.fromMillis(
     new Date(new Date().toDateString()).valueOf()
@@ -47,7 +51,7 @@ const CheckOuts = () => {
 
   const useCheckoutRef = (queryArg: queryInterface) => {
     let checkoutRef = firestoreQuery(
-      collection(firestore, 'checkouts'),
+      collection(firestore, 'libraries', activeLibraryID, 'checkouts'),
       orderBy('dueDate')
     );
     if (queryArg.checkoutStatus !== null) {

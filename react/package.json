@@ -12,7 +12,7 @@
     "@mui/styles": "^5.8.7",
     "algoliasearch": "^4.13.1",
     "bootstrap-css-only": "^4.4.1",
-    "firebase": "^9.8.4",
+    "firebase": "^9.9.0",
     "formik": "^2.2.9",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
@@ -20,7 +20,7 @@
     "react-material-ui-carousel": "^3.4.2",
     "react-phone-number-input": "^3.2.3",
     "react-router-dom": "^6.3.0",
-    "reactfire": "^4.2.1",
+    "reactfire": "^4.0.0-exp.eb1428b",
     "yup": "^0.32.9"
   },
   "scripts": {

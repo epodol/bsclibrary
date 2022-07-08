@@ -24,7 +24,9 @@ import { Formik, Form } from 'formik';
 import {
   useFirestore,
   useFirestoreCollectionData,
+  useFirestoreDocData,
   useFunctions,
+  useUser,
 } from 'reactfire';
 import { httpsCallable } from 'firebase/functions';
 
@@ -51,6 +53,7 @@ import {
   where,
 } from 'firebase/firestore';
 import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
+import Library from '@common/types/Library';
 
 interface checkoutData {
   user: User | null;
@@ -428,28 +431,27 @@ const ScanBooks = ({
           </Form>
         )}
       </Formik>
-      {(checkoutData.user?.checkoutInfo?.maxCheckouts ?? 0) -
-        ((checkoutData.user?.checkoutInfo?.activeCheckouts.length ?? 0) +
+      {(checkoutData.user?.maxCheckouts ?? 0) -
+        ((checkoutData.user?.activeCheckouts.length ?? 0) +
           checkoutData.books.length) >=
         1 && (
         <p>
-          {checkoutData.user?.userInfo.firstName}{' '}
-          {checkoutData.user?.userInfo.lastName} is only allowed{' '}
-          {(checkoutData.user?.checkoutInfo?.maxCheckouts ?? 0) -
-            ((checkoutData.user?.checkoutInfo?.activeCheckouts.length ?? 0) +
+          {checkoutData.user?.firstName} {checkoutData.user?.lastName} is only
+          allowed{' '}
+          {(checkoutData.user?.maxCheckouts ?? 0) -
+            ((checkoutData.user?.activeCheckouts.length ?? 0) +
               checkoutData.books.length)}{' '}
           more checkouts.
         </p>
       )}
-      {(checkoutData.user?.checkoutInfo?.maxCheckouts ?? 0) -
-        ((checkoutData.user?.checkoutInfo?.activeCheckouts.length ?? 0) +
+      {(checkoutData.user?.maxCheckouts ?? 0) -
+        ((checkoutData.user?.activeCheckouts.length ?? 0) +
           checkoutData.books.length) <
         1 && (
         <h5>
           <b>
-            {checkoutData.user?.userInfo.firstName}{' '}
-            {checkoutData.user?.userInfo.lastName} is not allowed any more
-            checkouts.{' '}
+            {checkoutData.user?.firstName} {checkoutData.user?.lastName} is not
+            allowed any more checkouts.{' '}
           </b>
           You can override this.
         </h5>
@@ -581,14 +583,14 @@ const Submit = ({
       });
     });
 
-    if (!checkoutData.user?.userInfo?.uid) {
+    if (!checkoutData.user?.uid) {
       // Should never happen
       throw new Error('This user does not have a UID');
     }
 
     const checkoutBookFunctionData: checkoutBookData = {
       books,
-      userID: checkoutData.user?.userInfo?.uid,
+      userID: checkoutData.user?.uid,
     };
 
     await httpsCallable(
@@ -694,12 +696,23 @@ const Submit = ({
 };
 
 const CheckOut = () => {
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library found!');
+
+  const user = useUser().data;
+  if (!user) throw new Error('No user signed in!');
+
+  const firestore = useFirestore();
+
+  const libraryDoc: Library = useFirestoreDocData(
+    doc(firestore, 'libraries', activeLibraryID)
+  ).data as Library;
+
   const [activeState, setActiveState] = useState(0);
   const [checkoutData, setCheckoutData] = useState<checkoutData>({
     user: null,
     books: [],
   });
-  const firebaseContext = useContext(FirebaseContext);
   return (
     <div>
       <div className="text-center lead m-5">
@@ -709,41 +722,32 @@ const CheckOut = () => {
             <h4>
               Checking out books for{' '}
               <b>
-                {firebaseContext?.claims?.permissions?.MANAGE_USERS && (
-                  <Link to={`/users/${checkoutData.user.userInfo.uid}`}>
-                    {checkoutData.user.userInfo.firstName}{' '}
-                    {checkoutData.user.userInfo.lastName}
+                {(libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
+                  libraryDoc.ownerUserID === user.uid) && (
+                  <Link to={`/users/${checkoutData.user.uid}`}>
+                    {checkoutData.user.firstName} {checkoutData.user.lastName}
                   </Link>
                 )}
-                {!firebaseContext?.claims?.permissions?.MANAGE_USERS && (
+                {(libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
+                  libraryDoc.ownerUserID === user.uid) && (
                   <>
-                    {checkoutData.user.userInfo.firstName}{' '}
-                    {checkoutData.user.userInfo.lastName}
+                    {checkoutData.user.firstName} {checkoutData.user.lastName}
                   </>
                 )}
               </b>
             </h4>
             <ul style={{ listStylePosition: 'inside' }}>
               <li>
-                <b>
-                  {checkoutData.user?.checkoutInfo?.activeCheckouts?.length ??
-                    0}
-                </b>{' '}
-                book
-                {(checkoutData.user?.checkoutInfo?.activeCheckouts?.length ??
-                  0) === 1
+                <b>{checkoutData.user?.activeCheckouts?.length ?? 0}</b> book
+                {(checkoutData.user?.activeCheckouts?.length ?? 0) === 1
                   ? ''
                   : 's'}{' '}
                 currently checked out
               </li>
               <li>
-                Allowed{' '}
-                <b>{checkoutData.user?.checkoutInfo?.maxCheckouts ?? 0}</b>{' '}
-                checkout
-                {(checkoutData.user?.checkoutInfo?.maxCheckouts ?? 0) === 1
-                  ? ''
-                  : 's'}{' '}
-                at a time
+                Allowed <b>{checkoutData.user?.maxCheckouts ?? 0}</b> checkout
+                {(checkoutData.user?.maxCheckouts ?? 0) === 1 ? '' : 's'} at a
+                time
               </li>
             </ul>
           </div>

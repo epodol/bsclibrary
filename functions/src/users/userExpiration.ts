@@ -4,7 +4,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 const userExpiration = functions
   .region('us-west2')
   .pubsub.schedule('0 0 * * *')
-  .timeZone('America/Los_Angeles')
+  .timeZone('Etc/UTC')
   .onRun(async (context) => {
     console.log(context);
     const firestore = getFirestore();

@@ -62,15 +62,16 @@ const NavBarItems = () => {
       >
         Contribute
       </Button>
-      <Button
-        color="inherit"
-        disabled={location.pathname === '/books'}
-        onClick={() => navigate('/books')}
-      >
-        Books
-      </Button>
+
       {user && (
         <>
+          <Button
+            color="inherit"
+            disabled={location.pathname === '/books'}
+            onClick={() => navigate('/books')}
+          >
+            Books
+          </Button>
           {libraryDoc.userPermissions.CHECK_OUT.includes(user.uid) ||
             (libraryDoc.ownerUserID === user.uid && (
               <Button

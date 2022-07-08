@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { TableRow, TableCell, IconButton } from '@mui/material';
 import { Launch } from '@mui/icons-material';
 
-import CheckoutType, { checkoutStatus } from '@common/types/Checkout';
+import CheckoutType from '@common/types/Checkout';
 import { condition } from '@common/types/Copy';
 
 import WithID from '@common/types/util/WithID';

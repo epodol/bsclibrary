@@ -59,7 +59,6 @@ const Routing = () => {
   if (!activeLibraryID) throw new Error('No active library found!');
 
   const user = useUser().data;
-  console.log(user);
   if (!user) throw new Error('No user signed in!');
 
   const firestore = useFirestore();
@@ -199,20 +198,20 @@ const Routing = () => {
                     </Page>
                   </Suspense>
                 }
-              >
-                <Route
-                  path=":id"
-                  element={
-                    <Suspense fallback={<Loading />}>
-                      <Page title="Display User – BASIS Scottsdale Library">
-                        <DisplayUser />
-                      </Page>
-                    </Suspense>
-                  }
-                />
-              </Route>
+              />
+              <Route
+                path="users/:id"
+                element={
+                  <Suspense fallback={<Loading />}>
+                    <Page title="Display User – BASIS Scottsdale Library">
+                      <DisplayUser />
+                    </Page>
+                  </Suspense>
+                }
+              />
             </>
           )}
+          <Route path="/signin" element={<Navigate to="/" />} />
           <Route path="*" element={<UnknownPage />} />
         </Route>
       </Routes>

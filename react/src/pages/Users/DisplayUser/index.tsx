@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Paper from '@mui/material/Paper';
 import { useFirestore, useFirestoreDocData } from 'reactfire';
 import { useParams } from 'react-router-dom';
@@ -9,25 +9,25 @@ import UserCheckouts from 'src/pages/Users/DisplayUser/UserCheckouts';
 
 import UserInterface from '@common/types/User';
 import { doc } from 'firebase/firestore';
+import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
 
 interface UserInterfaceWithID extends UserInterface {
   id?: string;
 }
 const DisplayUser = () => {
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library found!');
+
   const firestore = useFirestore();
+
   const { id } = useParams();
   if (id === undefined) throw new Error('No user defined.');
 
-  const ref = doc(firestore, 'users', id);
+  const ref = doc(firestore, 'libraries', activeLibraryID, 'users', id);
   const data = useFirestoreDocData(ref, {
     idField: 'id',
   }).data as unknown as UserInterfaceWithID;
 
-  if (typeof data.userInfo === 'undefined') {
-    return (
-      <h1 className="text-center">Uh oh! I couldn&apos;t find that user!</h1>
-    );
-  }
   return (
     <div className="div-margin">
       <Paper className="paper-margin">
@@ -39,7 +39,7 @@ const DisplayUser = () => {
             justifyContent: 'center',
           }}
         >
-          <UserInfo userInfo={data.userInfo} />
+          <UserInfo user={data} />
         </div>
         <div
           className=""
@@ -50,7 +50,7 @@ const DisplayUser = () => {
             justifyContent: 'center',
           }}
         >
-          <UserCheckouts checkouts={data.checkoutInfo} />
+          <UserCheckouts user={data} />
         </div>
       </Paper>
     </div>

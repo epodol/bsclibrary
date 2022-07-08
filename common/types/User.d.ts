@@ -33,15 +33,23 @@ export default interface User {
    */
   email: string;
   /**
+   * The user's phone number
+   */
+  phoneNumber: string | null;
+  /**
    * User lookup identifiers, such as Library Card numbers
    */
   identifiers: string[];
   /**
-   * The day when a user's account expires, rounded down to 00:00:00 America/Los_Angeles
+   * The day when a user's account expires, rounded down to 00:00:00 UTC
    */
   expiration: Timestamp | null;
   /**
    * The user's unique Firebase ID
    */
   uid: string;
+  createdAt: Timestamp | null;
+  createdBy: string;
+  updatedAt: Timestamp | null;
+  updatedBy: string;
 }

@@ -23,6 +23,8 @@ import WithID from '@common/types/util/WithID';
 import NotificationContext from 'src/contexts/NotificationContext';
 import { doc, setDoc, Timestamp } from 'firebase/firestore';
 import { useParams } from 'react-router';
+import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
+import Library from '@common/types/Library';
 
 function determineCondition(conditionArg: condition | null) {
   switch (conditionArg) {
@@ -59,30 +61,53 @@ function determineStatus(checkoutStatusArg: checkoutStatus) {
 }
 
 const CheckoutDialog = () => {
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library ID!');
+
   const params = useParams() as any;
 
   if (params === null) throw new Error('No checkout specified.');
 
-  const firebaseContext = useContext(FirebaseContext);
   const NotificationHandler = useContext(NotificationContext);
 
   const navigate = useNavigate();
   const firestore = useFirestore();
 
-  const checkout = useFirestoreDocData(doc(firestore, 'checkouts', params.id), {
-    idField: 'ID',
-  }).data as unknown as WithID<CheckoutType>;
+  const libraryDoc: Library = useFirestoreDocData(
+    doc(firestore, 'libraries', activeLibraryID)
+  ).data as Library;
 
-  const user = useFirestoreDocData(doc(firestore, 'users', checkout.userID), {
-    idField: 'ID',
-  }).data as unknown as WithID<User>;
+  const checkout = useFirestoreDocData(
+    doc(firestore, 'libraries', activeLibraryID, 'checkouts', params.id),
+    {
+      idField: 'ID',
+    }
+  ).data as unknown as WithID<CheckoutType>;
 
-  const book = useFirestoreDocData(doc(firestore, 'books', checkout.bookID), {
-    idField: 'ID',
-  }).data as unknown as WithID<Book>;
+  const user = useFirestoreDocData(
+    doc(firestore, 'libraries', activeLibraryID, 'users', checkout.userID),
+    {
+      idField: 'ID',
+    }
+  ).data as unknown as WithID<User>;
+
+  const book = useFirestoreDocData(
+    doc(firestore, 'libraries', activeLibraryID, 'books', checkout.bookID),
+    {
+      idField: 'ID',
+    }
+  ).data as unknown as WithID<Book>;
 
   const copy = useFirestoreDocData(
-    doc(firestore, 'books', checkout.bookID, 'copies', checkout.copyID),
+    doc(
+      firestore,
+      'libraries',
+      activeLibraryID,
+      'books',
+      checkout.bookID,
+      'copies',
+      checkout.copyID
+    ),
     { idField: 'ID' }
   ).data as unknown as WithID<Copy>;
 
@@ -117,14 +142,18 @@ const CheckoutDialog = () => {
       <DialogContent>
         <DialogContentText>
           User:{' '}
-          {firebaseContext?.claims?.permissions?.MANAGE_USERS && (
+          {(libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
+            libraryDoc.ownerUserID === user.uid) && (
             <Link to={`/users/${user.ID}`}>
-              {user.userInfo.firstName} {user.userInfo.lastName}
+              {user.firstName} {user.lastName}
             </Link>
           )}
-          {!firebaseContext?.claims?.permissions?.MANAGE_USERS && (
+          {!(
+            libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
+            libraryDoc.ownerUserID === user.uid
+          ) && (
             <>
-              {user.userInfo.firstName} {user.userInfo.lastName}
+              {user.firstName} {user.lastName}
             </>
           )}
           <br />
@@ -140,25 +169,29 @@ const CheckoutDialog = () => {
           <ul>
             <li>
               <b>Time Out:</b>{' '}
-              {firebaseContext?.claims?.permissions?.MANAGE_USERS && (
+              {(libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
+                libraryDoc.ownerUserID === user.uid) && (
                 <Link to={`/users/${checkout.checkedOutBy}`}>
                   {checkout?.timeOut?.toDate()?.toLocaleString() || ''}
                 </Link>
               )}
-              {!firebaseContext?.claims?.permissions?.MANAGE_USERS && (
-                <>{checkout?.timeOut?.toDate()?.toLocaleString() || ''}</>
-              )}
+              {!(
+                libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
+                libraryDoc.ownerUserID === user.uid
+              ) && <>{checkout?.timeOut?.toDate()?.toLocaleString() || ''}</>}
             </li>
             <li>
               <b>Time In:</b>{' '}
-              {firebaseContext?.claims?.permissions?.MANAGE_USERS && (
+              {(libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
+                libraryDoc.ownerUserID === user.uid) && (
                 <Link to={`/users/${checkout.checkedInBy}`}>
                   {checkout?.timeIn?.toDate()?.toLocaleString() || ''}
                 </Link>
               )}
-              {!firebaseContext?.claims?.permissions?.MANAGE_USERS && (
-                <>{checkout?.timeIn?.toDate()?.toLocaleString() || ''}</>
-              )}
+              {!(
+                libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
+                libraryDoc.ownerUserID === user.uid
+              ) && <>{checkout?.timeIn?.toDate()?.toLocaleString() || ''}</>}
             </li>
             <br />
             <li>
@@ -169,8 +202,7 @@ const CheckoutDialog = () => {
             </li>
             <br />
             <li>
-              <b>Renews Used:</b> {checkout.renewsUsed} /{' '}
-              {user.checkoutInfo.maxRenews ?? 0}
+              <b>Renews Used:</b> {checkout.renewsUsed} / {user.maxRenews ?? 0}
             </li>
           </ul>
         </div>

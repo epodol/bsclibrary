@@ -1,16 +1,17 @@
 import React, { useContext } from 'react';
 import * as yup from 'yup';
 import { Formik, Form } from 'formik';
-import { useFirestore, useUser } from 'reactfire';
+import { useFirestore, useFirestoreDocData, useUser } from 'reactfire';
 import { useParams } from 'react-router-dom';
 import { TextField, Grid, Button, CircularProgress } from '@mui/material';
 
-import user, { checkoutInfo } from '@common/types/User';
-import RecursivePartial from '@common/types/util/RecursivePartial';
+import User from '@common/types/User';
 
 import NotificationContext from 'src/contexts/NotificationContext';
 import { doc, setDoc } from 'firebase/firestore';
 import { serverTimestamp } from 'firebase/database';
+import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
+import Library from '@common/types/Library';
 
 const checkoutInfoSchema = yup.object().shape({
   activeCheckouts: yup.array().of(yup.string()),
@@ -18,14 +19,18 @@ const checkoutInfoSchema = yup.object().shape({
   maxRenews: yup.number().min(0),
 });
 
-const UserCheckouts = ({ checkouts }: { checkouts: checkoutInfo }) => {
+const UserCheckouts = ({ user }: { user: User }) => {
   const NotificationHandler = useContext(NotificationContext);
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library ID!');
 
   const firestore = useFirestore();
   const currentUser = useUser().data;
   if (currentUser === null) throw new Error('User does not exist.');
 
-  const firebaseContext = useContext(FirebaseContext);
+  const libraryDoc: Library = useFirestoreDocData(
+    doc(firestore, 'libraries', activeLibraryID)
+  ).data as Library;
 
   const { id } = useParams<any>();
   if (id === undefined) throw new Error('No user defined.');
@@ -33,28 +38,28 @@ const UserCheckouts = ({ checkouts }: { checkouts: checkoutInfo }) => {
   const userDocRef = doc(firestore, 'users', id);
   return (
     <div className="text-center">
-      <h5>{checkouts?.activeCheckouts.length ?? 0} active checkouts</h5>
+      <h3>Checkouts</h3>
+      <h5>
+        {user.activeCheckouts.length ?? 0} active checkout
+        {(user.activeCheckouts.length ?? 0) === 1 ? '' : 's'}
+      </h5>
       <br />
       <Formik
         enableReinitialize
         initialValues={{
-          activeCheckouts: checkouts?.activeCheckouts ?? [],
-          maxCheckouts: checkouts?.maxCheckouts ?? 0,
-          maxRenews: checkouts?.maxRenews ?? 0,
+          activeCheckouts: user.activeCheckouts ?? [],
+          maxCheckouts: user.maxCheckouts ?? 0,
+          maxRenews: user.maxRenews ?? 0,
         }}
         validationSchema={checkoutInfoSchema}
         onSubmit={(values, actions) => {
           actions.setSubmitting(true);
-          const newData: RecursivePartial<user> = {
-            checkoutInfo: {
-              activeCheckouts: values.activeCheckouts,
-              maxCheckouts: values.maxCheckouts,
-              maxRenews: values.maxRenews,
-            },
-            userInfo: {
-              editedBy: currentUser.uid,
-              editedTime: serverTimestamp(),
-            },
+          const newData: Partial<User> = {
+            activeCheckouts: values.activeCheckouts,
+            maxCheckouts: values.maxCheckouts,
+            maxRenews: values.maxRenews,
+            updatedBy: currentUser.uid,
+            updatedAt: serverTimestamp() as any,
           };
           setDoc(userDocRef, newData, { merge: true })
             .then(() => {
@@ -103,7 +108,7 @@ const UserCheckouts = ({ checkouts }: { checkouts: checkoutInfo }) => {
                   fullWidth
                   disabled={
                     currentUser.uid === id &&
-                    firebaseContext.claims?.role < 1000
+                    libraryDoc.ownerUserID !== user.uid
                   }
                   error={!!errors.maxCheckouts && submitCount > 0}
                   helperText={submitCount > 0 ? errors.maxCheckouts : ''}
@@ -119,7 +124,7 @@ const UserCheckouts = ({ checkouts }: { checkouts: checkoutInfo }) => {
                   fullWidth
                   disabled={
                     currentUser.uid === id &&
-                    firebaseContext.claims?.role < 1000
+                    libraryDoc.ownerUserID !== user.uid
                   }
                   error={!!errors.maxRenews && submitCount > 0}
                   helperText={submitCount > 0 ? errors.maxRenews : ''}
@@ -135,7 +140,7 @@ const UserCheckouts = ({ checkouts }: { checkouts: checkoutInfo }) => {
               size="large"
               disabled={
                 isSubmitting ||
-                (currentUser.uid === id && firebaseContext.claims?.role < 1000)
+                (currentUser.uid === id && libraryDoc.ownerUserID !== user.uid)
               }
             >
               {isSubmitting && <CircularProgress size={24} />}

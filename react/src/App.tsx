@@ -13,6 +13,7 @@ import {
   AuthProvider,
   RemoteConfigProvider,
   useSigninCheck,
+  useUser,
 } from 'reactfire';
 
 import {
@@ -222,11 +223,14 @@ const AppWithFirebase = () => {
 };
 
 const HomePageAuthCheck = () => {
+  const user = useUser().data;
   const signInCheckResult = useSigninCheck().data;
   const activeLibraryID = useContext(ActiveLibraryID);
 
   // User is signed in
   if (signInCheckResult.signedIn === true) {
+    // Workaround for reactfire bug: https://github.com/FirebaseExtended/reactfire/issues/495
+    if (!user) return <Loading />;
     if (activeLibraryID)
       return (
         <Suspense fallback={<Loading />}>
