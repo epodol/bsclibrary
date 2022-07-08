@@ -109,7 +109,8 @@ const Book = () => {
                   </Button>
                 </Tooltip>
               )}
-              {libraryDoc.userPermissions.MANAGE_BOOKS.includes(user.uid) && (
+              {(libraryDoc.userPermissions.MANAGE_BOOKS.includes(user.uid) ||
+                libraryDoc.ownerUserID === user.uid) && (
                 <Tooltip placement="bottom" title="Edit Book">
                   <Button
                     className="m-2"

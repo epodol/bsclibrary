@@ -67,7 +67,7 @@ const EditBook = ({
               authors: values.authors,
               genres: values.genres,
               description: values.description.trim(),
-              image: values.image.trim(),
+              image: values.image === '' ? null : values.image.trim(),
               isbn10: values.isbn10.trim(),
               isbn13: values.isbn13.trim(),
               subtitle: values.subtitle.trim(),

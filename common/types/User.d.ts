@@ -48,8 +48,16 @@ export default interface User {
    * The user's unique Firebase ID
    */
   uid: string;
-  createdAt: Timestamp | null;
-  createdBy: string;
-  updatedAt: Timestamp | null;
+  /**
+   * The Firestore ID of the user who last edited this user.
+   */
   updatedBy: string;
+  /**
+   * The Firestore Timestamp of the date and time this user was last edited.
+   */
+  updatedAt: Timestamp | null;
+  /**
+   * The Firestore Timestamp of the date and time this user was created.
+   */
+  createdAt: Timestamp | null;
 }

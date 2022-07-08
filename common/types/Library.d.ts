@@ -4,30 +4,85 @@ import { Timestamp } from 'firebase-admin/firestore';
  * Location: `/libraries/{library}`
  */
 export default interface Library {
+  /**
+   * The name of the library.
+   */
   name: string;
+  /**
+   * The support email address of the library.
+   */
   supportEmail: string;
-  createdAt: Timestamp | null;
+  /**
+   * The UID of the user who created this library.
+   */
   createdBy: string;
-  updatedAt: Timestamp | null;
+  /**
+   * The UID of the user who last edited this library.
+   */
   updatedBy: string;
+  /**
+   * The Firestore Timestamp of the date and time this library was last edited.
+   */
+  updatedAt: Timestamp | null;
+  /**
+   * The Firestore Timestamp of the date and time this library was created.
+   */
+  createdAt: Timestamp | null;
+  /**
+   * The logos of the library.
+   */
   logos: {
+    /**
+     * The URL of the png version of the library's logo.
+     */
     png: string;
+    /**
+     * The URL of the jpg version of the library's logo.
+     */
     jpg?: string;
+    /**
+     * The URL of the svg version of the library's logo.
+     */
     svg?: string;
   };
+  /**
+   * The library's custom theme.
+   */
   theme: Theme;
   /**
    * The active pages of the library used for the navigation bar.
    */
   pageGroups: [
     {
+      /**
+       * The index of this group.
+       */
       index: number;
+      /**
+       * The name that will appear on the navigation bar.
+       */
       name: string;
+      /**
+       * Weather or not this group will appear in the navigation bar to users not signed in.
+       * If this is false, the public flag of the individual page will not be relevant.
+       */
       public: boolean;
+      /**
+       * The pages in this group.
+       */
       pages: [
         {
+          /**
+           * The index of the page within the group.
+           */
           index: number;
+          /**
+           * The id of the page.
+           */
           id: string;
+          /**
+           * Weather or not this page will appear in the navigation bar to users not signed in.
+           */
           public: boolean;
         }
       ];

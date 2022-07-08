@@ -83,6 +83,7 @@ const CopiesTable = ({
 }) => {
   const firestore = useFirestore();
   const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library found!');
   const user = useUser().data;
   if (user === null) throw new Error('No user exists.');
 
@@ -92,9 +93,10 @@ const CopiesTable = ({
   );
 
   const copiesRef = editing
-    ? query(copiesInitRef, limit(25))
+    ? query(copiesInitRef, where('libraryID', '==', activeLibraryID), limit(25))
     : query(
         copiesInitRef,
+        where('libraryID', '==', activeLibraryID),
         where('status', '!=', 4),
         orderBy('status'),
         limit(25)
@@ -135,14 +137,24 @@ const CopiesTable = ({
                   <Button
                     className="px-3"
                     onClick={() => {
-                      addDoc(collection(firestore, `books/${bookID}/copies`), {
+                      const newCopyDocData: CopyInterface = {
                         identifier: '',
                         status: 4,
                         condition: 3,
                         notes: '',
-                        lastEditedBy: user.uid,
-                        lastEdited: serverTimestamp(),
-                      });
+                        createdBy: user.uid,
+                        createdAt: serverTimestamp() as any,
+                        updatedBy: user.uid,
+                        updatedAt: serverTimestamp() as any,
+                        libraryID: activeLibraryID,
+                      };
+                      addDoc(
+                        collection(
+                          firestore,
+                          `libraries/${activeLibraryID}/books/${bookID}/copies`
+                        ),
+                        newCopyDocData
+                      );
                     }}
                   >
                     <Add className="mt-0" />
@@ -229,6 +241,8 @@ const EditCopy = ({
   notes: string | undefined;
 }) => {
   const NotificationHandler = useContext(NotificationContext);
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library ID!');
 
   const [identifierValue, setIdentifierValue] = useState(identifier || '');
   const [statusValue, setStatusValue] = useState(status);
@@ -239,7 +253,7 @@ const EditCopy = ({
 
   const firestore = useFirestore();
   const user = useUser().data;
-  if (user === null) throw new Error('No user exists.');
+  if (!user) throw new Error('No user exists.');
 
   let activeTimer: NodeJS.Timeout | null = null;
 
@@ -397,16 +411,31 @@ const EditCopy = ({
             className="px-4"
             variant="contained"
             onClick={async () => {
+              const updatedCopyData: Partial<CopyInterface> = {
+                identifier: identifierValue,
+                status: statusValue,
+                condition: conditionValue,
+                notes: notesValue,
+                updatedBy: user.uid,
+                updatedAt: serverTimestamp() as any,
+              };
+
+              if (!bookID || !id)
+                throw new Error(
+                  'Unable to update copy without the bookID and copyID.'
+                );
+
               await updateDoc(
-                doc(firestore, 'books', bookID ?? '', 'copies', id ?? ''),
-                {
-                  identifier: identifierValue,
-                  status: statusValue,
-                  condition: conditionValue,
-                  notes: notesValue,
-                  lastEditedBy: user.uid,
-                  lastEdited: serverTimestamp(),
-                }
+                doc(
+                  firestore,
+                  'libraries',
+                  activeLibraryID,
+                  'books',
+                  bookID,
+                  'copies',
+                  id
+                ),
+                updatedCopyData
               )
                 .then(() => {
                   NotificationHandler.addNotification({
@@ -436,8 +465,20 @@ const EditCopy = ({
             color="secondary"
             className="px-3"
             onClick={() => {
+              if (!bookID || !id)
+                throw new Error(
+                  'Unable to update copy without the bookID and copyID.'
+                );
               deleteDoc(
-                doc(firestore, 'books', bookID ?? '', 'copies', id ?? '')
+                doc(
+                  firestore,
+                  'libraries',
+                  activeLibraryID,
+                  'books',
+                  bookID,
+                  'copies',
+                  id
+                )
               );
             }}
           >

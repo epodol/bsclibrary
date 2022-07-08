@@ -1,13 +1,29 @@
 import { Timestamp } from 'firebase-admin/firestore';
-
+/**
+ * Firestore location: `/libraries/{library}/books/{book}/copies/{copy}`
+ */
 export default interface Copy {
   identifier: string;
   condition: condition;
-  lastEdited: Timestamp | null;
-  lastEditedBy: string;
   notes: string;
   status: status;
   libraryID: string;
+  /**
+   * The Firestore ID of the user who created this copy.
+   */
+  createdBy: string;
+  /**
+   * The Firestore ID of the user who last edited this copy.
+   */
+  updatedBy: string;
+  /**
+   * The Firestore Timestamp of the date and time this copy was last edited.
+   */
+  updatedAt: Timestamp | null;
+  /**
+   * The Firestore Timestamp of the date and time this copy was created.
+   */
+  createdAt: Timestamp | null;
 }
 
 /**

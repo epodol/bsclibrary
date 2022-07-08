@@ -1,6 +1,9 @@
 import { Timestamp } from 'firebase-admin/firestore';
 import { condition } from './Copy';
 
+/**
+ * Firestore location: `/libraries/{library}/checkouts/{checkout}`
+ */
 export default interface Checkout {
   /**
    * The Firestore ID of the book being checked out
