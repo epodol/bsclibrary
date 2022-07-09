@@ -2,11 +2,13 @@ import functions from 'firebase-functions';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore, Timestamp, FieldValue } from 'firebase-admin/firestore';
 
-import checkoutBookData from '@common/functions/checkoutBook';
+import checkoutBookData, {
+  checkoutBookResult,
+} from '@common/functions/checkoutBook';
 
 import Checkout from '@common/types/Checkout';
 import Copy from '@common/types/Copy';
-import RecursivePartial from '@common/types/util/RecursivePartial';
+import User from '@common/types/User';
 
 const checkoutBook = functions
   .region('us-west2')
@@ -23,21 +25,28 @@ const checkoutBook = functions
     }
 
     // Auth Verification
-    if (!context.auth) {
+    if (!context.auth || !context.auth.uid) {
       throw new functions.https.HttpsError(
         'unauthenticated',
         'The function must be called while authenticated.'
       );
     }
 
-    if (!context.auth.token.permissions.CHECK_OUT) {
+    if (
+      !context.auth.token.permissions.CHECK_OUT.includes(data.libraryID) &&
+      !context.auth.token.librariesOwned.includes(data.libraryID)
+    ) {
       throw new functions.https.HttpsError(
         'permission-denied',
         "The user calling the function must have the 'CHECK_OUT' permission."
       );
     }
 
-    if (typeof data.userID !== 'string' || typeof data.books !== 'object') {
+    if (
+      typeof data.userID !== 'string' ||
+      typeof data.books !== 'object' ||
+      typeof data.libraryID !== 'string'
+    ) {
       throw new functions.https.HttpsError(
         'invalid-argument',
         'The function must be called with the appropriate arguments.'
@@ -48,12 +57,21 @@ const checkoutBook = functions
       throw new functions.https.HttpsError('invalid-argument', 'Unknown User');
     });
 
-    data.books.forEach(async (book) => {
-      const checkout: RecursivePartial<Checkout> = {
+    // TODO: Check if the user has the correct permissions to check out books (not expired and in the library)
+
+    const result: checkoutBookResult = {
+      booksCheckedOut: [],
+    };
+
+    /* eslint-disable no-await-in-loop */
+    for (let i = 0; i < data.books.length; i += 1) {
+      const book = data.books[i];
+
+      const checkout: Checkout = {
         bookID: book.bookID,
         copyID: book.copyID,
         userID: data.userID,
-        checkedOutBy: context.auth?.uid,
+        checkedOutBy: context.auth.uid,
         checkedInBy: null,
         dueDate: Timestamp.fromMillis(book.dueDate),
         timeOut: FieldValue.serverTimestamp() as Timestamp,
@@ -63,16 +81,15 @@ const checkoutBook = functions
         renewsUsed: 0,
       };
 
-      const newCheckout = firestore.collection('checkouts').doc();
+      const newCheckout = firestore
+        .collection(`libraries/${data.libraryID}/checkouts`)
+        .doc();
 
-      const user = {
-        // Dot notation required to avoid overriding the entire checkoutInfo object
-        'checkoutInfo.activeCheckouts': FieldValue.arrayUnion(
-          newCheckout.id
-        ) as unknown as string[],
+      const user: Partial<User> = {
+        activeCheckouts: FieldValue.arrayUnion(newCheckout.id) as any,
       };
 
-      const copy: RecursivePartial<Copy> = {
+      const copy: Partial<Copy> = {
         updatedAt: FieldValue.serverTimestamp() as Timestamp,
         updatedBy: context.auth?.uid,
         condition: book.condition,
@@ -84,10 +101,17 @@ const checkoutBook = functions
       // Create the checkout document
       batch.create(newCheckout, checkout);
       // Add the checkout to the user document
-      batch.update(firestore.collection('users').doc(data.userID), user);
+      batch.update(
+        firestore
+          .collection(`libraries/${data.libraryID}/users`)
+          .doc(data.userID),
+        user
+      );
       // Update the copy's status
       batch.update(
         firestore
+          .collection('libraries')
+          .doc(data.libraryID)
           .collection('books')
           .doc(book.bookID)
           .collection('copies')
@@ -95,12 +119,23 @@ const checkoutBook = functions
         copy
       );
 
-      await batch.commit().catch((err) => {
-        console.error('Error creating checkout: ', err);
-      });
-    });
+      await batch
+        .commit()
+        .then(() => {
+          result.booksCheckedOut.push({
+            bookID: book.bookID,
+            copyID: book.copyID,
+            checkoutID: newCheckout.id,
+          });
+        })
+        .catch((err) => {
+          console.error('Error creating checkout: ', err);
+        });
+    }
+    /* eslint-enable no-await-in-loop */
 
-    return null;
+    console.log('Returning result: ', result);
+    return result;
   });
 
 export default checkoutBook;

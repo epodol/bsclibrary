@@ -21,8 +21,8 @@ service cloud.firestore {
       }
 
       match /libraries/{library}/books/{book}/copies/{copy} {
-        allow get: if request.resource.data.libraryID in request.auth.token.permissions.VIEW_BOOKS || request.resource.data.libraryID in request.auth.token.permissions.CHECK_IN || request.resource.data.libraryID in request.auth.token.permissions.CHECK_OUT || request.resource.data.libraryID in request.auth.token.librariesOwned;
-        allow create, update, delete: if request.resource.data.libraryID in request.auth.token.permissions.MANAGE_BOOKS || request.resource.data.libraryID in request.auth.token.librariesOwned;
+        allow get: if library in request.auth.token.permissions.VIEW_BOOKS || library in request.auth.token.permissions.CHECK_IN || library in request.auth.token.permissions.CHECK_OUT || library in request.auth.token.librariesOwned;
+        allow create, update, delete: if library in request.auth.token.permissions.MANAGE_BOOKS || library in request.auth.token.librariesOwned;
       }
 
       // match /{path=**}/reviews/{review} {

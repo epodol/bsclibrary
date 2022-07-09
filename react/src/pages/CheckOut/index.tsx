@@ -187,6 +187,8 @@ const EnterUser = ({
   setCheckoutData: React.Dispatch<React.SetStateAction<checkoutData>>;
 }) => {
   const firestore = useFirestore();
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library found!');
   const [searchField, setSearchField] = useState<1 | 2 | 3>(1);
   const [searchTerm, setSearchTerm] = useState<string>('');
 
@@ -257,7 +259,13 @@ const EnterUser = ({
             actions.setSubmitting(true);
 
             const userDoc = await getDoc(
-              doc(firestore, 'users', values.userID)
+              doc(
+                firestore,
+                'libraries',
+                activeLibraryID,
+                'users',
+                values.userID
+              )
             );
 
             if (!userDoc.exists) {
@@ -323,6 +331,8 @@ const ScanBooks = ({
   checkoutData: checkoutData;
   setCheckoutData: React.Dispatch<React.SetStateAction<checkoutData>>;
 }) => {
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library found!');
   const bookInput: any = useRef();
   const firestore = useFirestore();
   return (
@@ -336,7 +346,8 @@ const ScanBooks = ({
           const bookResults = await getDocs(
             query(
               collectionGroup(firestore, 'copies'),
-              where('identifier', '==', values.book)
+              where('identifier', '==', values.book),
+              where('libraryID', '==', activeLibraryID)
             )
           );
 
@@ -566,12 +577,17 @@ const Submit = ({
   checkoutData: checkoutData;
   setCheckoutData: React.Dispatch<React.SetStateAction<checkoutData>>;
 }) => {
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library found!');
+
   const functions = useFunctions();
   const NotificationHandler = useContext(NotificationContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function submit() {
+    if (!activeLibraryID) throw new Error('No active library found!');
+
     setIsSubmitting(true);
     const books: checkoutBookDataBooks[] = [];
     checkoutData.books.forEach((book) => {
@@ -591,6 +607,7 @@ const Submit = ({
     const checkoutBookFunctionData: checkoutBookData = {
       books,
       userID: checkoutData.user?.uid,
+      libraryID: activeLibraryID,
     };
 
     await httpsCallable(
@@ -728,8 +745,10 @@ const CheckOut = () => {
                     {checkoutData.user.firstName} {checkoutData.user.lastName}
                   </Link>
                 )}
-                {(libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
-                  libraryDoc.ownerUserID === user.uid) && (
+                {!(
+                  libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
+                  libraryDoc.ownerUserID === user.uid
+                ) && (
                   <>
                     {checkoutData.user.firstName} {checkoutData.user.lastName}
                   </>

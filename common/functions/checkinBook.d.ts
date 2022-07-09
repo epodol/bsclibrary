@@ -2,6 +2,10 @@ import { condition, status } from '../types/Copy';
 
 export default interface checkinBookData {
   /**
+   * Firestore id of the library
+   */
+  libraryID: string;
+  /**
    * Firestore id of the book
    */
   bookID: string;

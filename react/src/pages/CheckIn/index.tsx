@@ -18,6 +18,7 @@ const ScanBooksScheme = yup.object().shape({
 const CheckIn = () => {
   const NotificationHandler = useContext(NotificationContext);
   const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library ID');
 
   const functions = useFunctions();
   const firestore = useFirestore();
@@ -95,6 +96,7 @@ const CheckIn = () => {
             const checkinBookFunctionData: checkinBookData = {
               bookID: parent.id,
               copyID: id,
+              libraryID: activeLibraryID,
               condition: values.condition,
               status: statusCheckIn,
             };
