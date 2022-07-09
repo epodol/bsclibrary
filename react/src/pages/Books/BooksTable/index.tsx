@@ -73,8 +73,10 @@ const BooksTable = () => {
                           subtitle: '',
                           title: '',
                         },
-                        lastEditedBy: user.uid,
-                        lastEdited: serverTimestamp() as Timestamp,
+                        updatedBy: user.uid,
+                        updatedAt: serverTimestamp() as Timestamp,
+                        createdBy: user.uid,
+                        createdAt: serverTimestamp() as Timestamp,
                         copiesAvailable: 0,
                         copiesCount: 0,
                       };

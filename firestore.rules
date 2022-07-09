@@ -17,9 +17,12 @@ service cloud.firestore {
       }
 
       match /{path=**}/copies/{copy} {
-      // match /libraries/{library}/books/{book}/copies/{copy} {
-        allow read: if resource.data.libraryID in request.auth.token.permissions.VIEW_BOOKS || resource.data.libraryID in request.auth.token.permissions.CHECK_IN || resource.data.libraryID in request.auth.token.permissions.CHECK_OUT || resource.data.libraryID in request.auth.token.librariesOwned;
-        allow create, update, delete: if resource.data.libraryID in request.auth.token.permissions.MANAGE_BOOKS || resource.data.libraryID in request.auth.token.librariesOwned;
+        allow list: if resource.data.libraryID in request.auth.token.permissions.VIEW_BOOKS || resource.data.libraryID in request.auth.token.permissions.CHECK_IN || resource.data.libraryID in request.auth.token.permissions.CHECK_OUT || resource.data.libraryID in request.auth.token.librariesOwned;
+      }
+
+      match /libraries/{library}/books/{book}/copies/{copy} {
+        allow get: if request.resource.data.libraryID in request.auth.token.permissions.VIEW_BOOKS || request.resource.data.libraryID in request.auth.token.permissions.CHECK_IN || request.resource.data.libraryID in request.auth.token.permissions.CHECK_OUT || request.resource.data.libraryID in request.auth.token.librariesOwned;
+        allow create, update, delete: if request.resource.data.libraryID in request.auth.token.permissions.MANAGE_BOOKS || request.resource.data.libraryID in request.auth.token.librariesOwned;
       }
 
       // match /{path=**}/reviews/{review} {

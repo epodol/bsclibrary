@@ -81,7 +81,9 @@ const useInitFirebaseSDKs = (): {
 } => {
   const { status: useInitFirestoreStatus, data: firestore } = useInitFirestore(
     async (firebaseApp) => {
-      const firestoreInit = initializeFirestore(firebaseApp, {});
+      const firestoreInit = initializeFirestore(firebaseApp, {
+        host: undefined,
+      });
       if (isDev) connectFirestoreEmulator(firestoreInit, 'localhost', 8080);
       return firestoreInit;
     },
@@ -245,8 +247,8 @@ const HomePageAuthCheck = () => {
 };
 
 // Have to use class because componentDidCatch is not supported in hooks
-class ErrorBoundary extends Component<{}, any> {
-  constructor(props: any) {
+class ErrorBoundary extends Component {
+  constructor(props: {}) {
     super(props);
     this.state = { error: null, errorInfo: null };
   }
@@ -264,8 +266,8 @@ class ErrorBoundary extends Component<{}, any> {
   }
 
   render() {
-    const { error, errorInfo } = this.state;
-    const { children } = this.props;
+    const { error, errorInfo } = this.state as any;
+    const { children } = this.props as any;
 
     if (errorInfo) {
       return (
@@ -324,7 +326,9 @@ const App = () => (
   <ErrorBoundary>
     <Suspense fallback={<Loading />}>
       <FirebaseAppProvider firebaseConfig={firebaseConfig} suspense>
-        <AppWithFirebase />
+        <Suspense fallback={<Loading />}>
+          <AppWithFirebase />
+        </Suspense>
       </FirebaseAppProvider>
     </Suspense>
   </ErrorBoundary>

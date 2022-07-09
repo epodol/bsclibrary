@@ -14,7 +14,7 @@ import {
   Chip,
 } from '@mui/material';
 
-import CheckoutType, { checkoutStatus } from '@common/types/Checkout';
+import CheckoutType from '@common/types/Checkout';
 import Copy, { condition } from '@common/types/Copy';
 
 import Book from '@common/types/Book';

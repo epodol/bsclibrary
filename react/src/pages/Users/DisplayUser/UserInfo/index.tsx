@@ -106,12 +106,7 @@ const UserInfo = ({ user }: { user: User }) => {
       </Grid>
       <br />
       <div className="text-center">
-        <Link
-          to={`/users/${user.createdBy}`}
-          style={{ color: 'inherit', textDecoration: 'inherit' }}
-        >
-          Created: {user?.createdAt?.toDate()?.toLocaleString() || 'Loading...'}
-        </Link>
+        Created: {user?.createdAt?.toDate()?.toLocaleString() || 'Loading...'}
         <br />
         <Link
           to={`/users/${user.updatedBy}`}

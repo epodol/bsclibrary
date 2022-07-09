@@ -38,44 +38,48 @@ export const ChooseLibraryDialog = ({
           columnSpacing={{ xs: 1, sm: 2, md: 3 }}
           sx={{ mt: 0.5 }}
         >
-          {libraries.forEach(async (value) => {
-            const libraryDoc = await getDoc(doc(firestore, 'libraries', value));
+          <>
+            {libraries.forEach(async (value) => {
+              const libraryDoc = await getDoc(
+                doc(firestore, 'libraries', value)
+              );
 
-            if (!libraryDoc.exists()) {
-              console.error('Unknown library in user account', value);
-              return null;
-            }
+              if (!libraryDoc.exists()) {
+                console.error('Unknown library in user account', value);
+                return null;
+              }
 
-            const library = libraryDoc.data() as Library;
+              const library = libraryDoc.data() as Library;
 
-            return (
-              <Grid item xs={3} key={libraryDoc.id}>
-                <ButtonBase>
-                  <Card sx={{ maxWidth: 100 }}>
-                    <CardMedia
-                      component="img"
-                      height="100"
-                      image={library.logos.svg ?? library.logos.png}
-                      alt={library.name}
-                    />
-                    <CardContent>{library.name}</CardContent>
-                  </Card>
-                </ButtonBase>
-              </Grid>
-            );
-          })}
-          <Grid item xs={3}>
-            <IconButton color="primary" aria-label="add to shopping cart">
-              <Add
-                sx={{
-                  fontSize: 100,
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              />
-            </IconButton>
-          </Grid>
+              return (
+                <Grid item xs={3} key={libraryDoc.id}>
+                  <ButtonBase>
+                    <Card sx={{ maxWidth: 100 }}>
+                      <CardMedia
+                        component="img"
+                        height="100"
+                        image={library.logos.svg ?? library.logos.png}
+                        alt={library.name}
+                      />
+                      <CardContent>{library.name}</CardContent>
+                    </Card>
+                  </ButtonBase>
+                </Grid>
+              );
+            })}
+            <Grid item xs={3}>
+              <IconButton color="primary">
+                <Add
+                  sx={{
+                    fontSize: 100,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                />
+              </IconButton>
+            </Grid>
+          </>
         </Grid>
       </DialogContent>
       <DialogActions>

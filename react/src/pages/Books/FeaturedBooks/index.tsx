@@ -55,13 +55,15 @@ const FeaturedBooks = () => {
           return (
             <Card key={id} onClick={() => navigate(`/books/${id}`)}>
               <CardActionArea>
-                <CardMedia
-                  component="img"
-                  alt={`${title} | Cover`}
-                  height="350"
-                  image={image}
-                  title={`${title} | Cover`}
-                />
+                {image && (
+                  <CardMedia
+                    component="img"
+                    alt={`${title} | Cover`}
+                    height="350"
+                    image={image}
+                    title={`${title} | Cover`}
+                  />
+                )}
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="h2">
                     {title}

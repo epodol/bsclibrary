@@ -73,8 +73,8 @@ const EditBook = ({
               subtitle: values.subtitle.trim(),
               title: values.title.trim(),
             },
-            lastEditedBy: user.uid,
-            lastEdited: serverTimestamp(),
+            updatedBy: user.uid,
+            updatedAt: serverTimestamp() as any,
           };
 
           await setDoc(bookRef, newData, { merge: true })

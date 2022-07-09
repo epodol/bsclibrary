@@ -75,38 +75,41 @@ export const ChooseLibrary = ({
           columnSpacing={{ xs: 1, sm: 2, md: 3 }}
           sx={{ mt: 0.5 }}
         >
-          {libraries.forEach((library) => {
-            const libraryDocData = library.data();
-            return (
-              <Grid item xs={3} key={library.id}>
-                <ButtonBase>
-                  <Card sx={{ maxWidth: 100 }}>
-                    <CardMedia
-                      component="img"
-                      height="100"
-                      image={
-                        libraryDocData?.logos?.svg ?? libraryDocData?.logos?.png
-                      }
-                      alt={libraryDocData?.name}
-                    />
-                    <CardContent>{libraryDocData?.name}aaa</CardContent>
-                  </Card>
-                </ButtonBase>
-              </Grid>
-            );
-          })}
-          <Grid item xs={3}>
-            <IconButton color="primary" aria-label="add to shopping cart">
-              <Add
-                sx={{
-                  fontSize: 100,
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              />
-            </IconButton>
-          </Grid>
+          <>
+            {libraries.forEach((library) => {
+              const libraryDocData = library.data();
+              return (
+                <Grid item xs={3} key={library.id}>
+                  <ButtonBase>
+                    <Card sx={{ maxWidth: 100 }}>
+                      <CardMedia
+                        component="img"
+                        height="100"
+                        image={
+                          libraryDocData?.logos?.svg ??
+                          libraryDocData?.logos?.png
+                        }
+                        alt={libraryDocData?.name}
+                      />
+                      <CardContent>{libraryDocData?.name}aaa</CardContent>
+                    </Card>
+                  </ButtonBase>
+                </Grid>
+              );
+            })}
+            <Grid item xs={3}>
+              <IconButton color="primary">
+                <Add
+                  sx={{
+                    fontSize: 100,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                />
+              </IconButton>
+            </Grid>
+          </>
         </Grid>
       </DialogContent>
       <DialogActions>

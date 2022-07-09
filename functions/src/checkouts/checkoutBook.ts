@@ -73,8 +73,8 @@ const checkoutBook = functions
       };
 
       const copy: RecursivePartial<Copy> = {
-        lastEdited: FieldValue.serverTimestamp() as Timestamp,
-        lastEditedBy: context.auth?.uid,
+        updatedAt: FieldValue.serverTimestamp() as Timestamp,
+        updatedBy: context.auth?.uid,
         condition: book.condition,
         status: 2,
       };
