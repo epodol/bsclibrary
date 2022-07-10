@@ -1,7 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { useFirestore, useFirestoreCollectionData } from 'reactfire';
 import {
-  Timestamp,
   query as firestoreQuery,
   collection,
   orderBy,
@@ -16,57 +15,66 @@ import {
   TableCell,
   TableBody,
   Paper,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormHelperText,
-  FormControlLabel,
-  Checkbox,
+  TableSortLabel,
+  ButtonGroup,
+  Button,
 } from '@mui/material';
 
 import CheckoutRow from 'src/pages/CheckOuts/CheckoutRow';
 import Checkout from '@common/types/Checkout';
 import WithID from '@common/types/util/WithID';
 import { Outlet } from 'react-router';
+import { useSearchParams } from 'react-router-dom';
 import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
 
-const CheckOuts = () => {
+const tableHeadRows = [
+  { id: 'timeOut', label: 'Time Out' },
+  { id: 'timeIn', label: 'Time In' },
+  { id: 'dueDate', label: 'Due Date' },
+  { id: 'conditionOut', label: 'Condition Out' },
+  { id: 'conditionIn', label: 'Condition In' },
+  { id: 'conditionDiff', label: 'Condition Change' },
+  { id: 'renewsUsed', label: 'Renews Used' },
+];
+
+const useBuildCheckoutsQuery = (searchParams: URLSearchParams) => {
   const activeLibraryID = useContext(ActiveLibraryID);
   if (!activeLibraryID) throw new Error('No active library ID!');
 
   const firestore = useFirestore();
-  const now = Timestamp.fromMillis(
-    new Date(new Date().toDateString()).valueOf()
+
+  let query = firestoreQuery(
+    collection(firestore, 'libraries', activeLibraryID, 'checkouts')
   );
 
-  interface queryInterface {
-    checkoutStatus: checkoutStatus | null;
-    showOverdue: boolean;
-  }
-  const [query, setQuery] = useState<queryInterface>({
-    checkoutStatus: null,
-    showOverdue: false,
-  });
+  const sortBy = searchParams.get('sortBy');
 
-  const useCheckoutRef = (queryArg: queryInterface) => {
-    let checkoutRef = firestoreQuery(
-      collection(firestore, 'libraries', activeLibraryID, 'checkouts'),
-      orderBy('dueDate')
+  if (sortBy !== null && tableHeadRows.map((row) => row.id).includes(sortBy)) {
+    query = firestoreQuery(
+      query,
+      orderBy(sortBy, searchParams.get('sortDir') === 'asc' ? 'asc' : 'desc')
     );
-    if (queryArg.checkoutStatus !== null) {
-      checkoutRef = firestoreQuery(
-        checkoutRef,
-        where('checkoutStatus', '==', queryArg.checkoutStatus)
-      );
-    }
-    if (queryArg.showOverdue) {
-      checkoutRef = firestoreQuery(checkoutRef, where('dueDate', '<=', now));
-    }
-    return checkoutRef;
-  };
+  }
 
-  const checkouts = useFirestoreCollectionData(useCheckoutRef(query), {
+  const status = searchParams.get('status');
+  if (status === 'active') {
+    query = firestoreQuery(query, where('timeIn', '==', null));
+  }
+  if (status === 'returned') {
+    query = firestoreQuery(query, where('returned', '==', true));
+  }
+
+  return query;
+};
+
+const CheckOuts = () => {
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library ID!');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const query = useBuildCheckoutsQuery(searchParams);
+
+  const checkouts = useFirestoreCollectionData(query, {
     idField: 'ID',
   }).data as unknown as WithID<Checkout>[];
 
@@ -76,62 +84,67 @@ const CheckOuts = () => {
       <Outlet />
       <TableContainer component={Paper}>
         <div style={{ margin: '1%' }}>
-          <FormControl>
-            <InputLabel shrink id="status-label">
-              Status
-            </InputLabel>
-            <Select
-              labelId="status-label"
-              id="status-label"
-              value={query.checkoutStatus ?? ''}
-              onChange={(e: any) => {
-                setQuery({
-                  ...query,
-                  checkoutStatus:
-                    e.target.value !== ''
-                      ? (e.target.value as checkoutStatus)
-                      : null,
-                });
-              }}
-              displayEmpty
-            >
-              <MenuItem value="">
-                <em>Any</em>
-              </MenuItem>
-              <MenuItem value={0}>Active</MenuItem>
-              <MenuItem value={1}>Returned</MenuItem>
-              <MenuItem value={2}>Returned Overdue</MenuItem>
-              <MenuItem value={3}>Missing</MenuItem>
-            </Select>
-            <FormHelperText>Show only</FormHelperText>
-          </FormControl>
           <br />
-          <FormControlLabel
-            control={
-              <Checkbox
-                color="primary"
-                checked={query.showOverdue}
-                onChange={(e: any) => {
-                  setQuery({
-                    ...query,
-                    showOverdue: e.target.checked as boolean,
-                  });
-                }}
-              />
-            }
-            label="Show Only Overdue Books"
-          />
+          <ButtonGroup>
+            <Button
+              disabled={searchParams.get('status') === null}
+              onClick={() => {
+                searchParams.delete('status');
+                setSearchParams(searchParams);
+              }}
+            >
+              Active and Returned
+            </Button>
+            <Button
+              disabled={searchParams.get('status') === 'active'}
+              onClick={() => {
+                searchParams.set('status', 'active');
+                setSearchParams(searchParams);
+              }}
+            >
+              Active Only
+            </Button>
+            <Button
+              disabled={searchParams.get('status') === 'returned'}
+              onClick={() => {
+                searchParams.set('status', 'returned');
+                setSearchParams(searchParams);
+              }}
+            >
+              Returned Only
+            </Button>
+          </ButtonGroup>
           <hr />
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell className="h4">Due Date</TableCell>
-                <TableCell className="h4">Time Out</TableCell>
-                <TableCell className="h4">Time In</TableCell>
-                <TableCell className="h4">Condition Out</TableCell>
-                <TableCell className="h4">Condition In</TableCell>
-                <TableCell className="h4">Renews Used</TableCell>
-                <TableCell className="h4">Status</TableCell>
+                {tableHeadRows.map((row) => (
+                  <TableCell key={row.id} className="h4">
+                    <TableSortLabel
+                      active={searchParams.get('sortBy') === row.id}
+                      direction={
+                        searchParams.get('sortDir') === 'asc' ? 'asc' : 'desc'
+                      }
+                      onClick={() => {
+                        if (searchParams.get('sortBy') === row.id) {
+                          searchParams.set(
+                            'sortDir',
+                            searchParams.get('sortDir') === 'asc'
+                              ? 'desc'
+                              : 'asc'
+                          );
+                        } else {
+                          searchParams.set('sortDir', 'asc');
+                        }
+
+                        searchParams.set('sortBy', row.id);
+                        setSearchParams(searchParams);
+                      }}
+                    >
+                      {row.label}
+                    </TableSortLabel>
+                  </TableCell>
+                ))}
                 <TableCell padding="none" />
               </TableRow>
             </TableHead>
@@ -141,6 +154,20 @@ const CheckOuts = () => {
               ))}
             </TableBody>
           </Table>
+          {checkouts.length === 0 && (
+            <div>
+              <h3 className="text-center mt-4 mb-4">No results found.</h3>
+              <Button
+                onClick={() => {
+                  searchParams.delete('sortBy');
+                  searchParams.delete('sortDir');
+                  setSearchParams(searchParams);
+                }}
+              >
+                Reset Filters
+              </Button>
+            </div>
+          )}
         </div>
       </TableContainer>
     </div>

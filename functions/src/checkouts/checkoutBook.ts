@@ -71,6 +71,7 @@ const checkoutBook = functions
         bookID: book.bookID,
         copyID: book.copyID,
         userID: data.userID,
+        returned: false,
         checkedOutBy: context.auth.uid,
         checkedInBy: null,
         dueDate: Timestamp.fromMillis(book.dueDate),
@@ -78,6 +79,7 @@ const checkoutBook = functions
         timeIn: null,
         conditionOut: book.condition,
         conditionIn: null,
+        conditionDiff: null,
         renewsUsed: 0,
       };
 
@@ -134,7 +136,6 @@ const checkoutBook = functions
     }
     /* eslint-enable no-await-in-loop */
 
-    console.log('Returning result: ', result);
     return result;
   });
 

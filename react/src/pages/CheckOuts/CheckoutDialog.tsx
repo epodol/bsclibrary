@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 
 import CheckoutType from '@common/types/Checkout';
-import Copy, { condition } from '@common/types/Copy';
+import Copy from '@common/types/Copy';
 
 import Book from '@common/types/Book';
 import User from '@common/types/User';
@@ -25,40 +25,6 @@ import { doc, setDoc, Timestamp } from 'firebase/firestore';
 import { useParams } from 'react-router';
 import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
 import Library from '@common/types/Library';
-
-function determineCondition(conditionArg: condition | null) {
-  switch (conditionArg) {
-    case 1:
-      return 'New';
-    case 2:
-      return 'Good';
-    case 3:
-      return 'Fair';
-    case 4:
-      return 'Poor';
-    case 5:
-      return 'Bad';
-    case null:
-      return '';
-    default:
-      return 'Unknown Condition';
-  }
-}
-
-function determineStatus(checkoutStatusArg: checkoutStatus) {
-  switch (checkoutStatusArg) {
-    case 0:
-      return 'Active';
-    case 1:
-      return 'Returned';
-    case 2:
-      return 'Returned Overdue';
-    case 3:
-      return 'Missing';
-    default:
-      return 'Unknown Condition';
-  }
-}
 
 const CheckoutDialog = () => {
   const activeLibraryID = useContext(ActiveLibraryID);
@@ -137,7 +103,7 @@ const CheckoutDialog = () => {
       maxWidth="lg"
     >
       <DialogTitle>
-        Checkout Info <Chip label={determineStatus(checkout.checkoutStatus)} />
+        Checkout Info <Chip label={checkout.timeIn ? 'Returned' : 'Active'} />
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
@@ -195,10 +161,13 @@ const CheckoutDialog = () => {
             </li>
             <br />
             <li>
-              <b>Condition Out:</b> {determineCondition(checkout.conditionOut)}
+              <b>Condition Out:</b>{' '}
+              {libraryDoc.conditionOptions[checkout.conditionOut]}
             </li>
             <li>
-              <b>Condition In:</b> {determineCondition(checkout.conditionIn)}
+              <b>Condition In:</b>{' '}
+              {checkout.conditionIn &&
+                libraryDoc.conditionOptions[checkout.conditionIn]}
             </li>
             <br />
             <li>
@@ -218,11 +187,13 @@ const CheckoutDialog = () => {
             InputLabelProps={{
               shrink: true,
             }}
+            disabled={checkout.timeIn !== null}
           />
         </div>
       </DialogContent>
       <DialogActions>
         <Button
+          disabled={checkout.timeIn !== null}
           onClick={() => {
             setIsSubmitting(true);
             const newData = {

@@ -1,7 +1,9 @@
 import functions from 'firebase-functions';
 import { getFirestore, Timestamp, FieldValue } from 'firebase-admin/firestore';
 
-import checkinBookData from '@common/functions/checkinBook';
+import checkinBookData, {
+  checkinBookResult,
+} from '@common/functions/checkinBook';
 
 import Checkout from '@common/types/Checkout';
 import Copy from '@common/types/Copy';
@@ -100,8 +102,10 @@ const checkinBook = functions
 
     // Updated checkout data
     const updatedCheckoutDocData: Partial<Checkout> = {
+      returned: true,
       checkedInBy: context.auth.uid,
       conditionIn: data.condition,
+      conditionDiff: data.condition - checkoutData.conditionOut,
       timeIn: FieldValue.serverTimestamp() as Timestamp,
     };
 
@@ -137,11 +141,13 @@ const checkinBook = functions
       );
     });
 
-    return {
+    const result: checkinBookResult = {
       checkoutID: checkoutDoc.id,
       userID: checkoutData.userID,
-      overdue: checkoutData.dueDate.toMillis() < new Date().getTime(),
+      conditionDiff: data.condition - checkoutData.conditionOut,
     };
+
+    return result;
   });
 
 export default checkinBook;

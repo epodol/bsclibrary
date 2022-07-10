@@ -18,6 +18,10 @@ export default interface Checkout {
    */
   userID: string;
   /**
+   * Weather or not the copy has been returned
+   */
+  returned: boolean;
+  /**
    * The Firestore ID of the user who checked out this book.
    */
   checkedOutBy: string;
@@ -45,6 +49,10 @@ export default interface Checkout {
    * The condition of the copy when it was checked in.
    */
   conditionIn: condition | null;
+  /**
+   * The difference in condition between the copy when it was checked in and when it was checked out. (conditionIn - conditionOut)
+   */
+  conditionDiff: number | null;
   /**
    * The number of times that this book has been renewed.
    */

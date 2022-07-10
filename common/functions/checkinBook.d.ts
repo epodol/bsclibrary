@@ -33,7 +33,7 @@ export interface checkinBookResult {
    */
   userID: string;
   /**
-   * If the book was returned overdue
+   * The difference in condition between the copy when it was checked in and when it was checked out. (conditionIn - conditionOut)
    */
-  overdue: boolean;
+  conditionDiff: number;
 }

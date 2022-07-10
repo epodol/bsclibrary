@@ -61,6 +61,8 @@ const renewCheckout = functions
     }
 
     const checkoutDoc = await firestore
+      .collection('libraries')
+      .doc(data.libraryID)
       .collection('checkouts')
       .doc(data.checkoutID)
       .get();

@@ -1,62 +1,45 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { TableRow, TableCell, IconButton } from '@mui/material';
 import { Launch } from '@mui/icons-material';
 
 import CheckoutType from '@common/types/Checkout';
-import { condition } from '@common/types/Copy';
 
 import WithID from '@common/types/util/WithID';
-
-function determineCondition(conditionArg: condition | null) {
-  switch (conditionArg) {
-    case 1:
-      return 'New';
-    case 2:
-      return 'Good';
-    case 3:
-      return 'Fair';
-    case 4:
-      return 'Poor';
-    case 5:
-      return 'Bad';
-    case null:
-      return '';
-    default:
-      return 'Unknown Condition';
-  }
-}
-
-function determineStatus(checkoutStatusArg: checkoutStatus) {
-  switch (checkoutStatusArg) {
-    case 0:
-      return 'Active';
-    case 1:
-      return 'Returned';
-    case 2:
-      return 'Returned Overdue';
-    case 3:
-      return 'Missing';
-    default:
-      return 'Unknown Condition';
-  }
-}
+import { useFirestore, useFirestoreDocData } from 'reactfire';
+import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
+import Library from '@common/types/Library';
+import { doc } from 'firebase/firestore';
 
 const Checkout = ({ checkout }: { checkout: WithID<CheckoutType> }) => {
   const navigate = useNavigate();
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library ID!');
+
+  const firestore = useFirestore();
+
+  const libraryDoc: Library = useFirestoreDocData(
+    doc(firestore, 'libraries', activeLibraryID)
+  ).data as Library;
+
   return (
     <>
       <TableRow>
-        <TableCell>{checkout.dueDate?.toDate().toDateString()}</TableCell>
         <TableCell>{checkout.timeOut?.toDate().toLocaleString()}</TableCell>
         <TableCell>
           {checkout.timeIn?.toDate().toLocaleString() ?? ''}
         </TableCell>
-        <TableCell>{determineCondition(checkout.conditionOut)}</TableCell>
-        <TableCell>{determineCondition(checkout.conditionIn) ?? ''}</TableCell>
+        <TableCell>{checkout.dueDate?.toDate().toDateString()}</TableCell>
+        <TableCell>
+          {libraryDoc.conditionOptions[checkout.conditionOut]}
+        </TableCell>
+        <TableCell>
+          {checkout.conditionIn &&
+            libraryDoc.conditionOptions[checkout.conditionIn]}
+        </TableCell>
+        <TableCell>{checkout.conditionDiff}</TableCell>
         <TableCell>{checkout.renewsUsed}</TableCell>
-        <TableCell>{determineStatus(checkout.checkoutStatus)}</TableCell>
         <TableCell>
           <IconButton
             aria-label="expand row"
