@@ -26,8 +26,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "firebase emulators:exec --import=../emulator-data \"react-scripts test\"",
-    "test:noemulators": "react-scripts test",
+    "test": "firebase emulators:exec --import=../emulator-data \"react-scripts test --passWithNoTests\"",
+    "test:noemulators": "react-scripts test --passWithNoTests",
     "eject": "react-scripts eject",
     "lint": "eslint . --resolve-plugins-relative-to ."
   },
