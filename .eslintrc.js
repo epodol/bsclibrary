@@ -30,7 +30,6 @@ module.exports = {
       './react/tsconfig.json',
       './functions/tsconfig.json',
       './common/tsconfig.json',
-      './discord/tsconfig.json',
     ],
     tsconfigRootDir: __dirname,
   },
@@ -42,6 +41,7 @@ module.exports = {
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': ['error'],
     'no-console': ['warn', { allow: ['warn', 'error'] }],
+    '@typescript-eslint/no-unused-vars': ['warn'],
   },
   settings: {
     jest: {

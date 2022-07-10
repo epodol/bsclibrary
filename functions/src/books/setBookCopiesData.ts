@@ -1,11 +1,11 @@
 import functions from 'firebase-functions';
 import { FieldValue } from 'firebase-admin/firestore';
 import Book from '@common/types/Book';
-import RecursivePartial from '@common/types/RecursivePartial';
+import RecursivePartial from '@common/types/util/RecursivePartial';
 
 const setBookCopiesData = functions
   .region('us-west2')
-  .firestore.document('books/{bookId}/copies/{copyID}')
+  .firestore.document('libraries/{libraryID}/books/{bookID}/copies/{copyID}')
   .onWrite(({ before, after }) => {
     const increment = (val: number) =>
       FieldValue.increment(val) as unknown as number;

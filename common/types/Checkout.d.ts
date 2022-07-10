@@ -1,6 +1,9 @@
 import { Timestamp } from 'firebase-admin/firestore';
 import { condition } from './Copy';
 
+/**
+ * Firestore location: `/libraries/{library}/checkouts/{checkout}`
+ */
 export default interface Checkout {
   /**
    * The Firestore ID of the book being checked out
@@ -14,6 +17,10 @@ export default interface Checkout {
    * The Firestore ID of the user who owns this checkout.
    */
   userID: string;
+  /**
+   * Weather or not the copy has been returned
+   */
+  returned: boolean;
   /**
    * The Firestore ID of the user who checked out this book.
    */
@@ -43,22 +50,11 @@ export default interface Checkout {
    */
   conditionIn: condition | null;
   /**
+   * The difference in condition between the copy when it was checked in and when it was checked out. (conditionIn - conditionOut)
+   */
+  conditionDiff: number | null;
+  /**
    * The number of times that this book has been renewed.
    */
   renewsUsed: number;
-  /**
-   * The current status of the checkout
-   */
-  checkoutStatus: checkoutStatus;
 }
-
-/**
- * 0: Active
- *
- * 1: Returned
- *
- * 2: Returned Overdue
- *
- * 3: Missing
- */
-export type checkoutStatus = 0 | 1 | 2 | 3;

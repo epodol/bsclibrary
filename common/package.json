@@ -4,9 +4,9 @@
     "node": "16"
   },
   "dependencies": {
-    "firebase-admin": "^10.0.2"
+    "firebase-admin": "^11.0.0"
   },
   "devDependencies": {
-    "jest": "^27.4.7"
+    "jest": "^28.1.2"
   }
 }

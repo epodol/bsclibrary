@@ -21,16 +21,6 @@ updates:
       - 'epodol'
 
   - package-ecosystem: 'npm'
-    directory: '/discord'
-    schedule:
-      interval: 'weekly'
-      day: 'friday'
-      time: '06:00'
-      timezone: 'America/Phoenix'
-    reviewers:
-      - 'epodol'
-
-  - package-ecosystem: 'npm'
     directory: '/functions'
     schedule:
       interval: 'weekly'

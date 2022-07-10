@@ -1,11 +1,13 @@
 import functions from 'firebase-functions';
 import { getFirestore, Timestamp, FieldValue } from 'firebase-admin/firestore';
 
-import checkinBookData from '@common/functions/checkinBook';
+import checkinBookData, {
+  checkinBookResult,
+} from '@common/functions/checkinBook';
 
 import Checkout from '@common/types/Checkout';
 import Copy from '@common/types/Copy';
-import RecursivePartial from '@common/types/RecursivePartial';
+import User from '@common/types/User';
 
 const checkinBook = functions
   .region('us-west2')
@@ -28,14 +30,10 @@ const checkinBook = functions
       );
     }
 
-    if (typeof context.auth.token.role === 'undefined') {
-      throw new functions.https.HttpsError(
-        'permission-denied',
-        'The caller must already have a set role.'
-      );
-    }
-
-    if (!context.auth.token.permissions.CHECK_IN) {
+    if (
+      !context.auth.token.permissions.CHECK_IN.includes(data.libraryID) &&
+      !context.auth.token.librariesOwned.includes(data.libraryID)
+    ) {
       throw new functions.https.HttpsError(
         'permission-denied',
         "The user calling the function must have the 'CHECK_IN' permission."
@@ -47,7 +45,8 @@ const checkinBook = functions
       typeof data.bookID !== 'string' ||
       typeof data.copyID !== 'string' ||
       typeof data.condition !== 'number' ||
-      typeof data.status !== 'number'
+      typeof data.status !== 'number' ||
+      typeof data.libraryID !== 'string'
     ) {
       throw new functions.https.HttpsError(
         'invalid-argument',
@@ -72,10 +71,10 @@ const checkinBook = functions
 
     // Get the checkout from the database
     const checkoutDocs = await firestore
-      .collection('checkouts')
+      .collection(`libraries/${data.libraryID}/checkouts`)
       .where('bookID', '==', data.bookID)
       .where('copyID', '==', data.copyID)
-      .where('checkoutStatus', '==', 0)
+      .where('timeIn', '==', null)
       .get();
 
     // Check if the checkout exists or there is more than one
@@ -93,7 +92,7 @@ const checkinBook = functions
     // Create a batched update
     const batch = firestore.batch();
 
-    if (checkoutData.dueDate === null) {
+    if (!checkoutData.dueDate) {
       // If the checkout has no due date, set it to the current date
       throw new functions.https.HttpsError(
         'internal',
@@ -102,26 +101,25 @@ const checkinBook = functions
     }
 
     // Updated checkout data
-    const updatedCheckoutDocData: RecursivePartial<Checkout> = {
+    const updatedCheckoutDocData: Partial<Checkout> = {
+      returned: true,
       checkedInBy: context.auth.uid,
-      checkoutStatus:
-        checkoutData.dueDate.toMillis() > new Date().getTime() ? 1 : 2,
       conditionIn: data.condition,
-      timeIn: FieldValue.serverTimestamp(),
+      conditionDiff: data.condition - checkoutData.conditionOut,
+      timeIn: FieldValue.serverTimestamp() as Timestamp,
     };
 
-    const userRef = firestore.collection('users').doc(checkoutData.userID);
+    const userRef = firestore
+      .collection(`libraries/${data.libraryID}/users`)
+      .doc(checkoutData.userID);
 
-    const user = {
-      // Dot notation required to avoid overriding the entire checkoutInfo object
-      'checkoutInfo.activeCheckouts': FieldValue.arrayRemove(
-        checkoutDoc.id
-      ) as unknown as string[],
+    const user: Partial<User> = {
+      activeCheckouts: FieldValue.arrayRemove(checkoutDoc.id) as any,
     };
 
-    const copy: RecursivePartial<Copy> = {
-      lastEdited: FieldValue.serverTimestamp() as Timestamp,
-      lastEditedBy: context.auth?.uid,
+    const copy: Partial<Copy> = {
+      updatedAt: FieldValue.serverTimestamp() as Timestamp,
+      updatedBy: context.auth?.uid,
       condition: data.condition,
       status: data.status,
     };
@@ -129,7 +127,9 @@ const checkinBook = functions
     batch.update(checkoutDoc.ref, updatedCheckoutDocData);
     batch.update(userRef, user);
     batch.update(
-      firestore.doc(`/books/${data.bookID}/copies/${data.copyID}`),
+      firestore.doc(
+        `libraries/${data.libraryID}/books/${data.bookID}/copies/${data.copyID}`
+      ),
       copy
     );
 
@@ -141,11 +141,13 @@ const checkinBook = functions
       );
     });
 
-    return {
+    const result: checkinBookResult = {
       checkoutID: checkoutDoc.id,
       userID: checkoutData.userID,
-      overdue: checkoutData.dueDate.toMillis() < new Date().getTime(),
+      conditionDiff: data.condition - checkoutData.conditionOut,
     };
+
+    return result;
   });
 
 export default checkinBook;

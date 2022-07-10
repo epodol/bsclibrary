@@ -1,4 +1,4 @@
-import React, { Suspense, Component, useEffect } from 'react';
+import React, { Suspense, Component, useEffect, useContext } from 'react';
 import {
   useFirebaseApp,
   useInitFirestore,
@@ -12,6 +12,8 @@ import {
   StorageProvider,
   AuthProvider,
   RemoteConfigProvider,
+  useSigninCheck,
+  useUser,
 } from 'reactfire';
 
 import {
@@ -41,8 +43,10 @@ import { getAnalytics } from 'firebase/analytics';
 
 import CssBaseline from '@mui/material/CssBaseline';
 
-import { FirebaseProvider } from 'src/contexts/FirebaseContext';
 import { NotificationProvider } from 'src/contexts/NotificationContext';
+import ActiveLibraryID, {
+  ActiveLibraryIDProvider,
+} from 'src/contexts/ActiveLibraryID';
 
 import { ThemeContextProvider } from 'src/contexts/MUITheme';
 import Routing from 'src/components/Routing';
@@ -50,6 +54,9 @@ import Loading from 'src/components/Loading';
 
 import 'bootstrap-css-only/css/bootstrap.min.css';
 import 'src/index.css';
+
+import HomeRouting from 'src/components/Routing/HomeRouting';
+import JoinLibrary from './pages/JoinLibrary';
 
 const isDev = process.env.NODE_ENV !== 'production';
 
@@ -74,7 +81,9 @@ const useInitFirebaseSDKs = (): {
 } => {
   const { status: useInitFirestoreStatus, data: firestore } = useInitFirestore(
     async (firebaseApp) => {
-      const firestoreInit = initializeFirestore(firebaseApp, {});
+      const firestoreInit = initializeFirestore(firebaseApp, {
+        host: undefined,
+      });
       if (isDev) connectFirestoreEmulator(firestoreInit, 'localhost', 8080);
       return firestoreInit;
     },
@@ -202,11 +211,9 @@ const AppWithFirebase = () => {
             <FunctionsProvider sdk={functions}>
               <StorageProvider sdk={storage}>
                 <RemoteConfigProvider sdk={remoteConfig}>
-                  <FirebaseProvider>
-                    <Suspense fallback={<Loading />}>
-                      <Routing />
-                    </Suspense>
-                  </FirebaseProvider>
+                  <ActiveLibraryIDProvider>
+                    <HomePageAuthCheck />
+                  </ActiveLibraryIDProvider>
                 </RemoteConfigProvider>
               </StorageProvider>
             </FunctionsProvider>
@@ -217,9 +224,31 @@ const AppWithFirebase = () => {
   );
 };
 
+const HomePageAuthCheck = () => {
+  const user = useUser().data;
+  const signInCheckResult = useSigninCheck().data;
+  const activeLibraryID = useContext(ActiveLibraryID);
+
+  // User is signed in
+  if (signInCheckResult.signedIn === true) {
+    // Workaround for reactfire bug: https://github.com/FirebaseExtended/reactfire/issues/495
+    if (!user) return <Loading />;
+    if (activeLibraryID)
+      return (
+        <Suspense fallback={<Loading />}>
+          <Routing />
+        </Suspense>
+      );
+    return <JoinLibrary />;
+  }
+
+  // User is not signed in
+  return <HomeRouting />;
+};
+
 // Have to use class because componentDidCatch is not supported in hooks
-class ErrorBoundary extends Component<{}, any> {
-  constructor(props: any) {
+class ErrorBoundary extends Component {
+  constructor(props: {}) {
     super(props);
     this.state = { error: null, errorInfo: null };
   }
@@ -237,13 +266,13 @@ class ErrorBoundary extends Component<{}, any> {
   }
 
   render() {
-    const { error, errorInfo } = this.state;
-    const { children } = this.props;
+    const { error, errorInfo } = this.state as any;
+    const { children } = this.props as any;
 
     if (errorInfo) {
       return (
-        <div>
-          <h2
+        <div style={{ margin: '4rem' }}>
+          <h1
             style={{
               display: 'flex',
               justifyContent: 'center',
@@ -251,7 +280,8 @@ class ErrorBoundary extends Component<{}, any> {
             }}
           >
             Something went wrong.
-          </h2>
+          </h1>
+          <br />
           <div
             style={{
               display: 'flex',
@@ -259,10 +289,12 @@ class ErrorBoundary extends Component<{}, any> {
               alignContent: 'center',
             }}
           >
-            <details style={{ whiteSpace: 'pre-wrap' }}>
-              {error && error.toString()}
-              <br />
-              {errorInfo.componentStack}
+            <details style={{ whiteSpace: 'pre-wrap', cursor: 'pointer' }}>
+              <div style={{ cursor: 'auto' }}>
+                <h3>{error && error.toString()}</h3>
+                <br />
+                {errorInfo.componentStack}
+              </div>
             </details>
           </div>
           <br />
@@ -275,7 +307,7 @@ class ErrorBoundary extends Component<{}, any> {
             }}
           >
             <a
-              href="https://github.com/epodol/bsclibrary"
+              href="https://github.com/epodol/bsclibrary/issues"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -294,7 +326,9 @@ const App = () => (
   <ErrorBoundary>
     <Suspense fallback={<Loading />}>
       <FirebaseAppProvider firebaseConfig={firebaseConfig} suspense>
-        <AppWithFirebase />
+        <Suspense fallback={<Loading />}>
+          <AppWithFirebase />
+        </Suspense>
       </FirebaseAppProvider>
     </Suspense>
   </ErrorBoundary>

@@ -2,6 +2,10 @@ import { condition, status } from '../types/Copy';
 
 export default interface checkinBookData {
   /**
+   * Firestore id of the library
+   */
+  libraryID: string;
+  /**
    * Firestore id of the book
    */
   bookID: string;
@@ -29,7 +33,7 @@ export interface checkinBookResult {
    */
   userID: string;
   /**
-   * If the book was returned overdue
+   * The difference in condition between the copy when it was checked in and when it was checked out. (conditionIn - conditionOut)
    */
-  overdue: boolean;
+  conditionDiff: number;
 }
