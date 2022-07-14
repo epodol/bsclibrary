@@ -71,4 +71,8 @@ export interface volumeInfo {
    * The book's title.
    */
   title: string;
+  /**
+   * The call number of the book.
+   */
+  callNumber: string;
 }

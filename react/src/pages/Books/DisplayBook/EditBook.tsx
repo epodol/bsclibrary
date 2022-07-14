@@ -35,6 +35,7 @@ const EditBook = ({
     image: yup.string().url(),
     isbn10: yup.string(),
     isbn13: yup.string(),
+    callNumber: yup.string(),
     subtitle: yup.string(),
     title: yup.string().required('Books must have a title'),
   });
@@ -55,6 +56,7 @@ const EditBook = ({
           image: volumeInfo.image || '',
           isbn10: volumeInfo.isbn10 || '',
           isbn13: volumeInfo.isbn13 || '',
+          callNumber: volumeInfo.callNumber || '',
           subtitle: volumeInfo.subtitle || '',
           title: volumeInfo.title || '',
         }}
@@ -70,6 +72,7 @@ const EditBook = ({
               image: values.image === '' ? null : values.image.trim(),
               isbn10: values.isbn10.trim(),
               isbn13: values.isbn13.trim(),
+              callNumber: values.callNumber.trim(),
               subtitle: values.subtitle.trim(),
               title: values.title.trim(),
             },
@@ -118,6 +121,7 @@ const EditBook = ({
               label="Title"
               value={values.title}
               onChange={handleChange}
+              sx={{ marginBlock: '1rem' }}
             />
             <TextField
               id="subtitle"
@@ -128,9 +132,8 @@ const EditBook = ({
               label="Subtitle"
               value={values.subtitle}
               onChange={handleChange}
+              sx={{ marginBlock: '1rem' }}
             />
-            <br />
-            <br />
             <TextField
               id="description"
               multiline
@@ -141,9 +144,8 @@ const EditBook = ({
               label="Description"
               value={values.description}
               onChange={handleChange}
+              sx={{ marginBlock: '1rem' }}
             />
-            <br />
-            <br />
             <TextField
               id="image"
               type="text"
@@ -153,9 +155,8 @@ const EditBook = ({
               label="Image URL"
               value={values.image}
               onChange={handleChange}
+              sx={{ marginBlock: '1rem' }}
             />
-            <br />
-            <br />
             <FieldArray
               name="authors"
               render={(arrayHelpers) => (
@@ -187,6 +188,7 @@ const EditBook = ({
                       }
                     }
                   }}
+                  sx={{ marginBlock: '1rem' }}
                 />
               )}
             />
@@ -221,6 +223,7 @@ const EditBook = ({
                       }
                     }
                   }}
+                  sx={{ marginBlock: '1rem' }}
                 />
               )}
             />
@@ -228,17 +231,34 @@ const EditBook = ({
               id="isbn10"
               type="text"
               error={!!errors.isbn10}
+              helperText={errors.isbn10}
+              fullWidth
               label="ISBN-10"
               value={values.isbn10}
               onChange={handleChange}
+              sx={{ marginBlock: '1rem' }}
             />
             <TextField
               id="isbn13"
               type="text"
               error={!!errors.isbn13}
+              helperText={errors.isbn13}
+              fullWidth
               label="ISBN-13"
               value={values.isbn13}
               onChange={handleChange}
+              sx={{ marginBlock: '1rem' }}
+            />
+            <TextField
+              id="callNumber"
+              type="text"
+              error={!!errors.callNumber}
+              helperText={errors.callNumber}
+              fullWidth
+              label="Call Number"
+              value={values.callNumber}
+              onChange={handleChange}
+              sx={{ marginBlock: '1rem' }}
             />
             <hr className="hr-dark" />
             <div className="text-center mt-4 black-text">
