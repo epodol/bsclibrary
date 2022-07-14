@@ -5,8 +5,5 @@
   },
   "dependencies": {
     "firebase-admin": "^11.0.0"
-  },
-  "devDependencies": {
-    "jest": "^28.1.2"
   }
 }

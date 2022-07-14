@@ -22,6 +22,9 @@ import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
 import { doc } from 'firebase/firestore';
 import Library from '@common/types/Library';
 import Layout from 'src/components/Layout';
+import User from '@common/types/User';
+import About from 'src/pages/CustomPage/About';
+import Contribute from 'src/pages/CustomPage/Contribute';
 
 const LibraryHome = lazy(() => import('src/pages/LibraryHome'));
 const JoinLibrary = lazy(() => import('src/pages/JoinLibrary'));
@@ -67,6 +70,10 @@ const Routing = () => {
     doc(firestore, 'libraries', activeLibraryID)
   ).data as Library;
 
+  const userDoc: User = useFirestoreDocData(
+    doc(firestore, 'libraries', activeLibraryID, 'users', user.uid)
+  ).data as User;
+
   const UnknownPage = () => {
     useEffect(() => {
       NotificationHandler.addNotification({
@@ -90,17 +97,33 @@ const Routing = () => {
           <Route
             index
             element={
-              <Page title="BASIS Scottsdale Library">
-                <LibraryHome />
-              </Page>
+              userDoc ? (
+                <Page title="BASIS Scottsdale Library">
+                  <LibraryHome />
+                </Page>
+              ) : (
+                <Page title="Join - BASIS Scottsdale Library">
+                  <JoinLibrary />
+                </Page>
+              )
             }
           />
           <Route
-            path="join"
+            path="about"
             element={
               <Suspense fallback={<Loading />}>
-                <Page title="Join Library">
-                  <JoinLibrary />
+                <Page title="About - BASIS Scottsdale Library">
+                  <About />
+                </Page>
+              </Suspense>
+            }
+          />
+          <Route
+            path="contribute"
+            element={
+              <Suspense fallback={<Loading />}>
+                <Page title="Contribute - BASIS Scottsdale Library">
+                  <Contribute />
                 </Page>
               </Suspense>
             }
@@ -108,110 +131,121 @@ const Routing = () => {
           <Route
             path="account"
             element={
-              <Suspense fallback={<Loading />}>
-                <Page title="Account – BASIS Scottsdale Library">
+              userDoc ? (
+                <Page title="Account - BASIS Scottsdale Library">
                   <Account />
                 </Page>
-              </Suspense>
-            }
-          />
-          <Route
-            path="books"
-            element={
-              <Suspense fallback={<Loading />}>
-                <Page title="Books – BASIS Scottsdale Library">
-                  <Books />
+              ) : (
+                <Page title="Join - BASIS Scottsdale Library">
+                  <JoinLibrary />
                 </Page>
-              </Suspense>
+              )
             }
           />
-          <Route
-            path="books/:id"
-            element={
-              <Suspense fallback={<Loading />}>
-                <Page title="View Book – BASIS Scottsdale Library">
-                  <DisplayBook />
-                </Page>
-              </Suspense>
-            }
-          />
-          {(libraryDoc.userPermissions.CHECK_OUT.includes(user.uid) ||
-            libraryDoc.ownerUserID === user.uid) && (
-            <Route
-              path="checkout"
-              element={
-                <Suspense fallback={<Loading />}>
-                  <Page title="Check Out – BASIS Scottsdale Library">
-                    <CheckOut />
-                  </Page>
-                </Suspense>
-              }
-            />
-          )}
-          {(libraryDoc.userPermissions.CHECK_IN.includes(user.uid) ||
-            libraryDoc.ownerUserID === user.uid) && (
-            <Route
-              path="checkin"
-              element={
-                <Suspense fallback={<Loading />}>
-                  <Page title="Check In – BASIS Scottsdale Library">
-                    <CheckIn />
-                  </Page>
-                </Suspense>
-              }
-            />
-          )}
-          {(libraryDoc.userPermissions.MANAGE_CHECKOUTS.includes(user.uid) ||
-            libraryDoc.ownerUserID === user.uid) && (
+          {userDoc && (
             <>
               <Route
-                path="checkouts"
+                path="books"
                 element={
                   <Suspense fallback={<Loading />}>
-                    <Page title="Manage Checkouts – BASIS Scottsdale Library">
-                      <CheckOuts />
+                    <Page title="Books - BASIS Scottsdale Library">
+                      <Books />
                     </Page>
                   </Suspense>
                 }
               />
               <Route
-                path="checkouts/:id"
+                path="books/:id"
                 element={
                   <Suspense fallback={<Loading />}>
-                    <Page title="Manage Checkouts – BASIS Scottsdale Library">
-                      <CheckOutDialog />
+                    <Page title="View Book - BASIS Scottsdale Library">
+                      <DisplayBook />
                     </Page>
                   </Suspense>
                 }
               />
-            </>
-          )}
-          {(libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
-            libraryDoc.ownerUserID === user.uid) && (
-            <>
-              <Route
-                path="users"
-                element={
-                  <Suspense fallback={<Loading />}>
-                    <Page title="Users Checkouts – BASIS Scottsdale Library">
-                      <Users />
-                    </Page>
-                  </Suspense>
-                }
-              />
-              <Route
-                path="users/:id"
-                element={
-                  <Suspense fallback={<Loading />}>
-                    <Page title="Display User – BASIS Scottsdale Library">
-                      <DisplayUser />
-                    </Page>
-                  </Suspense>
-                }
-              />
+              {(libraryDoc.userPermissions.CHECK_OUT.includes(user.uid) ||
+                libraryDoc.ownerUserID === user.uid) && (
+                <Route
+                  path="checkout"
+                  element={
+                    <Suspense fallback={<Loading />}>
+                      <Page title="Check Out - BASIS Scottsdale Library">
+                        <CheckOut />
+                      </Page>
+                    </Suspense>
+                  }
+                />
+              )}
+              {(libraryDoc.userPermissions.CHECK_IN.includes(user.uid) ||
+                libraryDoc.ownerUserID === user.uid) && (
+                <Route
+                  path="checkin"
+                  element={
+                    <Suspense fallback={<Loading />}>
+                      <Page title="Check In - BASIS Scottsdale Library">
+                        <CheckIn />
+                      </Page>
+                    </Suspense>
+                  }
+                />
+              )}
+              {(libraryDoc.userPermissions.MANAGE_CHECKOUTS.includes(
+                user.uid
+              ) ||
+                libraryDoc.ownerUserID === user.uid) && (
+                <>
+                  <Route
+                    path="checkouts"
+                    element={
+                      <Suspense fallback={<Loading />}>
+                        <Page title="Manage Checkouts - BASIS Scottsdale Library">
+                          <CheckOuts />
+                        </Page>
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="checkouts/:id"
+                    element={
+                      <Suspense fallback={<Loading />}>
+                        <Page title="Manage Checkouts - BASIS Scottsdale Library">
+                          <CheckOutDialog />
+                        </Page>
+                      </Suspense>
+                    }
+                  />
+                </>
+              )}
+              {(libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
+                libraryDoc.ownerUserID === user.uid) && (
+                <>
+                  <Route
+                    path="users"
+                    element={
+                      <Suspense fallback={<Loading />}>
+                        <Page title="Users Checkouts - BASIS Scottsdale Library">
+                          <Users />
+                        </Page>
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="users/:id"
+                    element={
+                      <Suspense fallback={<Loading />}>
+                        <Page title="Display User - BASIS Scottsdale Library">
+                          <DisplayUser />
+                        </Page>
+                      </Suspense>
+                    }
+                  />
+                </>
+              )}
             </>
           )}
           <Route path="/signin" element={<Navigate to="/" />} />
+          <Route path="/create-account" element={<Navigate to="/" />} />
           <Route path="*" element={<UnknownPage />} />
         </Route>
       </Routes>
