@@ -23,6 +23,7 @@ import {
   indexedDBLocalPersistence,
   browserSessionPersistence,
 } from 'firebase/auth';
+import { Link } from 'react-router-dom';
 
 const SignIn = () => {
   const SignInSchema = yup.object().shape({
@@ -48,7 +49,38 @@ const SignIn = () => {
 
   return (
     <div>
-      <Paper style={{ margin: '5rem', padding: '2rem' }}>
+      <Paper
+        sx={{
+          marginTop: {
+            xs: '1rem',
+            sm: '1rem',
+            md: '2rem',
+            lg: '4rem',
+            xl: '7rem',
+          },
+          marginLeft: {
+            xs: '1rem',
+            sm: '2rem',
+            md: '15rem',
+            lg: '25rem',
+            xl: '35rem',
+          },
+          marginRight: {
+            xs: '1rem',
+            sm: '2rem',
+            md: '15rem',
+            lg: '25rem',
+            xl: '35rem',
+          },
+          padding: {
+            xs: '1rem',
+            sm: '1rem',
+            md: '1rem',
+            lg: '2rem',
+            xl: '3rem',
+          },
+        }}
+      >
         {displaySignInForm && (
           <Formik
             initialValues={{
@@ -97,10 +129,10 @@ const SignIn = () => {
             {({ values, errors, isSubmitting, handleChange, submitCount }) => (
               <Form noValidate>
                 <h1 style={{ textAlign: 'center' }}>Sign In</h1>
-                <p>
+                <p style={{ textAlign: 'center' }}>
                   Welcome! If you already have registered for an account, please
-                  sign in here. If you do not have an account, please create one
-                  first.
+                  sign in here. If you do not have an account, please{' '}
+                  <Link to="/create-account">click here to create one.</Link>
                 </p>
                 <TextField
                   id="email"
@@ -155,7 +187,7 @@ const SignIn = () => {
                   variant="contained"
                   disabled={isSubmitting}
                 >
-                  {!isSubmitting && <p className="white-text m-0">Sign In</p>}
+                  {!isSubmitting && <p className="m-0">Sign In</p>}
                   {isSubmitting && (
                     <div className="spinner-border" role="status">
                       <span className="sr-only">Loading...</span>
@@ -264,9 +296,7 @@ const SignIn = () => {
                     variant="contained"
                     disabled={isSubmitting}
                   >
-                    {!isSubmitting && (
-                      <p className="white-text m-0">Reset Password</p>
-                    )}
+                    {!isSubmitting && <p className="m-0">Reset Password</p>}
                     {isSubmitting && (
                       <div className="spinner-border" role="status">
                         <span className="sr-only">Loading...</span>

@@ -80,7 +80,7 @@ const FindUserTable = ({
                   </TableCell>
                   <TableCell>{userInfo.email}</TableCell>
                   <TableCell>
-                    {userInfo.approvedTime?.toDate().toLocaleDateString()}
+                    {userInfo.approvedAt?.toDate().toLocaleDateString()}
                   </TableCell>
                   <TableCell>
                     {userInfo.expiration?.toDate().toLocaleDateString()}

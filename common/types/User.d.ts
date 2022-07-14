@@ -9,10 +9,6 @@ export default interface User {
    */
   activeCheckouts: string[];
   /**
-   * When the user was approved
-   */
-  approvedTime: Timestamp;
-  /**
    * The maximum number of checkouts the user is allowed to have
    */
   maxCheckouts: number;
@@ -57,7 +53,11 @@ export default interface User {
    */
   updatedAt: Timestamp | null;
   /**
-   * The Firestore Timestamp of the date and time this user was created.
+   * The Firestore ID of the user who approved this user.
    */
-  createdAt: Timestamp | null;
+  approvedBy: string;
+  /**
+   * When the user was approved
+   */
+  approvedAt: Timestamp | null;
 }

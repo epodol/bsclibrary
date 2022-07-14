@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Tabs, Tab, Box, Paper, Container } from '@mui/material';
+import { Tabs, Tab, Box, Container, Paper } from '@mui/material';
 
-import Donate from 'src/pages/Contribute/Donate';
-import Volunteer from 'src/pages/Contribute/Volunteer';
-import Code from 'src/pages/Contribute/Code';
+import Introduction from 'src/pages/CustomPage/About/Introduction';
+import DueDates from 'src/pages/CustomPage/About/DueDates';
+import MissingBooks from 'src/pages/CustomPage/About/MissingBooks';
+import Renewing from 'src/pages/CustomPage/About/Renewing';
 
 interface TabPanelProps {
   children: React.ReactNode;
@@ -28,12 +29,12 @@ const TabPanel = ({ children, value, index, ...other }: TabPanelProps) => (
   </div>
 );
 
-const Contribute = () => {
+const About = () => {
   const [value, setValue] = useState(0);
 
   return (
     <>
-      <h1 className="text-center m-4">Contribute</h1>
+      <h1 className="text-center m-4">About</h1>
       <Container>
         <Paper sx={{ flexGrow: 1, display: 'flex' }}>
           <div>
@@ -46,19 +47,23 @@ const Contribute = () => {
               style={{ overflowWrap: 'anywhere' }}
               allowScrollButtonsMobile
             >
-              <Tab wrapped label="Donate" />
-              <Tab wrapped label="Volunteer" />
-              <Tab wrapped label="Code" />
+              <Tab wrapped label="Introduction" />
+              <Tab wrapped label="Due Dates" />
+              <Tab wrapped label="Missing Books" />
+              <Tab wrapped label="Renewing" />
             </Tabs>
           </div>
           <TabPanel value={value} index={0}>
-            <Donate />
+            <Introduction />
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <Volunteer />
+            <DueDates />
           </TabPanel>
           <TabPanel value={value} index={2}>
-            <Code />
+            <MissingBooks />
+          </TabPanel>
+          <TabPanel value={value} index={3}>
+            <Renewing />
           </TabPanel>
         </Paper>
       </Container>
@@ -66,4 +71,4 @@ const Contribute = () => {
   );
 };
 
-export default Contribute;
+export default About;

@@ -3,7 +3,6 @@ import {
   Button,
   AppBar,
   Toolbar,
-  Avatar,
   IconButton,
   Menu,
   MenuItem,
@@ -11,6 +10,7 @@ import {
   ButtonBase,
 } from '@mui/material';
 import {
+  AccountCircle,
   Brightness7,
   ExitToApp,
   Home,
@@ -32,20 +32,86 @@ import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
 import { doc } from 'firebase/firestore';
 import User from '@common/types/User';
 
-const NavBarItems = () => {
+const AuthNavBarItems = () => {
   const location = useLocation();
   const navigate = useNavigate();
-
   const activeLibraryID = useContext(ActiveLibraryID);
   if (!activeLibraryID) throw new Error('No active library found!');
 
   const firestore = useFirestore();
 
   const user = useUser().data;
+  if (!user) throw new Error('No user!');
+
+  const userDoc: User = useFirestoreDocData(
+    doc(firestore, 'libraries', activeLibraryID, 'users', user.uid)
+  ).data as User;
 
   const libraryDoc: Library = useFirestoreDocData(
     doc(firestore, 'libraries', activeLibraryID)
   ).data as Library;
+
+  if (!userDoc) return <></>;
+
+  return (
+    <>
+      <Button
+        color="inherit"
+        disabled={location.pathname === '/books'}
+        onClick={() => navigate('/books')}
+      >
+        Books
+      </Button>
+      {libraryDoc.userPermissions.CHECK_OUT.includes(user.uid) ||
+        (libraryDoc.ownerUserID === user.uid && (
+          <Button
+            color="inherit"
+            disabled={location.pathname === '/checkout'}
+            onClick={() => navigate('/checkout')}
+          >
+            Check Out
+          </Button>
+        ))}
+      {libraryDoc.userPermissions.CHECK_IN.includes(user.uid) ||
+        (libraryDoc.ownerUserID === user.uid && (
+          <Button
+            color="inherit"
+            disabled={location.pathname === '/checkin'}
+            onClick={() => navigate('/checkin')}
+          >
+            Check In
+          </Button>
+        ))}
+      {libraryDoc.userPermissions.MANAGE_CHECKOUTS.includes(user.uid) ||
+        (libraryDoc.ownerUserID === user.uid && (
+          <Button
+            color="inherit"
+            disabled={location.pathname === '/checkouts'}
+            onClick={() => navigate('/checkouts')}
+          >
+            Manage Checkouts
+          </Button>
+        ))}
+      {libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
+        (libraryDoc.ownerUserID === user.uid && (
+          <Button
+            color="inherit"
+            disabled={location.pathname === '/users'}
+            onClick={() => navigate('/users')}
+          >
+            Users
+          </Button>
+        ))}
+    </>
+  );
+};
+
+const NavBarItems = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const user = useUser().data;
+
   return (
     <div style={{ marginLeft: 5 }}>
       <Button
@@ -63,74 +129,18 @@ const NavBarItems = () => {
         Contribute
       </Button>
 
-      {user && (
-        <>
-          <Button
-            color="inherit"
-            disabled={location.pathname === '/books'}
-            onClick={() => navigate('/books')}
-          >
-            Books
-          </Button>
-          {libraryDoc.userPermissions.CHECK_OUT.includes(user.uid) ||
-            (libraryDoc.ownerUserID === user.uid && (
-              <Button
-                color="inherit"
-                disabled={location.pathname === '/checkout'}
-                onClick={() => navigate('/checkout')}
-              >
-                Check Out
-              </Button>
-            ))}
-          {libraryDoc.userPermissions.CHECK_IN.includes(user.uid) ||
-            (libraryDoc.ownerUserID === user.uid && (
-              <Button
-                color="inherit"
-                disabled={location.pathname === '/checkin'}
-                onClick={() => navigate('/checkin')}
-              >
-                Check In
-              </Button>
-            ))}
-          {libraryDoc.userPermissions.MANAGE_CHECKOUTS.includes(user.uid) ||
-            (libraryDoc.ownerUserID === user.uid && (
-              <Button
-                color="inherit"
-                disabled={location.pathname === '/checkouts'}
-                onClick={() => navigate('/checkouts')}
-              >
-                Manage Checkouts
-              </Button>
-            ))}
-          {libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
-            (libraryDoc.ownerUserID === user.uid && (
-              <Button
-                color="inherit"
-                disabled={location.pathname === '/users'}
-                onClick={() => navigate('/users')}
-              >
-                Users
-              </Button>
-            ))}
-        </>
-      )}
+      {user && <AuthNavBarItems />}
     </div>
   );
 };
 
 const AuthMenuItems = () => {
   const auth = useAuth();
-  const user = useUser().data;
 
   const navigate = useNavigate();
 
-  const firestore = useFirestore();
   const activeLibraryID = useContext(ActiveLibraryID);
   if (!activeLibraryID) throw new Error('No active library found!');
-
-  const userDoc = useFirestoreDocData(
-    doc(firestore, `libraries/${activeLibraryID}/users/${user?.uid}`)
-  ).data as unknown as User;
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -149,13 +159,14 @@ const AuthMenuItems = () => {
     <>
       {/* <ChooseLibrary open={chooseLibraryOpen} setOpen={setChooseLibraryOpen} /> */}
       <IconButton onClick={handleMenu} color="inherit" size="large">
-        <Avatar
+        {/* <Avatar
           alt={`${userDoc.firstName || ''} ${userDoc.lastName || ''}`}
           src={user?.photoURL ?? ''}
           variant="rounded"
         >
           {`${userDoc.firstName?.slice(0, 1)}${userDoc.lastName?.slice(0, 1)}`}
-        </Avatar>
+        </Avatar> */}
+        <AccountCircle />
       </IconButton>
       <Menu anchorEl={anchorEl} keepMounted open={open} onClose={handleClose}>
         <MenuItem
@@ -173,6 +184,7 @@ const AuthMenuItems = () => {
             );
             setAnchorEl(null);
           }}
+          disabled
         >
           <LocalLibrary /> Libraries
         </MenuItem>

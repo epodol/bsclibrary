@@ -106,7 +106,13 @@ const UserInfo = ({ user }: { user: User }) => {
       </Grid>
       <br />
       <div className="text-center">
-        Created: {user?.createdAt?.toDate()?.toLocaleString() || 'Loading...'}
+        <Link
+          to={`/users/${user.approvedBy}`}
+          style={{ color: 'inherit', textDecoration: 'inherit' }}
+        >
+          Approved:{' '}
+          {user?.approvedAt?.toDate()?.toLocaleString() || 'Loading...'}
+        </Link>
         <br />
         <Link
           to={`/users/${user.updatedBy}`}
