@@ -80,20 +80,24 @@ const ViewBook = ({ volumeInfo }: { volumeInfo: volumeInfoInterface }) => {
             </h3>
           )}
         <h3>
-          {typeof volumeInfo.isbn10 !== 'undefined' &&
-            volumeInfo?.isbn10?.length > 0 && (
-              <>
-                <>ISBN-10:</>
-                <Chip className="mx-1" label={volumeInfo.isbn10} />
-              </>
-            )}
-          {typeof volumeInfo.isbn13 !== 'undefined' &&
-            volumeInfo?.isbn13?.length > 0 && (
-              <>
-                <>ISBN-13:</>
-                <Chip className="mx-1" label={volumeInfo.isbn13} />
-              </>
-            )}
+          {volumeInfo.isbn10 && volumeInfo?.isbn10?.length > 0 && (
+            <>
+              <>ISBN-10:</>
+              <Chip className="mx-1" label={volumeInfo.isbn10} />
+            </>
+          )}
+          {volumeInfo.isbn13 && volumeInfo?.isbn13?.length > 0 && (
+            <>
+              <>ISBN-13:</>
+              <Chip className="mx-1" label={volumeInfo.isbn13} />
+            </>
+          )}
+          {volumeInfo.callNumber && volumeInfo?.callNumber?.length > 0 && (
+            <>
+              <>Call Number:</>
+              <Chip className="mx-1" label={volumeInfo.callNumber} />
+            </>
+          )}
         </h3>
       </div>
     </>

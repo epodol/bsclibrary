@@ -219,6 +219,7 @@ const TableBody = () => {
                 image,
                 isbn10,
                 isbn13,
+                callNumber,
               } = '',
               volumeInfo: { authors, genres } = [],
             }) => (
@@ -238,6 +239,7 @@ const TableBody = () => {
                 image={image}
                 isbn10={isbn10}
                 isbn13={isbn13}
+                callNumber={callNumber}
               />
             )
           )}

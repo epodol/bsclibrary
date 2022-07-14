@@ -31,6 +31,7 @@ const Book = ({
   isbn10,
   isbn13,
   image,
+  callNumber,
 }: {
   id: string;
   title: string;
@@ -46,6 +47,7 @@ const Book = ({
   isbn10: string;
   isbn13: string;
   image: string;
+  callNumber: string;
 }) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -132,7 +134,7 @@ const Book = ({
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Grid container spacing={2}>
-              {image !== '' && (
+              {image && image !== '' && (
                 <Grid item xs={1}>
                   <img
                     src={image}
@@ -148,9 +150,11 @@ const Book = ({
                 <div style={{ whiteSpace: 'pre-line' }}>{description}</div>
               </Grid>
               <Grid item xs={3}>
-                ISBN-10: {isbn10}
+                {isbn10 && `ISBN-10: ${isbn10}`}
                 <br />
-                ISBN-13: {isbn13}
+                {isbn13 && `ISBN-13: ${isbn13}`}
+                <br />
+                {callNumber && `Call Number: ${callNumber}`}
               </Grid>
             </Grid>
           </Collapse>

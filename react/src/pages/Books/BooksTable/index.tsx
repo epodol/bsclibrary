@@ -72,6 +72,7 @@ const BooksTable = () => {
                           isbn13: '',
                           subtitle: '',
                           title: '',
+                          callNumber: '',
                         },
                         updatedBy: user.uid,
                         updatedAt: serverTimestamp() as Timestamp,
