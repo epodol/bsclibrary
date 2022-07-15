@@ -42,16 +42,9 @@ const ViewBook = ({ volumeInfo }: { volumeInfo: volumeInfoInterface }) => {
                   key={author.toString()}
                   style={{ cursor: 'pointer', marginLeft: 3, marginRight: 3 }}
                   label={author}
-                  onClick={() =>
-                    navigate('/books', {
-                      state: {
-                        query: {
-                          field: 'authors',
-                          search: author,
-                        },
-                      },
-                    })
-                  }
+                  onClick={() => {
+                    navigate(`/books?searchBy=authors&search=${author}`);
+                  }}
                 />
               ))}
             </h3>
@@ -66,14 +59,7 @@ const ViewBook = ({ volumeInfo }: { volumeInfo: volumeInfoInterface }) => {
                   style={{ cursor: 'pointer', marginLeft: 3, marginRight: 3 }}
                   label={genre}
                   onClick={() =>
-                    navigate('/books', {
-                      state: {
-                        query: {
-                          field: 'genres',
-                          search: genre,
-                        },
-                      },
-                    })
+                    navigate(`/books?searchBy=genres&search=${genre}`)
                   }
                 />
               ))}

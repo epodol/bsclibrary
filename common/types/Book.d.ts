@@ -11,7 +11,7 @@ export default interface Book {
   /**
    * The total number of copies of this book in the library.
    */
-  copiesCount: number;
+  copiesTotal: number;
   /**
    * Weather or not this book will appear in the library's featured books list.
    */

@@ -77,9 +77,10 @@ const Footer = () => (
                 rel="noopener noreferrer"
                 style={{ color: '#fff', textDecoration: 'none' }}
               >
-                React,
+                React
               </a>
-            </Tooltip>{' '}
+            </Tooltip>
+            {' and '}
             <Tooltip
               className="text-center"
               title="Firebase is a backend service from Google Cloud"
@@ -91,22 +92,7 @@ const Footer = () => (
                 rel="noopener noreferrer"
                 style={{ color: '#fff', textDecoration: 'none' }}
               >
-                Firebase
-              </a>
-            </Tooltip>
-            {', and '}
-            <Tooltip
-              className="text-center"
-              title="Algolia is a full text search API"
-              placement="top"
-              style={{ color: '#fff', textDecoration: 'none' }}
-            >
-              <a
-                href="https://www.algolia.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Algolia.
+                Firebase.
               </a>
             </Tooltip>
           </>

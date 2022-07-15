@@ -38,3 +38,8 @@ a {
 .page {
   min-height: calc(100vh - 168px);
 }
+
+p {
+  margin-top: auto;
+  margin-bottom: auto;
+}
