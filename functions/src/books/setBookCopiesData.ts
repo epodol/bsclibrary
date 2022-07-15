@@ -29,7 +29,7 @@ const setBookCopiesData = functions
         newVal.copiesAvailable = increment(-1);
       if (afterStatus === 4)
         // Reduce Available -1 Reduce Count -1
-        newVal.copiesCount = increment(-1);
+        newVal.copiesTotal = increment(-1);
       newVal.copiesAvailable = increment(-1);
     }
     if (beforeStatus === 2 || beforeStatus === 3) {
@@ -38,16 +38,16 @@ const setBookCopiesData = functions
         newVal.copiesAvailable = increment(1);
       if (afterStatus === 4)
         // Reduce Count -1
-        newVal.copiesCount = increment(-1);
+        newVal.copiesTotal = increment(-1);
     }
     if (beforeStatus === 4) {
       if (afterStatus === 0 || afterStatus === 1)
         // Add Available +1 Add Count +1
         newVal.copiesAvailable = increment(1);
-      newVal.copiesCount = increment(1);
+      newVal.copiesTotal = increment(1);
       if (afterStatus === 2 || afterStatus === 3)
         // Add Count +1
-        newVal.copiesCount = increment(1);
+        newVal.copiesTotal = increment(1);
     }
 
     return after.ref?.parent?.parent?.update(newVal);

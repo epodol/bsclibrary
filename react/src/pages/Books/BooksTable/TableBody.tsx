@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   Table,
   TableCell,
@@ -15,160 +15,223 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  Tooltip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
-import { HelpOutline, Search } from '@mui/icons-material';
+import { Search } from '@mui/icons-material';
 
-import { useNavigate, useLocation } from 'react-router-dom';
-import algoliasearch from 'algoliasearch';
+import { useSearchParams } from 'react-router-dom';
 
 import {
   collection,
+  limit,
+  orderBy,
   query as firestoreQuery,
   where,
-  limit,
-  getDocs,
 } from 'firebase/firestore';
-import { useFirestore } from 'reactfire';
+import { useFirestore, useFirestoreCollectionData } from 'reactfire';
 import Book from 'src/pages/Books/BooksTable/Book';
 import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
+import BookType from '@common/types/Book';
+import WithID from '@common/types/util/WithID';
 
-const isDev = process.env.NODE_ENV !== 'production';
+const searchByOptions = [
+  { id: 'title', label: 'Title', type: 'textSearch' },
+  { id: 'subtitle', label: 'Subtitle', type: 'textSearch' },
+  { id: 'authors', label: 'Author', type: 'arrayContains' },
+  { id: 'genres', label: 'Genre', type: 'arrayContains' },
+  { id: 'isbn10', label: 'ISBN-10', type: 'textSearch' },
+  { id: 'isbn13', label: 'ISBN-13', type: 'textSearch' },
+  { id: 'callNumber', label: 'Call Number', type: 'textSearch' },
+];
 
-const TableBody = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
+const useBuildBooksQuery = (searchParams: URLSearchParams) => {
   const activeLibraryID = useContext(ActiveLibraryID);
-  if (!activeLibraryID) throw new Error('No active library found!');
+  if (!activeLibraryID) throw new Error('No active library ID!');
 
   const firestore = useFirestore();
 
-  const [query, setQuery] = useState({
-    search: (location?.state as any)?.query?.search || '',
-    limit: 30,
-  });
-  const [search, setSearch] = useState('');
+  let query = firestoreQuery(
+    collection(firestore, 'libraries', activeLibraryID, 'books')
+  );
 
-  const [books, setBooks] = useState<any[]>([]);
+  const search = searchParams.get('search');
+  const searchBy = searchParams.get('searchBy') || 'title';
+  const rowsPerPage = Number(searchParams.get('rowsPerPage')) || 10;
+
+  if (search && search.length > 0) {
+    if (searchByOptions.map((option) => option.id).includes(searchBy)) {
+      if (
+        searchByOptions.find((option) => option.id === searchBy)?.type ===
+        'textSearch'
+      ) {
+        query = firestoreQuery(
+          query,
+          where(`volumeInfo.${searchBy}`, '>=', search),
+          where(`volumeInfo.${searchBy}`, '<=', `${search}\uf8ff`)
+        );
+      } else if (
+        searchByOptions.find((option) => option.id === searchBy)?.type ===
+        'arrayContains'
+      ) {
+        query = firestoreQuery(
+          query,
+          where(
+            `volumeInfo.${searchBy}`,
+            'array-contains-any',
+            search.split(/[,\s]+/).map((word) => word.trim())
+          )
+        );
+      }
+    } else {
+      query = firestoreQuery(
+        query,
+        where('title', '>=', search),
+        where('title', '<=', `${search}\uf8ff`)
+      );
+    }
+  } else {
+    query = firestoreQuery(
+      query,
+      orderBy('featured', 'desc'),
+      orderBy('copiesAvailable', 'desc'),
+      orderBy('copiesTotal', 'desc')
+    );
+  }
+
+  query = firestoreQuery(query, limit(rowsPerPage + 1));
+
+  return query;
+};
+
+const TableBody = () => {
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library found!');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [search, setSearch] = useState(searchParams.get('search') || '');
+
+  useEffect(() => {
+    setSearch(searchParams.get('search') || '');
+  }, [searchParams]);
 
   const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false);
-  useEffect(() => {
-    let isSubscribed = true;
-    navigate(location.pathname, { replace: true });
 
-    if (
-      !isDev &&
-      process.env.REACT_APP_ALGOLIA_APP_ID &&
-      process.env.REACT_APP_ALGOLIA_API_KEY
-    ) {
-      // ONLY EXECUTED IN PRODUCTION
-      algoliasearch(
-        process.env.REACT_APP_ALGOLIA_APP_ID,
-        process.env.REACT_APP_ALGOLIA_API_KEY
-      )
-        .initIndex('books')
-        .search(query.search, { hitsPerPage: query.limit })
-        .then(({ hits }) => setBooks(hits));
-    } else {
-      // ONLY EXECUTED IN A DEVELOPMENT ENVIRONMENT
-      const booksRef = collection(
-        firestore,
-        'libraries',
-        activeLibraryID,
-        'books'
-      );
+  const query = useBuildBooksQuery(searchParams);
 
-      const ref =
-        query.search !== ''
-          ? firestoreQuery(
-              booksRef,
-              where('volumeInfo.title', '>=', query.search),
-              where('volumeInfo.title', '<=', `${query.search}~`),
-              limit(query.limit)
-            )
-          : firestoreQuery(booksRef, limit(query.limit));
-
-      const booksArray: any = [];
-      getDocs(ref).then((res) => {
-        res.docs.forEach((doc) =>
-          booksArray.push({ ...doc.data(), objectID: doc.id })
-        );
-        if (isSubscribed) setBooks(booksArray);
-      });
-    }
-    return () => {
-      isSubscribed = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [navigate, location.pathname, query, firestore]);
-
-  const searchRef = useRef(search);
-  searchRef.current = search;
-
-  const queryRef = useRef(query);
-  queryRef.current = query;
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (
-        search === searchRef.current &&
-        searchRef.current !== queryRef.current.search
-      ) {
-        setQuery({
-          search,
-          limit: queryRef.current.limit,
-        });
-      }
-    }, 1500);
-  }, [search]);
+  const books = useFirestoreCollectionData(query, {
+    idField: 'ID',
+  }).data as unknown as WithID<BookType>[];
 
   return (
     <div>
-      <div className="mx-auto px-auto">
+      <div
+        style={{
+          textAlign: 'center',
+          marginBlock: '2.5%',
+        }}
+      >
         <form
           onSubmit={(event) => {
             event.preventDefault();
-            if (search === query.search) return;
-            setQuery({
-              search,
-              limit: queryRef.current.limit,
-            });
+            if (search.length > 0) {
+              searchParams.set('search', search);
+              setSearchParams(searchParams);
+            } else {
+              searchParams.delete('search');
+              setSearchParams(searchParams);
+            }
           }}
         >
-          <div
-            style={{
-              padding: '15px 0px',
-              display: 'flex',
-              alignItems: 'center',
-            }}
+          <FormControl
+            sx={{ marginInline: 2, width: 160, marginBottom: '1rem' }}
           >
-            <TextField
-              label="Search our book collection"
-              value={search}
-              onInput={(event) => {
-                const target = event.target as HTMLTextAreaElement;
-                setSearch(target.value);
+            <InputLabel id="searchByLabel">Search by</InputLabel>
+            <Select
+              labelId="searchByLabel"
+              id="searchBy"
+              value={searchParams.get('searchBy') || 'title'}
+              label="Search by"
+              onChange={(e) => {
+                if (e.target.value) {
+                  searchParams.set('searchBy', e.target.value);
+                  setSearchParams(searchParams);
+                } else {
+                  searchParams.delete('searchBy');
+                  setSearchParams(searchParams);
+                }
               }}
-              autoFocus
-              fullWidth
-              InputProps={{
-                startAdornment: (
-                  <Tooltip title="Search our book collection by entering any part of the book's title, subtitle, author, genre, description, or ISBN. Search results powered by Algolia.">
-                    <HelpOutline style={{ marginRight: 10 }} />
-                  </Tooltip>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton type="submit" aria-label="search" size="large">
-                      <Search />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-                'aria-label': 'search our book collection',
+            >
+              {searchByOptions.map((option) => (
+                <MenuItem key={option.id} value={option.id}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <TextField
+            label="Search"
+            helperText={`Tip: Enter only the beginning of your search in its correct case. For example if you want to search for "A Wrinkle in Time" you should enter at least "A Wrinkle".`}
+            value={search}
+            onInput={(event) => {
+              const target = event.target as HTMLTextAreaElement;
+              setSearch(target.value);
+            }}
+            autoFocus
+            sx={{
+              width: {
+                xs: '95%',
+                sm: '90%',
+                md: '80%',
+                lg: '70%',
+                xl: '60%',
+              },
+              marginBottom: '1rem',
+            }}
+            fullWidth
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    type="submit"
+                    aria-label="search"
+                    size="large"
+                    color="primary"
+                  >
+                    <Search />
+                  </IconButton>
+                </InputAdornment>
+              ),
+              'aria-label': 'search our book collection',
+            }}
+          />
+          <FormControl
+            sx={{ marginInline: 2, width: 120, marginBottom: '1rem' }}
+          >
+            <InputLabel id="rowsPerPageLabel">Rows per page</InputLabel>
+            <Select
+              labelId="rowsPerPageLabel"
+              id="rowsPerPage"
+              label="Rows per page"
+              value={searchParams.get('rowsPerPage') || 10}
+              onChange={(e) => {
+                if (e.target.value && e.target.value === 10) {
+                  searchParams.delete('rowsPerPage');
+                  setSearchParams(searchParams);
+                } else if (e.target.value) {
+                  searchParams.set('rowsPerPage', String(e.target.value));
+                  setSearchParams(searchParams);
+                }
               }}
-            />
-          </div>
+            >
+              <MenuItem value={10}>10</MenuItem>
+              <MenuItem value={20}>20</MenuItem>
+              <MenuItem value={50}>50</MenuItem>
+              <MenuItem value={100}>100</MenuItem>
+            </Select>
+          </FormControl>
         </form>
       </div>
       <Dialog
@@ -177,87 +240,47 @@ const TableBody = () => {
       >
         <DialogTitle>Request a book</DialogTitle>
         <DialogContent>
-          <DialogContentText>This feature is coming soon.</DialogContentText>
+          <DialogContentText>
+            The BASIS Scottsdale Library is always looking for new books to add
+            to our collection. If there is a specific book you would like added,
+            feel free to send us an email at info@bsclibrary.net!
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setIsRequestDialogOpen(false)} color="primary">
-            Cancel
+            Close
           </Button>
-          <Button onClick={() => setIsRequestDialogOpen(false)} color="primary">
+          {/* <Button onClick={() => setIsRequestDialogOpen(false)} color="primary">
             Request
-          </Button>
+          </Button> */}
         </DialogActions>
       </Dialog>
       <Table stickyHeader>
         <caption style={{ padding: 0 }}>
           <div className="text-right">
             <Button onClick={() => setIsRequestDialogOpen(true)}>
-              Can&apos;t find the book you want? Request it here!
+              Can&apos;t find the book you want?
             </Button>
           </div>
         </caption>
         <TableHead>
           <TableRow>
             <TableCell padding="none" />
-            <TableCell className="h4">Title</TableCell>
+            <TableCell className="h4" size="medium">
+              Title
+            </TableCell>
             <TableCell className="h4">Authors</TableCell>
             <TableCell className="h4">Genres</TableCell>
             <TableCell className="h4">Availability</TableCell>
-            <TableCell padding="none" />
+            <TableCell padding="none" size="small" />
           </TableRow>
         </TableHead>
         <MUITableBody>
-          {books.map(
-            ({
-              objectID,
-              copiesCount = 0,
-              copiesAvailable = 0,
-              volumeInfo: {
-                title,
-                subtitle,
-                description,
-                image,
-                isbn10,
-                isbn13,
-                callNumber,
-              } = '',
-              volumeInfo: { authors, genres } = [],
-            }) => (
-              <Book
-                key={objectID}
-                id={objectID}
-                title={title}
-                subtitle={subtitle}
-                authors={authors}
-                genres={genres}
-                query={query}
-                setQuery={setQuery}
-                setSearch={setSearch}
-                copiesCount={copiesCount}
-                copiesAvailable={copiesAvailable}
-                description={description}
-                image={image}
-                isbn10={isbn10}
-                isbn13={isbn13}
-                callNumber={callNumber}
-              />
-            )
-          )}
+          {books.map((bookItem) => (
+            <Book key={bookItem.ID} book={bookItem} />
+          ))}
         </MUITableBody>
       </Table>
-      <div className="text-center">
-        <Button
-          disabled={books.length < query.limit}
-          onClick={() =>
-            setQuery({
-              search: query.search,
-              limit: query.limit + 5,
-            })
-          }
-        >
-          Load More
-        </Button>
-      </div>
     </div>
   );
 };

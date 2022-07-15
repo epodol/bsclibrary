@@ -79,7 +79,7 @@ const BooksTable = () => {
                         createdBy: user.uid,
                         createdAt: serverTimestamp() as Timestamp,
                         copiesAvailable: 0,
-                        copiesCount: 0,
+                        copiesTotal: 0,
                       };
                       addDoc(
                         collection(

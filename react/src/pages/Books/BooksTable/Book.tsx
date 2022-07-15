@@ -14,47 +14,18 @@ import {
   KeyboardArrowUp,
   KeyboardArrowDown,
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import BookType from '@common/types/Book';
+import WithID from '@common/types/util/WithID';
 
-const Book = ({
-  id,
-  title,
-  subtitle,
-  authors,
-  genres,
-  query,
-  setQuery,
-  setSearch,
-  copiesCount,
-  copiesAvailable,
-  description,
-  isbn10,
-  isbn13,
-  image,
-  callNumber,
-}: {
-  id: string;
-  title: string;
-  subtitle: string;
-  authors: string[];
-  genres: string[];
-  query: any;
-  setQuery: any;
-  setSearch: any;
-  copiesCount: number;
-  copiesAvailable: number;
-  description: string;
-  isbn10: string;
-  isbn13: string;
-  image: string;
-  callNumber: string;
-}) => {
+const Book = ({ book }: { book: WithID<BookType> }) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   return (
     <>
-      <TableRow key={id} className="font-weight-bold">
+      <TableRow key={book.ID} className="font-weight-bold">
         <TableCell padding="none">
           <IconButton
             aria-label="expand row"
@@ -68,63 +39,63 @@ const Book = ({
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          <span className="font-weight-bold pr-2">{title || ''}</span>
-          <span className="font-weight-light">{subtitle || ''}</span>
+          <span className="font-weight-bold pr-2">
+            {book?.volumeInfo?.title || ''}
+          </span>
+          <span className="font-weight-light">
+            {book?.volumeInfo?.subtitle || ''}
+          </span>
         </TableCell>
         <TableCell className="font-weight-bold h6">
-          {Array.isArray(authors)
-            ? authors.map((author) => (
-                <Chip
-                  label={author}
-                  key={author.toString()}
-                  color="default"
-                  className="m-1"
-                  style={{ cursor: 'pointer' }}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    setSearch(author);
-                    setQuery({
-                      search: author,
-                      limit: query.limit,
-                    });
-                  }}
-                />
-              ))
-            : null}
+          {Array.isArray(book?.volumeInfo?.authors) &&
+            book?.volumeInfo?.authors.map((author) => (
+              <Chip
+                label={author}
+                key={author.toString()}
+                color="default"
+                className="m-1"
+                style={{ cursor: 'pointer' }}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  searchParams.set('searchBy', 'authors');
+                  searchParams.set('search', author);
+                  setSearchParams(searchParams);
+                }}
+              />
+            ))}
         </TableCell>
         <TableCell className="font-weight-bold h6">
-          {Array.isArray(genres)
-            ? genres.map((genre) => (
-                <Chip
-                  label={genre}
-                  key={genre.toString()}
-                  color="default"
-                  className="m-1"
-                  style={{ cursor: 'pointer' }}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    setSearch(genre);
-                    setQuery({
-                      search: genre,
-                      limit: query.limit,
-                    });
-                  }}
-                />
-              ))
-            : null}
+          {Array.isArray(book?.volumeInfo?.genres) &&
+            book?.volumeInfo?.genres.map((genre) => (
+              <Chip
+                label={genre}
+                key={genre.toString()}
+                color="default"
+                className="m-1"
+                style={{ cursor: 'pointer' }}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  searchParams.set('searchBy', 'genres');
+                  searchParams.set('search', genre);
+                  setSearchParams(searchParams);
+                }}
+              />
+            ))}
         </TableCell>
         <TableCell>
-          {copiesAvailable > 0 && (
+          {book?.copiesAvailable > 0 && (
             <CheckCircleOutlined className="green-text mr-2" />
           )}
-          {copiesAvailable === 0 && <HighlightOff className="red-text mr-2" />}
-          {copiesAvailable}/{copiesCount}
+          {book?.copiesAvailable === 0 && (
+            <HighlightOff className="red-text mr-2" />
+          )}
+          {book?.copiesAvailable || 0}/{book?.copiesTotal || 0}
         </TableCell>
         <TableCell padding="none">
           <Button
             size="small"
             variant="text"
-            onClick={() => navigate(`/books/${id}`)}
+            onClick={() => navigate(`/books/${book.ID}`)}
           >
             View Book
           </Button>
@@ -134,10 +105,10 @@ const Book = ({
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Grid container spacing={2}>
-              {image && image !== '' && (
+              {book?.volumeInfo?.image && book?.volumeInfo?.image !== '' && (
                 <Grid item xs={1}>
                   <img
-                    src={image}
+                    src={book?.volumeInfo?.image}
                     alt="Book cover"
                     style={{
                       maxHeight: '100%',
@@ -146,15 +117,20 @@ const Book = ({
                   />
                 </Grid>
               )}
-              <Grid item xs={image !== '' ? 8 : 9}>
-                <div style={{ whiteSpace: 'pre-line' }}>{description}</div>
+              <Grid item xs={book?.volumeInfo?.image !== '' ? 8 : 9}>
+                <div style={{ whiteSpace: 'pre-line' }}>
+                  {book?.volumeInfo?.description}
+                </div>
               </Grid>
               <Grid item xs={3}>
-                {isbn10 && `ISBN-10: ${isbn10}`}
+                {book?.volumeInfo?.isbn10 &&
+                  `ISBN-10: ${book?.volumeInfo?.isbn10}`}
                 <br />
-                {isbn13 && `ISBN-13: ${isbn13}`}
+                {book?.volumeInfo?.isbn13 &&
+                  `ISBN-13: ${book?.volumeInfo?.isbn13}`}
                 <br />
-                {callNumber && `Call Number: ${callNumber}`}
+                {book?.volumeInfo?.callNumber &&
+                  `Call Number: ${book?.volumeInfo?.callNumber}`}
               </Grid>
             </Grid>
           </Collapse>
