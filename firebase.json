@@ -10,7 +10,11 @@
     {
       "target": "prod",
       "public": "react/build",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
       "rewrites": [
         {
           "source": "**",
@@ -21,7 +25,11 @@
     {
       "target": "preview",
       "public": "react/build",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
       "rewrites": [
         {
           "source": "**",
@@ -30,32 +38,21 @@
       ]
     }
   ],
-  "storage": {
-    "rules": "storage.rules"
-  },
   "emulators": {
-    "ui": {
-      "enabled": true,
-      "host": "localhost",
-      "port": 4000
-    },
-    "firestore": {
-      "port": 8080
-    },
     "auth": {
       "port": 9099
     },
     "functions": {
       "port": 5001
     },
+    "firestore": {
+      "port": 8080
+    },
     "hosting": {
       "port": 5000
     },
-    "pubsub": {
-      "port": 8085
-    },
-    "storage": {
-      "port": 9199
+    "ui": {
+      "enabled": true
     }
   }
 }
