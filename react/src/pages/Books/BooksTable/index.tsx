@@ -67,7 +67,6 @@ const BooksTable = () => {
                           authors: [],
                           genres: [],
                           description: '',
-                          image: '',
                           isbn10: '',
                           isbn13: '',
                           subtitle: '',

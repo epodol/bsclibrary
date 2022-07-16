@@ -105,19 +105,38 @@ const Book = ({ book }: { book: WithID<BookType> }) => {
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Grid container spacing={2}>
-              {book?.volumeInfo?.image && book?.volumeInfo?.image !== '' && (
+              {(book?.volumeInfo?.isbn10 || book?.volumeInfo?.isbn13) && (
                 <Grid item xs={1}>
-                  <img
-                    src={book?.volumeInfo?.image}
-                    alt="Book cover"
-                    style={{
-                      maxHeight: '100%',
-                      maxWidth: '100%',
-                    }}
-                  />
+                  {book?.volumeInfo?.isbn13 && (
+                    <img
+                      src={`https://covers.openlibrary.org/b/isbn/${book?.volumeInfo?.isbn13}-L.jpg`}
+                      alt="Book cover"
+                      style={{
+                        maxHeight: '100%',
+                        maxWidth: '100%',
+                      }}
+                    />
+                  )}
+                  {!book?.volumeInfo?.isbn13 && book?.volumeInfo?.isbn10 && (
+                    <img
+                      src={`https://covers.openlibrary.org/b/isbn/${book?.volumeInfo?.isbn10}-L.jpg`}
+                      alt="Book cover"
+                      style={{
+                        maxHeight: '100%',
+                        maxWidth: '100%',
+                      }}
+                    />
+                  )}
                 </Grid>
               )}
-              <Grid item xs={book?.volumeInfo?.image !== '' ? 8 : 9}>
+              <Grid
+                item
+                xs={
+                  (book?.volumeInfo?.isbn10 || book?.volumeInfo?.isbn13) !== ''
+                    ? 8
+                    : 9
+                }
+              >
                 <div style={{ whiteSpace: 'pre-line' }}>
                   {book?.volumeInfo?.description}
                 </div>

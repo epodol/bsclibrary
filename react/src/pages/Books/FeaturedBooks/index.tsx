@@ -50,17 +50,27 @@ const FeaturedBooks = () => {
           const {
             title = 'Unknown book',
             subtitle = '',
-            image = 'https://www.abbeville.com/assets/common/images/edition_placeholder.png',
+            isbn10,
+            isbn13,
           } = volumeInfo;
           return (
             <Card key={id} onClick={() => navigate(`/books/${id}`)}>
               <CardActionArea>
-                {image && (
+                {isbn13 && (
                   <CardMedia
                     component="img"
                     alt={`${title} | Cover`}
                     height="350"
-                    image={image}
+                    image={`https://covers.openlibrary.org/b/isbn/${isbn13}-L.jpg`}
+                    title={`${title} | Cover`}
+                  />
+                )}
+                {!isbn13 && isbn10 && (
+                  <CardMedia
+                    component="img"
+                    alt={`${title} | Cover`}
+                    height="350"
+                    image={`https://covers.openlibrary.org/b/isbn/${isbn10}-L.jpg`}
                     title={`${title} | Cover`}
                   />
                 )}

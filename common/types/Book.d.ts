@@ -52,10 +52,6 @@ export interface volumeInfo {
    */
   genres: string[];
   /**
-   * The book's image URL. Null if no image is available.
-   */
-  image: string | null;
-  /**
    * The book's ISBN-10.
    */
   isbn10: string;
