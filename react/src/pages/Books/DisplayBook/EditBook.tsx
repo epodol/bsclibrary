@@ -32,7 +32,6 @@ const EditBook = ({
     authors: yup.array().of(yup.string()),
     genres: yup.array().of(yup.string()),
     description: yup.string(),
-    image: yup.string().url(),
     isbn10: yup.string(),
     isbn13: yup.string(),
     callNumber: yup.string(),
@@ -53,7 +52,6 @@ const EditBook = ({
           authors: volumeInfo.authors || [],
           genres: volumeInfo.genres || [],
           description: volumeInfo.description || '',
-          image: volumeInfo.image || '',
           isbn10: volumeInfo.isbn10 || '',
           isbn13: volumeInfo.isbn13 || '',
           callNumber: volumeInfo.callNumber || '',
@@ -69,7 +67,6 @@ const EditBook = ({
               authors: values.authors,
               genres: values.genres,
               description: values.description.trim(),
-              image: values.image === '' ? null : values.image.trim(),
               isbn10: values.isbn10.trim(),
               isbn13: values.isbn13.trim(),
               callNumber: values.callNumber.trim(),
@@ -143,17 +140,6 @@ const EditBook = ({
               fullWidth
               label="Description"
               value={values.description}
-              onChange={handleChange}
-              sx={{ marginBlock: '1rem' }}
-            />
-            <TextField
-              id="image"
-              type="text"
-              error={!!errors.image}
-              helperText={errors.image}
-              fullWidth
-              label="Image URL"
-              value={values.image}
               onChange={handleChange}
               sx={{ marginBlock: '1rem' }}
             />

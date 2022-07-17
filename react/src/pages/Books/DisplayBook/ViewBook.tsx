@@ -11,12 +11,22 @@ const ViewBook = ({ volumeInfo }: { volumeInfo: volumeInfoInterface }) => {
   return (
     <>
       <div style={{ padding: 20 }}>
-        {volumeInfo.image && (
+        {volumeInfo.isbn13 && (
           <div className="mb-3">
             <img
               style={{ maxHeight: 500 }}
               className="rounded mx-auto d-block img-fluid z-depth-3"
-              src={volumeInfo.image}
+              src={`https://covers.openlibrary.org/b/isbn/${volumeInfo.isbn13}-L.jpg`}
+              alt={volumeInfo.title || 'Book Thumbnail'}
+            />
+          </div>
+        )}
+        {!volumeInfo.isbn13 && volumeInfo.isbn10 && (
+          <div className="mb-3">
+            <img
+              style={{ maxHeight: 500 }}
+              className="rounded mx-auto d-block img-fluid z-depth-3"
+              src={`https://covers.openlibrary.org/b/isbn/${volumeInfo.isbn10}-L.jpg`}
               alt={volumeInfo.title || 'Book Thumbnail'}
             />
           </div>

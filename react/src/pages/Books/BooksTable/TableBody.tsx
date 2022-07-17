@@ -76,13 +76,12 @@ const useBuildBooksQuery = (searchParams: URLSearchParams) => {
         searchByOptions.find((option) => option.id === searchBy)?.type ===
         'arrayContains'
       ) {
+        const searchArray = search.split(/[,\s]+/).map((word) => word.trim());
+        searchArray.push(search);
+
         query = firestoreQuery(
           query,
-          where(
-            `volumeInfo.${searchBy}`,
-            'array-contains-any',
-            search.split(/[,\s]+/).map((word) => word.trim())
-          )
+          where(`volumeInfo.${searchBy}`, 'array-contains-any', searchArray)
         );
       }
     } else {
@@ -101,7 +100,7 @@ const useBuildBooksQuery = (searchParams: URLSearchParams) => {
     );
   }
 
-  query = firestoreQuery(query, limit(rowsPerPage + 1));
+  query = firestoreQuery(query, limit(rowsPerPage));
 
   return query;
 };
