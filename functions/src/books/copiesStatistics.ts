@@ -84,16 +84,12 @@ const copiesStatistics = functions
       if (beforeData.condition !== afterData.condition) {
         if (!copiesStatisticsChanges.currentCountByCondition)
           copiesStatisticsChanges.currentCountByCondition = {};
-        if (!copiesStatisticsChanges.currentCountByStatus)
-          copiesStatisticsChanges.currentCountByStatus = {};
         copiesStatisticsChanges.currentCountByCondition[beforeData.condition] =
           FieldValue.increment(-1);
         copiesStatisticsChanges.currentCountByCondition[afterData.condition] =
           FieldValue.increment(1);
       }
       if (beforeData.status !== afterData.status) {
-        if (!copiesStatisticsChanges.currentCountByCondition)
-          copiesStatisticsChanges.currentCountByCondition = {};
         if (!copiesStatisticsChanges.currentCountByStatus)
           copiesStatisticsChanges.currentCountByStatus = {};
         copiesStatisticsChanges.currentCountByStatus[beforeData.status] =

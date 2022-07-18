@@ -16,6 +16,7 @@ import {
   FormControl,
   Select,
   IconButton,
+  InputLabel,
 } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 import * as yup from 'yup';
@@ -186,17 +187,21 @@ const EnterUser = ({
         >
           <h3 className="flex-center text-center">Search Users</h3>
           <div>
-            <Select
-              sx={{
-                marginTop: 2,
-              }}
-              value={searchField}
-              onChange={(e: any) => setSearchField(e.target.value)}
+            <FormControl
+              sx={{ marginInline: 2, width: 160, marginBottom: '1rem' }}
             >
-              <MenuItem value={1}>First Name</MenuItem>
-              <MenuItem value={2}>Last Name</MenuItem>
-              <MenuItem value={3}>Email</MenuItem>
-            </Select>
+              <InputLabel id="searchByLabel">Search by</InputLabel>
+              <Select
+                labelId="searchByLabel"
+                id="searchBy"
+                value={searchField}
+                onChange={(e: any) => setSearchField(e.target.value)}
+              >
+                <MenuItem value={1}>First Name</MenuItem>
+                <MenuItem value={2}>Last Name</MenuItem>
+                <MenuItem value={3}>Email</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               label="Search Terms"
               onChange={(e) => setSearchTerm(e.target.value)}

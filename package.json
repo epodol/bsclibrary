@@ -1,6 +1,6 @@
 {
   "name": "bsclibrary",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "description": "The BASIS Scottsdale Library Website",
   "keywords": [
     "BASIS Scottsdale Library"
@@ -60,7 +60,7 @@
     "outdated:common": "cd common && npm outdated"
   },
   "devDependencies": {
-    "@types/node": "^16.11.43",
+    "@types/node": "^16.11.45",
     "@typescript-eslint/eslint-plugin": "^5.30.6",
     "@typescript-eslint/parser": "^5.30.6",
     "eslint": "^8.20.0",

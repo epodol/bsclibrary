@@ -46,7 +46,7 @@ service cloud.firestore {
       }
 
       match /libraries/{library}/joinRequests/{joinRequest} {
-        allow create: if true;
+        allow create: if request.auth.token;
         allow delete, update: if false;
         allow get: if joinRequest == request.auth.uid || library in request.auth.token.permissions.MANAGE_USERS || library in request.auth.token.librariesOwned;
         allow list: if library in request.auth.token.permissions.MANAGE_USERS || library in request.auth.token.librariesOwned;

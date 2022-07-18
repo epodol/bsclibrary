@@ -50,14 +50,27 @@ const Book = () => {
   const data = useFirestoreDocData(ref, {
     idField: 'id',
   }).data as unknown as BookInterfaceWithID;
-  const { volumeInfo, featured } = data;
 
   const [editing, setEditing] = useState(location?.state?.editing || false);
 
   const [viewCopies, setViewCopies] = useState(false);
 
-  if (typeof volumeInfo === 'undefined') {
-    return <h1>Book Not Found!</h1>;
+  if (!data) {
+    return (
+      <div style={{ padding: '5rem', textAlign: 'center' }}>
+        <h1>Book Not Found!</h1>
+      </div>
+    );
+  }
+
+  const { volumeInfo, featured } = data;
+
+  if (!volumeInfo) {
+    return (
+      <div style={{ padding: '5rem', textAlign: 'center' }}>
+        <h1>Book Not Found!</h1>
+      </div>
+    );
   }
 
   return (
