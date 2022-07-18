@@ -32,7 +32,7 @@ import { httpsCallable } from 'firebase/functions';
 
 import { Link } from 'react-router-dom';
 import User from '@common/types/User';
-import Copy, { condition as conditionType } from '@common/types/Copy';
+import Copy from '@common/types/Copy';
 import checkoutBookData, {
   checkoutBookDataBooks,
 } from '@common/functions/checkoutBook';
@@ -66,23 +66,6 @@ interface checkoutDataBook {
   id: string;
   parent: any;
   parentData: any;
-}
-
-function determineCondition(condition: conditionType) {
-  switch (condition) {
-    case 1:
-      return 'New';
-    case 2:
-      return 'Good';
-    case 3:
-      return 'Fair';
-    case 4:
-      return 'Poor';
-    case 5:
-      return 'Bad';
-    default:
-      return 'Unknown Condition';
-  }
 }
 
 function determineSearchField(searchField: 1 | 2 | 3) {
@@ -333,8 +316,14 @@ const ScanBooks = ({
 }) => {
   const activeLibraryID = useContext(ActiveLibraryID);
   if (!activeLibraryID) throw new Error('No active library found!');
-  const bookInput: any = useRef();
+
   const firestore = useFirestore();
+
+  const activeLibraryDoc: Library = useFirestoreDocData(
+    doc(firestore, 'libraries', activeLibraryID)
+  ).data as Library;
+
+  const bookInput: any = useRef();
   return (
     <div>
       <Formik
@@ -512,11 +501,21 @@ const ScanBooks = ({
                           });
                         }}
                       >
-                        <MenuItem value={1}>{determineCondition(1)}</MenuItem>
-                        <MenuItem value={2}>{determineCondition(2)}</MenuItem>
-                        <MenuItem value={3}>{determineCondition(3)}</MenuItem>
-                        <MenuItem value={4}>{determineCondition(4)}</MenuItem>
-                        <MenuItem value={5}>{determineCondition(5)}</MenuItem>
+                        <MenuItem value={1}>
+                          {activeLibraryDoc.conditionOptions[1]}
+                        </MenuItem>
+                        <MenuItem value={2}>
+                          {activeLibraryDoc.conditionOptions[2]}
+                        </MenuItem>
+                        <MenuItem value={3}>
+                          {activeLibraryDoc.conditionOptions[3]}
+                        </MenuItem>
+                        <MenuItem value={4}>
+                          {activeLibraryDoc.conditionOptions[4]}
+                        </MenuItem>
+                        <MenuItem value={5}>
+                          {activeLibraryDoc.conditionOptions[5]}
+                        </MenuItem>
                       </Select>
                     </FormControl>
                   </TableCell>

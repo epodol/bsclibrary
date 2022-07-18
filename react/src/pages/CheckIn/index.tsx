@@ -2,14 +2,21 @@ import React, { useContext, useRef, useState } from 'react';
 import { Button, TextField, ButtonGroup, Paper } from '@mui/material';
 import * as yup from 'yup';
 import { Formik, Form } from 'formik';
-import { useFirestore, useFunctions } from 'reactfire';
+import { useFirestore, useFirestoreDocData, useFunctions } from 'reactfire';
 
 import Copy, { condition, status } from '@common/types/Copy';
 import checkinBookData from '@common/functions/checkinBook';
 import NotificationContext from 'src/contexts/NotificationContext';
 import { httpsCallable } from 'firebase/functions';
-import { collectionGroup, getDocs, query, where } from 'firebase/firestore';
+import {
+  collectionGroup,
+  doc,
+  getDocs,
+  query,
+  where,
+} from 'firebase/firestore';
 import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
+import Library from '@common/types/Library';
 
 const ScanBooksScheme = yup.object().shape({
   book: yup.string().required('You need to enter the Identifier'),
@@ -24,12 +31,18 @@ const CheckIn = () => {
   const firestore = useFirestore();
   const bookInput: any = useRef();
 
+  const activeLibraryDoc: Library = useFirestoreDocData(
+    doc(firestore, `libraries/${activeLibraryID}`)
+  ).data as Library;
+
   const [statusCheckIn, setStatusCheckIn] = useState<status>(0);
 
   const initialValues: {
     book: string;
     condition: condition | 0;
   } = { book: '', condition: 0 };
+
+  const conditionOptions: condition[] = [1, 2, 3, 4, 5];
 
   return (
     <div className="text-center lead m-5">
@@ -174,51 +187,18 @@ const CheckIn = () => {
                 size="large"
                 className="text-center"
               >
-                <Button
-                  onClick={() => {
-                    setFieldValue('condition', 5);
-                    bookInput?.current?.focus();
-                  }}
-                  disabled={values.condition === 5}
-                >
-                  Bad
-                </Button>
-                <Button
-                  onClick={() => {
-                    setFieldValue('condition', 4);
-                    bookInput?.current?.focus();
-                  }}
-                  disabled={values.condition === 4}
-                >
-                  Poor
-                </Button>
-                <Button
-                  onClick={() => {
-                    setFieldValue('condition', 3);
-                    bookInput?.current?.focus();
-                  }}
-                  disabled={values.condition === 3}
-                >
-                  Fair
-                </Button>{' '}
-                <Button
-                  onClick={() => {
-                    setFieldValue('condition', 2);
-                    bookInput?.current?.focus();
-                  }}
-                  disabled={values.condition === 2}
-                >
-                  Good
-                </Button>
-                <Button
-                  onClick={() => {
-                    setFieldValue('condition', 1);
-                    bookInput?.current?.focus();
-                  }}
-                  disabled={values.condition === 1}
-                >
-                  New
-                </Button>
+                {conditionOptions.map((buttonCondition) => (
+                  <Button
+                    key={buttonCondition}
+                    onClick={() => {
+                      setFieldValue('condition', buttonCondition);
+                      bookInput?.current?.focus();
+                    }}
+                    disabled={values.condition === buttonCondition}
+                  >
+                    {activeLibraryDoc.conditionOptions[buttonCondition]}
+                  </Button>
+                ))}
               </ButtonGroup>
               <br />
               <TextField
