@@ -1,6 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
 
-import { useFirestore, useFirestoreCollectionData, useUser } from 'reactfire';
+import {
+  useFirestore,
+  useFirestoreCollectionData,
+  useFirestoreDocData,
+  useUser,
+} from 'reactfire';
 import {
   collection,
   where,
@@ -39,6 +44,7 @@ import CopyInterface, {
 import NotificationContext from 'src/contexts/NotificationContext';
 import WithID from '@common/types/util/WithID';
 import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
+import Library from '@common/types/Library';
 
 function determineStatus(status: statusType | undefined) {
   switch (status) {
@@ -255,6 +261,10 @@ const EditCopy = ({
   const user = useUser().data;
   if (!user) throw new Error('No user exists.');
 
+  const activeLibraryDoc: Library = useFirestoreDocData(
+    doc(firestore, `libraries/${activeLibraryID}`)
+  ).data as Library;
+
   let activeTimer: NodeJS.Timeout | null = null;
 
   // eslint-disable-next-line arrow-body-style
@@ -342,17 +352,17 @@ const EditCopy = ({
             disabled={conditionValue === 1}
             className="px-2"
             onClick={() => setConditionValue(1)}
-            variant="contained"
+            variant="outlined"
           >
-            New
+            {activeLibraryDoc.conditionOptions[1]}
           </Button>
           <Button
             disabled={conditionValue === 2}
             className="px-2"
             onClick={() => setConditionValue(2)}
-            variant="contained"
+            variant="outlined"
           >
-            Good
+            {activeLibraryDoc.conditionOptions[2]}
           </Button>
         </ButtonGroup>
         <br />
@@ -361,9 +371,9 @@ const EditCopy = ({
           disabled={conditionValue === 3}
           className="px-2"
           onClick={() => setConditionValue(3)}
-          variant="contained"
+          variant="outlined"
         >
-          Fair
+          {activeLibraryDoc.conditionOptions[3]}
         </Button>
         <br />
         <ButtonGroup size="small">
@@ -371,17 +381,17 @@ const EditCopy = ({
             disabled={conditionValue === 4}
             className="px-2"
             onClick={() => setConditionValue(4)}
-            variant="contained"
+            variant="outlined"
           >
-            Poor
+            {activeLibraryDoc.conditionOptions[4]}
           </Button>
           <Button
             disabled={conditionValue === 5}
             className="px-2"
             onClick={() => setConditionValue(5)}
-            variant="contained"
+            variant="outlined"
           >
-            Bad
+            {activeLibraryDoc.conditionOptions[5]}
           </Button>
         </ButtonGroup>
       </TableCell>

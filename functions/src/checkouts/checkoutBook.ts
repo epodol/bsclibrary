@@ -121,6 +121,14 @@ const checkoutBook = functions
         copy
       );
 
+      batch.update(
+        firestore.doc(`libraries/${data.libraryID}/statistics/checkouts`),
+        {
+          currentCount: FieldValue.increment(1),
+          historicalCount: FieldValue.increment(1),
+        }
+      );
+
       await batch
         .commit()
         .then(() => {
