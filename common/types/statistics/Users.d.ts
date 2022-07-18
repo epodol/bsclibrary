@@ -1,5 +1,3 @@
-import { Timestamp } from 'firebase-admin/firestore';
-
 export interface Users {
   /**
    * The current count of users in the library.

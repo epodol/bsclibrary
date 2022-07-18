@@ -1,5 +1,3 @@
-import { Timestamp } from 'firebase-admin/firestore';
-
 export interface Checkouts {
   /**
    * The current count of active checkouts in the library.

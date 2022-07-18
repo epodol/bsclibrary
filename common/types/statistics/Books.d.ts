@@ -1,5 +1,3 @@
-import { Timestamp } from 'firebase-admin/firestore';
-
 export interface Books {
   /**
    * The current count of books in the library.

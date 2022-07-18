@@ -135,7 +135,7 @@ const checkinBook = functions
     batch.update(
       firestore.doc(`libraries/${data.libraryID}/statistics/checkouts`),
       {
-        currentCount: FieldValue.increment(1),
+        currentCount: FieldValue.increment(-1),
       }
     );
 
