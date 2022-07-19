@@ -4,6 +4,7 @@ import React, {
   useEffect,
   Dispatch,
   SetStateAction,
+  useRef,
 } from 'react';
 import {
   Dialog,
@@ -23,8 +24,17 @@ import {
   IconButton,
   Autocomplete,
   Chip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
-import { useUser, useFirestore, useFirestoreCollectionData } from 'reactfire';
+import {
+  useUser,
+  useFirestore,
+  useFirestoreCollectionData,
+  useFirestoreDocData,
+} from 'reactfire';
 import {
   addDoc,
   collection,
@@ -32,6 +42,7 @@ import {
   Timestamp,
   where,
   query,
+  doc,
 } from 'firebase/firestore';
 import { useNavigate } from 'react-router';
 import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
@@ -40,7 +51,12 @@ import Book from 'src/pages/Books/BooksTable/Book';
 import BookType, { volumeInfo } from '@common/types/Book';
 import WithID from '@common/types/util/WithID';
 import { useTheme } from '@mui/material/styles';
-import { Search } from '@mui/icons-material';
+import { KeyboardReturn, Search } from '@mui/icons-material';
+import Copy, {
+  condition as conditionType,
+  status as statusType,
+} from '@common/types/Copy';
+import Library from '@common/types/Library';
 
 function combineArrayAndRemoveDuplicates(arr1: any[], arr2: any[]) {
   const combined: any[] = [];
@@ -74,12 +90,19 @@ const AddBook = ({
 
   const [isbn, setIsbn] = useState<string>('');
 
-  const [step, setStep] = useState<0 | 1 | 2>(0);
+  const [identifier, setIdentifier] = useState<string>('');
 
-  const handleClose = () => {
+  const [bookID, setBookID] = useState<null | string>(null);
+
+  const identifierInputRef = useRef<HTMLInputElement>();
+
+  const [step, setStep] = useState<0 | 1 | 2 | 3>(0);
+
+  const handleClose = (close: boolean) => {
     setIsbn('');
+    setIdentifier('');
     setStep(0);
-    setIsOpen(false);
+    if (close) setIsOpen(false);
   };
   return (
     <Dialog
@@ -113,6 +136,41 @@ const AddBook = ({
                 fullWidth
                 value={isbn}
                 onChange={(e) => setIsbn(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    identifierInputRef?.current?.focus();
+                    e.preventDefault();
+                  }
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="search"
+                        size="large"
+                        color="primary"
+                        onClick={() => {
+                          identifierInputRef?.current?.focus();
+                        }}
+                      >
+                        <KeyboardReturn />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                  'aria-label': 'search our book collection',
+                }}
+              />
+              <TextField
+                id="identifier"
+                label="Identifier"
+                type="text"
+                margin="dense"
+                fullWidth
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                inputRef={(input) => {
+                  identifierInputRef.current = input;
+                }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -133,7 +191,16 @@ const AddBook = ({
           </>
         )}
         {step === 1 && <AddBook1 isbn={isbn} setStep={setStep} />}
-        {step === 2 && <AddBook2 isbn={isbn} />}
+        {step === 2 && (
+          <AddBook2 isbn={isbn} setStep={setStep} setBookID={setBookID} />
+        )}
+        {step === 3 && (
+          <AddBook3
+            bookID={bookID}
+            identifier={identifier}
+            handleClose={handleClose}
+          />
+        )}
       </DialogContent>
       <DialogActions>
         <Button
@@ -178,13 +245,12 @@ const AddBook = ({
                   severity: 'error',
                   timeout: 10000,
                 });
-                handleClose();
               });
           }}
         >
           Create a Blank Book Instead
         </Button>
-        <Button variant="outlined" onClick={handleClose}>
+        <Button variant="outlined" onClick={() => handleClose(true)}>
           Cancel
         </Button>
       </DialogActions>
@@ -197,7 +263,7 @@ const AddBook1 = ({
   setStep,
 }: {
   isbn: string;
-  setStep: Dispatch<SetStateAction<0 | 1 | 2>>;
+  setStep: Dispatch<SetStateAction<0 | 1 | 2 | 3>>;
 }) => {
   const activeLibraryID = useContext(ActiveLibraryID);
   if (!activeLibraryID) throw new Error('No active library found!');
@@ -372,7 +438,15 @@ const useISBNLookup = (isbn: string) => {
   return books;
 };
 
-const AddBook2 = ({ isbn }: { isbn: string }) => {
+const AddBook2 = ({
+  isbn,
+  setBookID,
+  setStep,
+}: {
+  isbn: string;
+  setBookID: Dispatch<SetStateAction<string | null>>;
+  setStep: Dispatch<SetStateAction<0 | 1 | 2 | 3>>;
+}) => {
   const books = useISBNLookup(isbn);
 
   if (!books) return <>Loading...</>;
@@ -382,12 +456,20 @@ const AddBook2 = ({ isbn }: { isbn: string }) => {
       <DialogContentText>
         To add a book, enter the information below.
       </DialogContentText>
-      <AddBook2Form books={books} />
+      <AddBook2Form books={books} setStep={setStep} setBookID={setBookID} />
     </div>
   );
 };
 
-const AddBook2Form = ({ books }: { books: lookupBookResponse }) => {
+const AddBook2Form = ({
+  books,
+  setBookID,
+  setStep,
+}: {
+  books: lookupBookResponse;
+  setBookID: Dispatch<SetStateAction<string | null>>;
+  setStep: Dispatch<SetStateAction<0 | 1 | 2 | 3>>;
+}) => {
   const activeLibraryID = useContext(ActiveLibraryID);
   if (!activeLibraryID) throw new Error('No active library ID');
 
@@ -397,8 +479,6 @@ const AddBook2Form = ({ books }: { books: lookupBookResponse }) => {
 
   const user = useUser().data;
   if (!user) throw new Error('No user exists.');
-
-  const navigate = useNavigate();
 
   const [newVolumeInfo, setNewVolumeInfo] = useState<volumeInfo>({
     title: books.title[0] || '',
@@ -414,6 +494,39 @@ const AddBook2Form = ({ books }: { books: lookupBookResponse }) => {
   const [newGenre, setNewGenre] = useState('');
 
   const [newAuthor, setNewAuthor] = useState('');
+
+  const addBook = () => {
+    const newBook: BookType = {
+      featured: false,
+      updatedBy: user.uid,
+      updatedAt: serverTimestamp() as Timestamp,
+      createdBy: user.uid,
+      createdAt: serverTimestamp() as Timestamp,
+      copiesAvailable: 0,
+      copiesTotal: 0,
+      volumeInfo: newVolumeInfo,
+    };
+    addDoc(
+      collection(firestore, 'libraries', activeLibraryID, 'books'),
+      newBook
+    )
+      .then((book) => {
+        NotificationHandler.addNotification({
+          message: `New book created.`,
+          severity: 'success',
+        });
+        setBookID(book.id);
+        setStep(3);
+      })
+      .catch((err) => {
+        console.error(err);
+        NotificationHandler.addNotification({
+          message: `An unexpected error occurred.`,
+          severity: 'error',
+          timeout: 10000,
+        });
+      });
+  };
 
   return (
     <div>
@@ -654,43 +767,153 @@ const AddBook2Form = ({ books }: { books: lookupBookResponse }) => {
           variant="contained"
           color="primary"
           size="large"
-          onClick={() => {
-            const newBook: BookType = {
-              featured: false,
-              updatedBy: user.uid,
-              updatedAt: serverTimestamp() as Timestamp,
-              createdBy: user.uid,
-              createdAt: serverTimestamp() as Timestamp,
-              copiesAvailable: 0,
-              copiesTotal: 0,
-              volumeInfo: newVolumeInfo,
-            };
-            addDoc(
-              collection(firestore, 'libraries', activeLibraryID, 'books'),
-              newBook
-            )
-              .then((book) => {
-                NotificationHandler.addNotification({
-                  message: `New book created.`,
-                  severity: 'success',
-                });
-                navigate(`/books/${book.id}`, {
-                  state: { editing: true },
-                });
-              })
-              .catch((err) => {
-                console.error(err);
-                NotificationHandler.addNotification({
-                  message: `An unexpected error occurred.`,
-                  severity: 'error',
-                  timeout: 10000,
-                });
-              });
-          }}
+          onClick={addBook}
         >
           Add Book
         </Button>
       </div>
+    </div>
+  );
+};
+
+function determineStatus(status: statusType | undefined) {
+  switch (status) {
+    case 0:
+      return 'On Shelf';
+    case 1:
+      return 'In Storage';
+    case 2:
+      return 'Checked Out';
+    case 3:
+      return 'Missing';
+    case 4:
+      return 'Not Tracked';
+    default:
+      return 'Unknown Status';
+  }
+}
+
+const AddBook3 = ({
+  bookID,
+  identifier,
+  handleClose,
+}: {
+  bookID: string | null;
+  identifier: string;
+  handleClose: (close: boolean) => void;
+}) => {
+  const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library found!');
+
+  const NotificationHandler = useContext(NotificationContext);
+
+  const user = useUser().data;
+  if (!user) throw new Error('No user found!');
+
+  const firestore = useFirestore();
+
+  const libraryDoc: Library = useFirestoreDocData(
+    doc(firestore, 'libraries', activeLibraryID)
+  ).data as Library;
+
+  const [status, setStatus] = useState<statusType>(0);
+
+  const [condition, setCondition] = useState<conditionType>(4);
+
+  const [notes, setNotes] = useState<string>('');
+
+  return (
+    <div>
+      Enter information about the copy. ({identifier})
+      <FormControl fullWidth sx={{ marginBlock: '1rem' }}>
+        <InputLabel id="status-label">Status</InputLabel>
+        <Select
+          labelId="status-label"
+          id="status"
+          value={status}
+          label="Status"
+          onChange={(e) => {
+            setStatus(e.target.value as statusType);
+          }}
+        >
+          <MenuItem value={0}>{determineStatus(0)}</MenuItem>
+          <MenuItem value={1}>{determineStatus(1)}</MenuItem>
+          <MenuItem value={3}>{determineStatus(3)}</MenuItem>
+          <MenuItem value={4}>{determineStatus(4)}</MenuItem>
+        </Select>
+      </FormControl>
+      <FormControl fullWidth sx={{ marginBlock: '1rem' }}>
+        <InputLabel id="condition-label">Condition</InputLabel>
+        <Select
+          labelId="condition-label"
+          id="condition"
+          value={condition}
+          label="Condition"
+          onChange={(e) => {
+            setCondition(e.target.value as conditionType);
+          }}
+        >
+          <MenuItem value={1}>{libraryDoc.conditionOptions[1]}</MenuItem>
+          <MenuItem value={2}>{libraryDoc.conditionOptions[2]}</MenuItem>
+          <MenuItem value={3}>{libraryDoc.conditionOptions[3]}</MenuItem>
+          <MenuItem value={4}>{libraryDoc.conditionOptions[4]}</MenuItem>
+          <MenuItem value={5}>{libraryDoc.conditionOptions[5]}</MenuItem>
+        </Select>
+      </FormControl>
+      <TextField
+        label="Notes"
+        value={notes}
+        onChange={(e) => {
+          setNotes(e.target.value);
+        }}
+        multiline
+        rows={4}
+        fullWidth
+        sx={{
+          marginBlock: '1rem',
+        }}
+      />
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => {
+          const newCopyDocData: Copy = {
+            identifier,
+            status,
+            condition,
+            notes,
+            createdBy: user.uid,
+            createdAt: serverTimestamp() as any,
+            updatedBy: user.uid,
+            updatedAt: serverTimestamp() as any,
+            libraryID: activeLibraryID,
+          };
+          addDoc(
+            collection(
+              firestore,
+              `libraries/${activeLibraryID}/books/${bookID}/copies`
+            ),
+            newCopyDocData
+          )
+            .then(() => {
+              NotificationHandler.addNotification({
+                message: `New book created.`,
+                severity: 'success',
+              });
+              handleClose(false);
+            })
+            .catch((err) => {
+              console.error(err);
+              NotificationHandler.addNotification({
+                message: `An unexpected error occurred.`,
+                severity: 'error',
+                timeout: 10000,
+              });
+            });
+        }}
+      >
+        Add Copy
+      </Button>
     </div>
   );
 };
