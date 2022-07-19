@@ -1,43 +1,47 @@
 {
   "indexes": [
     {
-      "collectionGroup": "users",
+      "collectionGroup": "books",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "userInfo.disabled",
+          "fieldPath": "featured",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "copiesAvailable",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "copiesTotal",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "checkoutStatus",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "userInfo.queryEmail",
+          "fieldPath": "dueDate",
           "order": "ASCENDING"
         }
       ]
     },
     {
-      "collectionGroup": "users",
+      "collectionGroup": "copies",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "userInfo.disabled",
+          "fieldPath": "libraryID",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "userInfo.queryFirstName",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "users",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "userInfo.disabled",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "userInfo.queryLastName",
+          "fieldPath": "status",
           "order": "ASCENDING"
         }
       ]
@@ -63,6 +67,28 @@
         {
           "order": "ASCENDING",
           "queryScope": "COLLECTION_GROUP"
+        },
+        {
+          "arrayConfig": "CONTAINS",
+          "queryScope": "COLLECTION_GROUP"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "users",
+      "fieldPath": "identifiers",
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "order": "DESCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "arrayConfig": "CONTAINS",
+          "queryScope": "COLLECTION"
         },
         {
           "arrayConfig": "CONTAINS",
