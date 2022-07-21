@@ -122,23 +122,18 @@ const CopiesTable = ({
           <TableHead>
             <TableRow>
               <TableCell />
-              <TableCell
-                className={editing ? 'h4 text-center' : 'h4'}
-                style={editing ? { width: 1 } : {}}
-              >
+              <TableCell className={editing ? 'h4 text-center' : 'h4'}>
                 Identifier
               </TableCell>
               <TableCell className={editing ? 'h4 text-center' : 'h4'}>
                 Status
               </TableCell>
               {editing && (
-                <TableCell className="h4 text-center" style={{ width: 1 }}>
-                  Condition
-                </TableCell>
+                <TableCell className="h4 text-center">Condition</TableCell>
               )}
               {editing && <TableCell className="h4">Notes</TableCell>}
               {editing && (
-                <TableCell className="h4" style={editing ? { width: 1 } : {}}>
+                <TableCell className="h4">
                   Actions
                   <Button
                     className="px-3"
@@ -146,7 +141,7 @@ const CopiesTable = ({
                       const newCopyDocData: CopyInterface = {
                         identifier: '',
                         status: 4,
-                        condition: 3,
+                        condition: 4,
                         notes: '',
                         createdBy: user.uid,
                         createdAt: serverTimestamp() as any,

@@ -132,7 +132,7 @@ const SignIn = () => {
                 <p style={{ textAlign: 'center' }}>
                   Welcome! If you already have registered for an account, please
                   sign in here. If you do not have an account, please{' '}
-                  <Link to="/create-account">click here to create one.</Link>
+                  <Link to="/createaccount">click here to create one.</Link>
                 </p>
                 <TextField
                   id="email"

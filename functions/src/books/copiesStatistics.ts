@@ -2,6 +2,7 @@ import functions from 'firebase-functions';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import Book from '@common/types/Book';
 import RecursivePartial from '@common/types/util/RecursivePartial';
+import CopiesStatistics from '@common/types/CopiesStatistics';
 import Copy, { status } from '@common/types/Copy';
 
 function updateAvailabilityCounters(beforeStatus: status, afterStatus: status) {
@@ -58,44 +59,55 @@ const copiesStatistics = functions
     const beforeData = before?.data() as Copy | undefined;
     const afterData = after?.data() as Copy | undefined;
 
-    const copiesStatisticsChanges: any = {};
+    const copiesStatisticsChanges: RecursivePartial<CopiesStatistics> = {};
 
+    // Copy deleted
     if (beforeData && !afterData) {
       if (!copiesStatisticsChanges.currentCountByCondition)
         copiesStatisticsChanges.currentCountByCondition = {};
       if (!copiesStatisticsChanges.currentCountByStatus)
         copiesStatisticsChanges.currentCountByStatus = {};
       copiesStatisticsChanges.currentCountByCondition[beforeData.condition] =
-        FieldValue.increment(-1);
+        FieldValue.increment(-1) as unknown as number;
       copiesStatisticsChanges.currentCountByStatus[beforeData.status] =
-        FieldValue.increment(-1);
-      copiesStatisticsChanges.currentCount = FieldValue.increment(-1);
+        FieldValue.increment(-1) as unknown as number;
+      copiesStatisticsChanges.currentCount = FieldValue.increment(
+        -1
+      ) as unknown as number;
+      // Copy added
     } else if (!beforeData && afterData) {
       if (!copiesStatisticsChanges.currentCountByCondition)
         copiesStatisticsChanges.currentCountByCondition = {};
       if (!copiesStatisticsChanges.currentCountByStatus)
         copiesStatisticsChanges.currentCountByStatus = {};
       copiesStatisticsChanges.currentCountByCondition[afterData.condition] =
-        FieldValue.increment(1);
+        FieldValue.increment(1) as unknown as number;
       copiesStatisticsChanges.currentCountByStatus[afterData.status] =
-        FieldValue.increment(1);
-      copiesStatisticsChanges.currentCount = FieldValue.increment(1);
+        FieldValue.increment(1) as unknown as number;
+      copiesStatisticsChanges.currentCount = FieldValue.increment(
+        1
+      ) as unknown as number;
+      copiesStatisticsChanges.historicalCount = FieldValue.increment(
+        1
+      ) as unknown as number;
+
+      // Copy updated
     } else if (beforeData && afterData) {
       if (beforeData.condition !== afterData.condition) {
         if (!copiesStatisticsChanges.currentCountByCondition)
           copiesStatisticsChanges.currentCountByCondition = {};
         copiesStatisticsChanges.currentCountByCondition[beforeData.condition] =
-          FieldValue.increment(-1);
+          FieldValue.increment(-1) as unknown as number;
         copiesStatisticsChanges.currentCountByCondition[afterData.condition] =
-          FieldValue.increment(1);
+          FieldValue.increment(1) as unknown as number;
       }
       if (beforeData.status !== afterData.status) {
         if (!copiesStatisticsChanges.currentCountByStatus)
           copiesStatisticsChanges.currentCountByStatus = {};
         copiesStatisticsChanges.currentCountByStatus[beforeData.status] =
-          FieldValue.increment(-1);
+          FieldValue.increment(-1) as unknown as number;
         copiesStatisticsChanges.currentCountByStatus[afterData.status] =
-          FieldValue.increment(1);
+          FieldValue.increment(1) as unknown as number;
       }
     }
 

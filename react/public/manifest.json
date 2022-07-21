@@ -5,7 +5,7 @@
   "icons": [
     {
       "src": "./assets/logos/BASIS Scottsdale Library Logo.ico",
-      "sizes": "48x48",
+      "sizes": "256x256",
       "type": "image/x-icon"
     },
     {
@@ -21,7 +21,7 @@
     {
       "src": "./assets/logos/BASIS Scottsdale Library Logo.png",
       "type": "image/png",
-      "sizes": "2000x2000"
+      "sizes": "4000x4000"
     }
   ],
   "orientation": "landscape",

@@ -34,6 +34,20 @@
     },
     {
       "collectionGroup": "copies",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        {
+          "fieldPath": "identifier",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "libraryID",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "copies",
       "queryScope": "COLLECTION",
       "fields": [
         {

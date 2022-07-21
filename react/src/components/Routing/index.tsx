@@ -245,7 +245,7 @@ const Routing = () => {
             </>
           )}
           <Route path="/signin" element={<Navigate to="/" />} />
-          <Route path="/create-account" element={<Navigate to="/" />} />
+          <Route path="/createaccount" element={<Navigate to="/" />} />
           <Route path="*" element={<UnknownPage />} />
         </Route>
       </Routes>
