@@ -131,12 +131,12 @@ const Home = () => {
               color="inherit"
               style={{ fontWeight: 'bold' }}
             >
-              Now Open!
+              Opening 8/8/2022!
             </Typography>
             {!user ? (
               <Button
                 style={{ marginTop: 10 }}
-                onClick={() => navigate('/create-account')}
+                onClick={() => navigate('/createaccount')}
                 variant="contained"
               >
                 Create an Account

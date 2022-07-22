@@ -1,4 +1,4 @@
-export interface Books {
+export interface BooksStatistics {
   /**
    * The current count of books in the library.
    */
@@ -8,3 +8,5 @@ export interface Books {
    */
   historicalCount: number;
 }
+
+export default BooksStatistics;

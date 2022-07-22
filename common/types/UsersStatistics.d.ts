@@ -1,4 +1,4 @@
-export interface Users {
+export interface UsersStatistics {
   /**
    * The current count of users in the library.
    */
@@ -8,3 +8,5 @@ export interface Users {
    */
   historicalCount: number;
 }
+
+export default UsersStatistics;

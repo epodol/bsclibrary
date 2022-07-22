@@ -70,10 +70,10 @@ interface checkoutDataBook {
 }
 
 function determineSearchField(searchField: 1 | 2 | 3) {
-  let res = 'userInfo.queryFirstName';
-  if (searchField === 1) res = 'userInfo.queryFirstName';
-  if (searchField === 2) res = 'userInfo.queryLastName';
-  if (searchField === 3) res = 'userInfo.queryEmail';
+  let res = 'firstName';
+  if (searchField === 1) res = 'firstName';
+  if (searchField === 2) res = 'lastName';
+  if (searchField === 3) res = 'email';
 
   return res;
 }
@@ -99,9 +99,9 @@ const FindUserTable = ({
   const userQueryRef = query(
     collection(firestore, 'libraries', activeLibraryID, 'users'),
     orderBy(textSearchField),
-    startAt(searchTerm.toLowerCase()),
-    endAt(`${searchTerm.toLowerCase()}\uf8ff`),
-    where('userInfo.disabled', '==', false),
+    startAt(searchTerm),
+    endAt(`${searchTerm}\uf8ff`),
+    // where('userInfo.disabled', '==', false),
     limit(10)
   );
 

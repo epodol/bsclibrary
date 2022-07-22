@@ -11,6 +11,8 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  InputLabel,
+  FormControl,
 } from '@mui/material';
 import User from '@common/types/User';
 
@@ -19,7 +21,7 @@ import { collection, limit, query, where } from '@firebase/firestore';
 import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
 
 function determineSearchField(searchField: 1 | 2 | 3) {
-  let res = 'userInfo.queryFirstName';
+  let res = 'firstName';
   if (searchField === 1) res = 'firstName';
   if (searchField === 2) res = 'lastName';
   if (searchField === 3) res = 'email';
@@ -42,8 +44,8 @@ const FindUserTable = ({
 
   const userQueryRef = query(
     collection(firestore, 'libraries', activeLibraryID, 'users'),
-    where(textSearchField, '>=', searchTerm.toLowerCase()),
-    where(textSearchField, '<=', `${searchTerm.toLowerCase()}~`),
+    where(textSearchField, '>=', searchTerm),
+    where(textSearchField, '<=', `${searchTerm}~`),
     limit(25)
   );
 
@@ -116,14 +118,21 @@ const FindUser = () => {
         className="text-center mx-auto"
       >
         <div>
-          <Select
-            value={searchField}
-            onChange={(e: any) => setSearchField(e.target.value)}
+          <FormControl
+            sx={{ marginInline: 2, width: 160, marginBottom: '1rem' }}
           >
-            <MenuItem value={1}>First Name</MenuItem>
-            <MenuItem value={2}>Last Name</MenuItem>
-            <MenuItem value={3}>Email</MenuItem>
-          </Select>
+            <InputLabel id="searchByLabel">Search by</InputLabel>
+            <Select
+              labelId="searchByLabel"
+              id="searchBy"
+              value={searchField}
+              onChange={(e: any) => setSearchField(e.target.value)}
+            >
+              <MenuItem value={1}>First Name</MenuItem>
+              <MenuItem value={2}>Last Name</MenuItem>
+              <MenuItem value={3}>Email</MenuItem>
+            </Select>
+          </FormControl>
           <TextField
             label="Search Terms"
             onChange={(e) => setSearchTerm(e.target.value)}

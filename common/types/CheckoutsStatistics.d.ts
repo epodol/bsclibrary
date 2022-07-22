@@ -1,4 +1,4 @@
-export interface Checkouts {
+export interface CheckoutsStatistics {
   /**
    * The current count of active checkouts in the library.
    */
@@ -8,3 +8,5 @@ export interface Checkouts {
    */
   historicalCount: number;
 }
+
+export default CheckoutsStatistics;

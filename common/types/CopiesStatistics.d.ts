@@ -1,4 +1,4 @@
-export interface Copies {
+export interface CopiesStatistics {
   /**
    * The current count of copies in the library.
    */
@@ -28,3 +28,5 @@ export interface Copies {
     4: number;
   };
 }
+
+export default CopiesStatistics;

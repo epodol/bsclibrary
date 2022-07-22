@@ -104,7 +104,7 @@ const HomeRouting = () => {
             }
           />
           <Route
-            path="/create-account"
+            path="/createaccount"
             element={
               <DocumentTitle title="Sign Up - BASIS Scottsdale Library">
                 <div className="page">

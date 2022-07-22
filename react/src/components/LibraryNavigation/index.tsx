@@ -62,46 +62,46 @@ const AuthNavBarItems = () => {
       >
         Books
       </Button>
-      {libraryDoc.userPermissions.CHECK_OUT.includes(user.uid) ||
-        (libraryDoc.ownerUserID === user.uid && (
-          <Button
-            color="inherit"
-            disabled={location.pathname === '/checkout'}
-            onClick={() => navigate('/checkout')}
-          >
-            Check Out
-          </Button>
-        ))}
-      {libraryDoc.userPermissions.CHECK_IN.includes(user.uid) ||
-        (libraryDoc.ownerUserID === user.uid && (
-          <Button
-            color="inherit"
-            disabled={location.pathname === '/checkin'}
-            onClick={() => navigate('/checkin')}
-          >
-            Check In
-          </Button>
-        ))}
-      {libraryDoc.userPermissions.MANAGE_CHECKOUTS.includes(user.uid) ||
-        (libraryDoc.ownerUserID === user.uid && (
-          <Button
-            color="inherit"
-            disabled={location.pathname === '/checkouts'}
-            onClick={() => navigate('/checkouts')}
-          >
-            Manage Checkouts
-          </Button>
-        ))}
-      {libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
-        (libraryDoc.ownerUserID === user.uid && (
-          <Button
-            color="inherit"
-            disabled={location.pathname === '/users'}
-            onClick={() => navigate('/users')}
-          >
-            Users
-          </Button>
-        ))}
+      {(libraryDoc.userPermissions.CHECK_OUT.includes(user.uid) ||
+        libraryDoc.ownerUserID === user.uid) && (
+        <Button
+          color="inherit"
+          disabled={location.pathname === '/checkout'}
+          onClick={() => navigate('/checkout')}
+        >
+          Check Out
+        </Button>
+      )}
+      {(libraryDoc.userPermissions.CHECK_IN.includes(user.uid) ||
+        libraryDoc.ownerUserID === user.uid) && (
+        <Button
+          color="inherit"
+          disabled={location.pathname === '/checkin'}
+          onClick={() => navigate('/checkin')}
+        >
+          Check In
+        </Button>
+      )}
+      {(libraryDoc.userPermissions.MANAGE_CHECKOUTS.includes(user.uid) ||
+        libraryDoc.ownerUserID === user.uid) && (
+        <Button
+          color="inherit"
+          disabled={location.pathname === '/checkouts'}
+          onClick={() => navigate('/checkouts')}
+        >
+          Manage Checkouts
+        </Button>
+      )}
+      {(libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
+        libraryDoc.ownerUserID === user.uid) && (
+        <Button
+          color="inherit"
+          disabled={location.pathname === '/users'}
+          onClick={() => navigate('/users')}
+        >
+          Users
+        </Button>
+      )}
     </>
   );
 };
@@ -239,9 +239,10 @@ const Navigation = () => {
             {!user && (
               <Button
                 size="large"
-                variant="contained"
+                variant="outlined"
                 onClick={() => navigate('/signin')}
                 disabled={location.pathname.startsWith('/signin')}
+                color="inherit"
               >
                 Sign In
               </Button>
