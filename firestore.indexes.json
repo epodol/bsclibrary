@@ -23,12 +23,396 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "checkoutStatus",
+          "fieldPath": "timeIn",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timeOut",
           "order": "ASCENDING"
         },
         {
           "fieldPath": "dueDate",
           "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "conditionOut",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "conditionIn",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "conditionDiff",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "renewsUsed",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "timeIn",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timeOut",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "timeIn",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "dueDate",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "timeIn",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "conditionOut",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "timeIn",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "conditionIn",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "timeIn",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "conditionDiff",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "timeIn",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "renewsUsed",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "timeIn",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timeOut",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "timeIn",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "dueDate",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "timeIn",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "conditionOut",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "timeIn",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "conditionIn",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "timeIn",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "conditionDiff",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "timeIn",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "renewsUsed",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "returned",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timeOut",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "returned",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timeIn",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "returned",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "dueDate",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "returned",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "conditionOut",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "returned",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "conditionIn",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "returned",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "conditionDiff",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "returned",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "renewsUsed",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "returned",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timeOut",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "returned",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timeIn",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "returned",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "dueDate",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "returned",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "conditionOut",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "returned",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "conditionIn",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "returned",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "conditionDiff",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "checkouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "returned",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "renewsUsed",
+          "order": "DESCENDING"
         }
       ]
     },

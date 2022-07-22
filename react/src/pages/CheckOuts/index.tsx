@@ -57,7 +57,7 @@ const useBuildCheckoutsQuery = (searchParams: URLSearchParams) => {
   }
 
   const status = searchParams.get('status');
-  if (status === 'active') {
+  if (status === 'active' && sortBy !== 'timeIn') {
     query = firestoreQuery(query, where('timeIn', '==', null));
   }
   if (status === 'returned') {
@@ -161,6 +161,7 @@ const CheckOuts = () => {
                 onClick={() => {
                   searchParams.delete('sortBy');
                   searchParams.delete('sortDir');
+                  searchParams.delete('status');
                   setSearchParams(searchParams);
                 }}
               >

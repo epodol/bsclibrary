@@ -101,7 +101,7 @@ const FindUserTable = ({
     orderBy(textSearchField),
     startAt(searchTerm),
     endAt(`${searchTerm}\uf8ff`),
-    where('userInfo.disabled', '==', false),
+    // where('userInfo.disabled', '==', false),
     limit(10)
   );
 
