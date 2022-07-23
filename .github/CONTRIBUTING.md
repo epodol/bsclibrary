@@ -12,7 +12,7 @@ We would love for you to contribute to `bsclibrary`, pull requests are welcome! 
 
 1. Clone the repo
 
-   ```
+   ```sh
    > git clone https://github.com/epodol/bsclibrary.git
    > cd bsclibrary
    ```
@@ -22,13 +22,17 @@ We would love for you to contribute to `bsclibrary`, pull requests are welcome! 
    [![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/epodol/bsclibrary)
 
 1. Install dependencies
-   ```
+
+   ```sh
    > npm install --no-audit
    ```
+
 1. Start the React development server, Typescript compiler, and Firebase Emulators.
-   ```
+
+   ```sh
    > npm run start
    ```
+
 1. Open [http://localhost:3000](http://localhost:3000) (React development server) and [http://localhost:4000](http://localhost:4000) (Emulator UI) in your browser. It will automatically reload if you change any of the source files.
 
 ## Emulator Data Export
