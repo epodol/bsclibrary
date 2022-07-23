@@ -11,11 +11,11 @@ import {
 } from '@mui/material';
 import {
   AccountCircle,
-  Brightness7,
   ExitToApp,
   Home,
   LocalLibrary,
-  ModeNight,
+  LightMode,
+  DarkMode,
 } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 
@@ -233,7 +233,7 @@ const Navigation = () => {
               style={{ marginInline: 10 }}
               onClick={() => toggleTheme()}
             >
-              {theme.palette.mode === 'dark' ? <Brightness7 /> : <ModeNight />}
+              {theme.palette.mode === 'dark' ? <LightMode /> : <DarkMode />}
             </IconButton>
             {user && <AuthMenuItems />}
             {!user && (
