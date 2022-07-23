@@ -15,7 +15,7 @@ const Code = () => (
       </p>
       <br />
       <a
-        href="https://github.com/epodol/bsclibrary"
+        href="https://github.com/epodol/bsclibrary/blob/main/.github/CONTRIBUTING.md"
         target="_blank"
         rel="noopener noreferrer"
       >
