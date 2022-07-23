@@ -13,17 +13,10 @@ interface TabPanelProps {
 }
 
 const TabPanel = ({ children, value, index, ...other }: TabPanelProps) => (
-  <div
-    role="tabpanel"
-    hidden={value !== index}
-    style={{ overflowWrap: 'break-word' }}
-    {...other}
-  >
+  <div role="tabpanel" hidden={value !== index} {...other}>
     {value === index && (
       <Box m="5%">
-        <div style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>
-          {children}
-        </div>
+        <div style={{ whiteSpace: 'pre-wrap' }}>{children}</div>
       </Box>
     )}
   </div>
@@ -44,7 +37,6 @@ const About = () => {
               value={value}
               onChange={(e, newValue) => setValue(newValue)}
               scrollButtons
-              style={{ overflowWrap: 'anywhere' }}
               allowScrollButtonsMobile
             >
               <Tab wrapped label="Introduction" />
