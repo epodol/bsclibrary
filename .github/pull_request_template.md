@@ -9,10 +9,12 @@ issue before creating a pull request. Once you have completed the following, ple
     - [ ] A description/summary of the changes
     - [ ] A link to the related issue(s)
 
-
 -->
+<!-- markdownlint-disable MD041 -->
 
 Fixes #<!-- Enter issue number here -->
+
+<!-- markdownlint-enable MD041 -->
 
 ### Description
 
