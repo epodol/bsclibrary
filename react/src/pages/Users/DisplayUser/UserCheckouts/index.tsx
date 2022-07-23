@@ -40,16 +40,16 @@ const UserCheckouts = ({ user }: { user: User }) => {
     <div className="text-center">
       <h3>Checkouts</h3>
       <h5>
-        {user.activeCheckouts.length ?? 0} active checkout
-        {(user.activeCheckouts.length ?? 0) === 1 ? '' : 's'}
+        {user?.activeCheckouts?.length ?? 0} active checkout
+        {(user?.activeCheckouts?.length ?? 0) === 1 ? '' : 's'}
       </h5>
       <br />
       <Formik
         enableReinitialize
         initialValues={{
-          activeCheckouts: user.activeCheckouts ?? [],
-          maxCheckouts: user.maxCheckouts ?? 0,
-          maxRenews: user.maxRenews ?? 0,
+          activeCheckouts: user?.activeCheckouts ?? [],
+          maxCheckouts: user?.maxCheckouts ?? 0,
+          maxRenews: user?.maxRenews ?? 0,
         }}
         validationSchema={checkoutInfoSchema}
         onSubmit={(values, actions) => {
