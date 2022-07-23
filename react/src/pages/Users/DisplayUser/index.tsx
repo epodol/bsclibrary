@@ -28,6 +28,13 @@ const DisplayUser = () => {
     idField: 'id',
   }).data as unknown as UserInterfaceWithID;
 
+  if (!data)
+    return (
+      <div style={{ margin: '4rem', textAlign: 'center' }}>
+        <h1>User not found.</h1>
+      </div>
+    );
+
   return (
     <div className="div-margin">
       <Paper className="paper-margin">

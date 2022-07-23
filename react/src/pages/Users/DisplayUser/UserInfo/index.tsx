@@ -44,9 +44,11 @@ const UserInfo = ({ user }: { user: User }) => {
     lastName: yup.string(),
   });
 
-  const userExpired = user.expiration
+  const userExpired = user?.expiration
     ? user.expiration.toDate() < new Date()
     : false;
+
+  if (!user) return <h1>No User Found.</h1>;
 
   return (
     <div>

@@ -224,7 +224,7 @@ const Routing = () => {
                     path="users"
                     element={
                       <Suspense fallback={<Loading />}>
-                        <Page title="Users Checkouts - BASIS Scottsdale Library">
+                        <Page title="Users - BASIS Scottsdale Library">
                           <Users />
                         </Page>
                       </Suspense>

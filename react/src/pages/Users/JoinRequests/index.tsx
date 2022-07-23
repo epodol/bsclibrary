@@ -1,6 +1,5 @@
 import React, { useState, Suspense, useContext } from 'react';
 import { useFirestore, useFirestoreCollectionData } from 'reactfire';
-import { useNavigate } from 'react-router-dom';
 import {
   Select,
   MenuItem,
@@ -13,14 +12,16 @@ import {
   TableRow,
   InputLabel,
   FormControl,
+  FormControlLabel,
+  Checkbox,
 } from '@mui/material';
-import User from '@common/types/User';
 
 import Loading from 'src/components/Loading';
 import { collection, limit, query, where } from '@firebase/firestore';
 import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
+import JoinRequest from '@common/types/JoinRequest';
 
-function determineSearchField(searchField: 1 | 2 | 3) {
+function determineSearchField(searchField: 1 | 2 | 3 | 4) {
   let res = 'firstName';
   if (searchField === 1) res = 'firstName';
   if (searchField === 2) res = 'lastName';
@@ -29,12 +30,14 @@ function determineSearchField(searchField: 1 | 2 | 3) {
   return res;
 }
 
-const FindUserTable = ({
+const JoinRequestsTable = ({
   searchField,
   searchTerm,
+  showApproved,
 }: {
-  searchField: 1 | 2 | 3;
+  searchField: 1 | 2 | 3 | 4;
   searchTerm: string;
+  showApproved: boolean;
 }) => {
   const textSearchField = determineSearchField(searchField);
 
@@ -42,50 +45,52 @@ const FindUserTable = ({
   const activeLibraryID = useContext(ActiveLibraryID);
   if (!activeLibraryID) throw new Error('No active library!');
 
-  const userQueryRef = query(
-    collection(firestore, 'libraries', activeLibraryID, 'users'),
+  let userQueryRef = query(
+    collection(firestore, 'libraries', activeLibraryID, 'joinRequests'),
     where(textSearchField, '>=', searchTerm),
     where(textSearchField, '<=', `${searchTerm}~`),
     limit(25)
   );
 
-  const userData: User[] = useFirestoreCollectionData(userQueryRef, {
-    idField: 'id',
-  }).data as unknown as User[];
+  if (!showApproved) {
+    userQueryRef = query(userQueryRef, where('approved', '==', false));
+  }
 
-  const navigate = useNavigate();
+  const joinRequestData: JoinRequest[] = useFirestoreCollectionData(
+    userQueryRef,
+    {
+      idField: 'id',
+    }
+  ).data as unknown as JoinRequest[];
 
   return (
     <div className="text-center">
-      {userData.length !== 0 && (
+      {joinRequestData.length !== 0 && (
         <Table aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Approved</TableCell>
-              <TableCell>Expires</TableCell>
+              <TableCell></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {userData.map((userInfo) => {
-              if (!userInfo) return <></>;
+            {joinRequestData.map((joinRequest) => {
+              if (!joinRequest) return <></>;
               return (
-                <TableRow
-                  key={userInfo.uid}
-                  style={{ cursor: 'pointer' }}
-                  hover
-                  onClick={() => navigate(`/users/${userInfo.uid}`)}
-                >
+                <TableRow key={joinRequest.uid}>
                   <TableCell component="th" scope="row">
-                    {userInfo.firstName} {userInfo.lastName}
+                    {joinRequest.firstName} {joinRequest.lastName}
                   </TableCell>
-                  <TableCell>{userInfo.email}</TableCell>
+                  <TableCell>{joinRequest.email}</TableCell>
                   <TableCell>
-                    {userInfo.approvedAt?.toDate().toLocaleDateString()}
+                    {joinRequest.approved ? <strong>Yes</strong> : 'No'}
                   </TableCell>
                   <TableCell>
-                    {userInfo.expiration?.toDate().toLocaleDateString()}
+                    <Button disabled>
+                      {joinRequest.approved ? 'View User' : 'Approve User'}
+                    </Button>
                   </TableCell>
                 </TableRow>
               );
@@ -93,26 +98,28 @@ const FindUserTable = ({
           </TableBody>
         </Table>
       )}
-      {userData.length === 0 && (
+      {joinRequestData.length === 0 && (
         <>
           <br />
-          <h3>No Users Found.</h3>
+          <h3>No Join Requests Found.</h3>
         </>
       )}
     </div>
   );
 };
 
-const FindUser = () => {
-  const [searchField, setSearchField] = useState<1 | 2 | 3>(1);
+const JoinRequests = () => {
+  const [searchField, setSearchField] = useState<1 | 2 | 3 | 4>(1);
   const [searchTerm, setSearchTerm] = useState<string>('');
 
-  const [lastSearchField, setLastSearchField] = useState<1 | 2 | 3>(1);
-  const [lastSearchTerm, setLastSearchTerm] = useState<string | null>(null);
+  const [showApproved, setShowApproved] = useState<boolean>(true);
+
+  const [lastSearchField, setLastSearchField] = useState<1 | 2 | 3 | 4>(1);
+  const [lastSearchTerm, setLastSearchTerm] = useState<string>('');
 
   return (
     <div>
-      <h2 className="flex-center text-center">Search Users</h2>
+      <h2 className="flex-center text-center">Join Requests</h2>
       <form
         onSubmit={(e) => e.preventDefault()}
         className="text-center mx-auto"
@@ -140,6 +147,19 @@ const FindUser = () => {
             value={searchTerm}
           />
         </div>
+        <div style={{ marginTop: '1rem' }}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                value={!showApproved}
+                onChange={(e) => {
+                  setShowApproved(e.target.checked);
+                }}
+              />
+            }
+            label="Show Approved Requests"
+          />
+        </div>
         <div className="pt-3 mx-auto text-center">
           <Button
             variant="contained"
@@ -153,21 +173,15 @@ const FindUser = () => {
           </Button>
         </div>
       </form>
-      {lastSearchField !== null &&
-        lastSearchTerm !== null &&
-        lastSearchTerm !== '' && (
-          <Suspense fallback={<Loading />}>
-            <FindUserTable
-              searchField={lastSearchField}
-              searchTerm={lastSearchTerm}
-            />
-          </Suspense>
-        )}
-      {lastSearchTerm === '' && (
-        <h5 className="text-center">Please enter a search term</h5>
-      )}
+      <Suspense fallback={<Loading />}>
+        <JoinRequestsTable
+          searchField={lastSearchField}
+          searchTerm={lastSearchTerm}
+          showApproved={showApproved}
+        />
+      </Suspense>
     </div>
   );
 };
 
-export default FindUser;
+export default JoinRequests;
