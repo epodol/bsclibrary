@@ -96,6 +96,10 @@ const FindUserTable = ({
   const activeLibraryID = useContext(ActiveLibraryID);
   if (!activeLibraryID) throw new Error('No active library found!');
 
+  const libraryDoc: Library = useFirestoreDocData(
+    doc(firestore, 'libraries', activeLibraryID)
+  ).data as Library;
+
   const userQueryRef = query(
     collection(firestore, 'libraries', activeLibraryID, 'users'),
     orderBy(textSearchField),
@@ -141,7 +145,8 @@ const FindUserTable = ({
                   </TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>
-                    {user.activeCheckouts?.length} / {user.maxCheckouts}
+                    {user.activeCheckouts?.length} /{' '}
+                    {libraryDoc.checkoutGroups[user.checkoutGroup].maxCheckouts}
                   </TableCell>
                 </TableRow>
               );
@@ -322,6 +327,8 @@ const ScanBooks = ({
   const activeLibraryID = useContext(ActiveLibraryID);
   if (!activeLibraryID) throw new Error('No active library found!');
 
+  if (!checkoutData.user) throw new Error('No user found!');
+
   const firestore = useFirestore();
 
   const activeLibraryDoc: Library = useFirestoreDocData(
@@ -406,7 +413,14 @@ const ScanBooks = ({
                 id,
                 parent: parent.id,
                 parentData,
-                dueDate: new Date(new Date().setDate(new Date().getDate() + 14))
+                dueDate: new Date(
+                  new Date().setDate(
+                    new Date().getDate() +
+                      activeLibraryDoc.checkoutGroups[
+                        checkoutData?.user?.checkoutGroup ?? 'default'
+                      ].checkoutDuration
+                  )
+                )
                   .toISOString()
                   .split('T')[0],
               },
@@ -436,26 +450,29 @@ const ScanBooks = ({
           </Form>
         )}
       </Formik>
-      {(checkoutData.user?.maxCheckouts ?? 0) -
+      {(activeLibraryDoc.checkoutGroups[checkoutData.user.checkoutGroup]
+        .maxCheckouts ?? 0) -
         ((checkoutData.user?.activeCheckouts.length ?? 0) +
           checkoutData.books.length) >=
         1 && (
         <p>
           {checkoutData.user?.firstName} {checkoutData.user?.lastName} is only
           allowed{' '}
-          {(checkoutData.user?.maxCheckouts ?? 0) -
+          {(activeLibraryDoc.checkoutGroups[checkoutData.user.checkoutGroup]
+            .maxCheckouts ?? 0) -
             ((checkoutData.user?.activeCheckouts.length ?? 0) +
               checkoutData.books.length)}{' '}
           more checkouts.
         </p>
       )}
-      {(checkoutData.user?.maxCheckouts ?? 0) -
+      {(activeLibraryDoc.checkoutGroups[checkoutData.user.checkoutGroup]
+        .maxCheckouts ?? 0) -
         ((checkoutData.user?.activeCheckouts.length ?? 0) +
           checkoutData.books.length) <
         1 && (
         <h5>
           <b>
-            {checkoutData.user?.firstName} {checkoutData.user?.lastName} is not
+            {checkoutData.user?.firstName} {checkoutData.user.lastName} is not
             allowed any more checkouts.{' '}
           </b>
           You can override this.
@@ -729,6 +746,10 @@ const CheckOut = () => {
     doc(firestore, 'libraries', activeLibraryID)
   ).data as Library;
 
+  const userDoc: User = useFirestoreDocData(
+    doc(firestore, 'libraries', activeLibraryID, 'users', user.uid)
+  ).data as User;
+
   const [activeState, setActiveState] = useState(0);
   const [checkoutData, setCheckoutData] = useState<checkoutData>({
     user: null,
@@ -768,9 +789,17 @@ const CheckOut = () => {
                 currently checked out
               </li>
               <li>
-                Allowed <b>{checkoutData.user?.maxCheckouts ?? 0}</b> checkout
-                {(checkoutData.user?.maxCheckouts ?? 0) === 1 ? '' : 's'} at a
-                time
+                Allowed{' '}
+                <b>
+                  {libraryDoc.checkoutGroups[userDoc.checkoutGroup]
+                    .maxCheckouts ?? 0}
+                </b>{' '}
+                checkout
+                {(libraryDoc.checkoutGroups[userDoc.checkoutGroup]
+                  .maxCheckouts ?? 0) === 1
+                  ? ''
+                  : 's'}{' '}
+                at a time
               </li>
             </ul>
           </div>

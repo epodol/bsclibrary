@@ -171,7 +171,8 @@ const CheckoutDialog = () => {
             </li>
             <br />
             <li>
-              <b>Renews Used:</b> {checkout.renewsUsed} / {user.maxRenews ?? 0}
+              <b>Renews Used:</b> {checkout.renewsUsed} /{' '}
+              {libraryDoc.checkoutGroups[user.checkoutGroup].maxRenews}
             </li>
           </ul>
         </div>
