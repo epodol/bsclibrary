@@ -62,13 +62,12 @@ const CheckoutRow = ({ checkoutID }: { checkoutID: string }) => {
             marginLeft: '1rem',
           }}
           variant="contained"
-          color="inherit"
           disabled={(userDoc?.maxRenews ?? 0) - checkout.renewsUsed <= 0}
           onClick={() => {
             httpsCallable(
               functions,
               'renewCheckout'
-            )({ checkoutID })
+            )({ checkoutID, libraryID: activeLibraryID })
               .then(() => {
                 NotificationHandler.addNotification({
                   message: 'Checkout renewed',

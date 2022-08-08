@@ -4,6 +4,7 @@ import renewCheckoutData from '@common/functions/renewCheckout';
 
 import Checkout from '@common/types/Checkout';
 import RecursivePartial from '@common/types/util/RecursivePartial';
+import User from '@common/types/User';
 
 const renewCheckout = functions
   .region('us-west2')
@@ -34,26 +35,32 @@ const renewCheckout = functions
       );
     }
 
-    // Checkout Verification
-    if (
-      typeof context.auth.token?.checkoutInfo?.activeCheckouts === 'undefined'
-    ) {
+    const libraryDoc = await firestore
+      .collection('libraries')
+      .doc(data.libraryID)
+      .get();
+
+    if (!libraryDoc.exists) {
+      throw new functions.https.HttpsError('not-found', `Library not found.`);
+    }
+
+    const userDoc = await firestore
+      .collection('libraries')
+      .doc(data.libraryID)
+      .collection('users')
+      .doc(context.auth.uid)
+      .get();
+
+    if (!userDoc.exists) {
       throw new functions.https.HttpsError(
-        'permission-denied',
-        'The caller must already have a set active checkout array.'
+        'not-found',
+        `The user with ID ${context.auth.uid} does not have a user document.`
       );
     }
 
-    if (context.auth.token?.checkoutInfo?.activeCheckouts.length === 0) {
-      throw new functions.https.HttpsError(
-        'permission-denied',
-        'The caller must already have an active checkout.'
-      );
-    }
+    const user: User = userDoc.data() as User;
 
-    if (
-      !context.auth.token.checkoutInfo.activeCheckouts.includes(data.checkoutID)
-    ) {
+    if (!user.activeCheckouts.includes(data.checkoutID)) {
       throw new functions.https.HttpsError(
         'permission-denied',
         'The requested checkout must be active.'
@@ -66,6 +73,7 @@ const renewCheckout = functions
       .collection('checkouts')
       .doc(data.checkoutID)
       .get();
+
     if (!checkoutDoc.exists) {
       throw new functions.https.HttpsError(
         'not-found',
@@ -79,7 +87,7 @@ const renewCheckout = functions
         `The checkout with ID ${data.checkoutID} does not belong to the user.`
       );
     }
-    if (context.auth.token.checkoutInfo.maxRenews - checkout.renewsUsed <= 0) {
+    if (user.maxRenews - checkout.renewsUsed <= 0) {
       throw new functions.https.HttpsError(
         'permission-denied',
         `The checkout with ID ${data.checkoutID} has already been renewed the maximum number of times.`
@@ -93,7 +101,12 @@ const renewCheckout = functions
       // Since we can not increment the dueDate, we will not increment the renewsUsed
       renewsUsed: checkout.renewsUsed + 1,
     };
-    firestore.collection('checkouts').doc(data.checkoutID).update(newCheckout);
+    firestore
+      .collection('libraries')
+      .doc(data.libraryID)
+      .collection('checkouts')
+      .doc(data.checkoutID)
+      .update(newCheckout);
   });
 
 export default renewCheckout;

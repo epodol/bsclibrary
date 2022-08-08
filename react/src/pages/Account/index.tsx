@@ -38,9 +38,6 @@ const Account = () => {
               </li>
               <li>{user.phoneNumber ?? 'No phone number set.'}</li>
             </ul>
-            <p className="text-center font-italic">
-              The ability to change this information will be available soon.
-            </p>
           </Paper>
         </Grid>
         <Grid item xs={8}>
