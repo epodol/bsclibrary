@@ -131,7 +131,7 @@ const Home = () => {
               color="inherit"
               style={{ fontWeight: 'bold' }}
             >
-              Opening 8/8/2022!
+              Now Open in Room 123!
             </Typography>
             {!user ? (
               <Button
@@ -177,6 +177,15 @@ const Home = () => {
           The BASIS Scottsdale Library depends on donations from BASIS
           Scottsdale families. Please consider donating books or volunteering.
           For more information, click <Link to="/contribute">here.</Link>
+        </h6>
+        <br />
+        <h2>When will the Library be open?</h2>
+        <h6>
+          The BASIS Scottsdale Library will typically be open from{' '}
+          <strong>
+            3:45-4:30 Monday-Friday, and 7:00-8:15 Wednesday-Friday
+          </strong>
+          . Check the Bulldog Blast for any updates to our hours for the week.
         </h6>
         <br />
         <h2>I have more questions!</h2>

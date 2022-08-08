@@ -1,39 +1,33 @@
-import { condition, status } from '../types/Copy';
-
 export default interface approveUserData {
   /**
    * Firestore id of the library
    */
   libraryID: string;
   /**
-   * Firestore id of the book
+   * The Firebase ID of the user to approve
    */
-  bookID: string;
+  uid: string;
   /**
-   * Firestore id of the copy
+   * The user's first name
    */
-  copyID: string;
+  firstName: string;
   /**
-   * Condition of the book when it was checked in
+   * The user's last name
    */
-  condition: condition;
+  lastName: string;
   /**
-   * The status of the copy to set
+   * The user's email address
    */
-  status: status;
+  email: string;
+  /**
+   * The expiration date of the user's account
+   */
+  expiration: number;
 }
 
 export interface approveUserResult {
   /**
-   * Firestore id of the checkout
-   */
-  checkoutID: string;
-  /**
    * Firestore id of the user
    */
   userID: string;
-  /**
-   * The difference in condition between the copy when it was checked in and when it was checked out. (conditionIn - conditionOut)
-   */
-  conditionDiff: number;
 }

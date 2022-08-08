@@ -13,3 +13,4 @@ export { default as renewCheckout } from './checkouts/renewCheckout.js';
 export { default as updatePermissionsClaims } from './libraries/updatePermissionsClaims.js';
 
 export { default as userStatistics } from './users/userStatistics.js';
+export { default as approveUser } from './users/approveUser.js';

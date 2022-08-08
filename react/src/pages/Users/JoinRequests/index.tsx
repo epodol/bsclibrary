@@ -20,6 +20,8 @@ import Loading from 'src/components/Loading';
 import { collection, limit, query, where } from '@firebase/firestore';
 import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
 import JoinRequest from '@common/types/JoinRequest';
+import { useNavigate } from 'react-router';
+import ApproveUserDialog from 'src/pages/Users/JoinRequests/ApproveUserDialog';
 
 function determineSearchField(searchField: 1 | 2 | 3 | 4) {
   let res = 'firstName';
@@ -45,6 +47,11 @@ const JoinRequestsTable = ({
   const activeLibraryID = useContext(ActiveLibraryID);
   if (!activeLibraryID) throw new Error('No active library!');
 
+  const navigate = useNavigate();
+
+  const [approveUserDialog, setApproveUserDialog] =
+    useState<JoinRequest | null>(null);
+
   let userQueryRef = query(
     collection(firestore, 'libraries', activeLibraryID, 'joinRequests'),
     where(textSearchField, '>=', searchTerm),
@@ -65,12 +72,17 @@ const JoinRequestsTable = ({
 
   return (
     <div className="text-center">
+      <ApproveUserDialog
+        joinRequest={approveUserDialog}
+        closeDialog={() => setApproveUserDialog(null)}
+      />
       {joinRequestData.length !== 0 && (
         <Table aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
+              <TableCell>Created At</TableCell>
               <TableCell>Approved</TableCell>
               <TableCell></TableCell>
             </TableRow>
@@ -85,10 +97,19 @@ const JoinRequestsTable = ({
                   </TableCell>
                   <TableCell>{joinRequest.email}</TableCell>
                   <TableCell>
+                    {joinRequest.createdAt?.toDate().toLocaleString()}
+                  </TableCell>
+                  <TableCell>
                     {joinRequest.approved ? <strong>Yes</strong> : 'No'}
                   </TableCell>
                   <TableCell>
-                    <Button disabled>
+                    <Button
+                      onClick={() => {
+                        if (joinRequest.approved)
+                          navigate(`/users/${joinRequest.uid}`);
+                        else setApproveUserDialog(joinRequest);
+                      }}
+                    >
                       {joinRequest.approved ? 'View User' : 'Approve User'}
                     </Button>
                   </TableCell>
@@ -112,7 +133,7 @@ const JoinRequests = () => {
   const [searchField, setSearchField] = useState<1 | 2 | 3 | 4>(1);
   const [searchTerm, setSearchTerm] = useState<string>('');
 
-  const [showApproved, setShowApproved] = useState<boolean>(true);
+  const [showApproved, setShowApproved] = useState<boolean>(false);
 
   const [lastSearchField, setLastSearchField] = useState<1 | 2 | 3 | 4>(1);
   const [lastSearchTerm, setLastSearchTerm] = useState<string>('');
@@ -151,7 +172,7 @@ const JoinRequests = () => {
           <FormControlLabel
             control={
               <Checkbox
-                value={!showApproved}
+                value={showApproved}
                 onChange={(e) => {
                   setShowApproved(e.target.checked);
                 }}
