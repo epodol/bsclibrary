@@ -1,6 +1,6 @@
 {
   "name": "bsclibrary",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "The BASIS Scottsdale Library Website",
   "keywords": [
     "BASIS Scottsdale Library"
@@ -60,24 +60,24 @@
     "outdated:common": "cd common && npm outdated"
   },
   "devDependencies": {
-    "@types/node": "^16.11.45",
-    "@typescript-eslint/eslint-plugin": "^5.30.7",
-    "@typescript-eslint/parser": "^5.30.7",
-    "eslint": "^8.20.0",
+    "@types/node": "^16.11.47",
+    "@typescript-eslint/eslint-plugin": "^5.32.0",
+    "@typescript-eslint/parser": "^5.32.0",
+    "eslint": "^8.21.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-jest": "^26.6.0",
+    "eslint-plugin-jest": "^26.8.0",
     "eslint-plugin-jest-dom": "^4.0.2",
     "eslint-plugin-jsx-a11y": "^6.6.1",
     "eslint-plugin-prettier": "^4.2.1",
-    "firebase-tools": "^11.3.0",
+    "firebase-tools": "^11.4.2",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.7.1",
     "run-script-os": "^1.1.6",
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "firebase": "^9.9.1"
+    "firebase": "^9.9.2"
   }
 }

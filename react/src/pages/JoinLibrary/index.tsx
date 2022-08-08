@@ -71,7 +71,7 @@ const JoinLibrary = () => {
       >
         <h1 style={{ textAlign: 'center' }}>Join Library</h1>
         <div style={{ textAlign: 'center' }}>
-          <h3>Please confirm your email address before joining the library.</h3>
+          <h3>Please confirm your email address.</h3>
           <p>Check your inbox to confirm your email address.</p>
           <br />
           <Button
