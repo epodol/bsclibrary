@@ -5,6 +5,10 @@ import { Timestamp } from 'firebase-admin/firestore';
  */
 export default interface User {
   /**
+   * Whether or not the user is active within the library
+   */
+  active: boolean;
+  /**
    * An array of active checkout IDs
    */
   activeCheckouts: string[];
