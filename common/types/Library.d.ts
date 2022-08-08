@@ -103,6 +103,29 @@ export default interface Library {
     5: string;
   };
   /**
+   * Groups for maximum checkouts and renews
+   */
+  checkoutGroups: {
+    [key: string]: {
+      /**
+       * The maximum number of checkouts allowed.
+       */
+      maxCheckouts: number;
+      /**
+       * The maximum number of renews allowed.
+       */
+      maxRenews: number;
+      /**
+       * Renew duration in days.
+       */
+      renewDuration: number;
+      /**
+       * Default checkout duration in days.
+       */
+      checkoutDuration: number;
+    };
+  };
+  /**
    * The UID of the user who owns this library.
    */
   ownerUserID: string;

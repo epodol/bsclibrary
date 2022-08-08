@@ -9,13 +9,9 @@ export default interface User {
    */
   activeCheckouts: string[];
   /**
-   * The maximum number of checkouts the user is allowed to have
+   * The checkout group of the user.
    */
-  maxCheckouts: number;
-  /**
-   * The maximum number of renews the user is allowed to have
-   */
-  maxRenews: number;
+  checkoutGroup: string;
   /**
    * The user's first name
    */

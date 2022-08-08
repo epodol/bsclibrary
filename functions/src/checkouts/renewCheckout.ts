@@ -5,6 +5,7 @@ import renewCheckoutData from '@common/functions/renewCheckout';
 import Checkout from '@common/types/Checkout';
 import RecursivePartial from '@common/types/util/RecursivePartial';
 import User from '@common/types/User';
+import Library from '@common/types/Library';
 
 const renewCheckout = functions
   .region('us-west2')
@@ -43,6 +44,8 @@ const renewCheckout = functions
     if (!libraryDoc.exists) {
       throw new functions.https.HttpsError('not-found', `Library not found.`);
     }
+
+    const library: Library = libraryDoc.data() as Library;
 
     const userDoc = await firestore
       .collection('libraries')
@@ -87,7 +90,11 @@ const renewCheckout = functions
         `The checkout with ID ${data.checkoutID} does not belong to the user.`
       );
     }
-    if (user.maxRenews - checkout.renewsUsed <= 0) {
+    if (
+      library.checkoutGroups[user.checkoutGroup].maxRenews -
+        checkout.renewsUsed <=
+      0
+    ) {
       throw new functions.https.HttpsError(
         'permission-denied',
         `The checkout with ID ${data.checkoutID} has already been renewed the maximum number of times.`
@@ -96,7 +103,12 @@ const renewCheckout = functions
 
     const newCheckout: RecursivePartial<Checkout> = {
       dueDate: Timestamp.fromMillis(
-        checkout.dueDate.toDate().valueOf() + 7 * 24 * 60 * 60 * 1000
+        checkout.dueDate.toDate().valueOf() +
+          library.checkoutGroups[user.checkoutGroup].renewDuration *
+            24 *
+            60 *
+            60 *
+            1000
       ),
       // Since we can not increment the dueDate, we will not increment the renewsUsed
       renewsUsed: checkout.renewsUsed + 1,

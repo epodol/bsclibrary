@@ -21,6 +21,7 @@ import Checkout from '@common/types/Checkout';
 import NotificationContext from 'src/contexts/NotificationContext';
 import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
 import User from '@common/types/User';
+import Library from '@common/types/Library';
 
 const CheckoutRow = ({ checkoutID }: { checkoutID: string }) => {
   const NotificationHandler = useContext(NotificationContext);
@@ -32,6 +33,10 @@ const CheckoutRow = ({ checkoutID }: { checkoutID: string }) => {
 
   const user = useUser().data;
   if (!user) throw new Error('No user signed in!');
+
+  const libraryDoc: Library = useFirestoreDocData(
+    doc(firestore, 'libraries', activeLibraryID)
+  ).data as Library;
 
   const userDoc: User = useFirestoreDocData(
     doc(firestore, 'libraries', activeLibraryID, 'users', user.uid)
@@ -56,13 +61,18 @@ const CheckoutRow = ({ checkoutID }: { checkoutID: string }) => {
         {checkout?.dueDate?.toDate()?.toDateString() ?? 'Loading'}
       </TableCell>
       <TableCell>
-        {checkout.renewsUsed} / {userDoc?.maxRenews ?? 0}
+        {checkout.renewsUsed} /{' '}
+        {libraryDoc.checkoutGroups[userDoc.checkoutGroup].maxRenews ?? 0}
         <Button
           style={{
             marginLeft: '1rem',
           }}
           variant="contained"
-          disabled={(userDoc?.maxRenews ?? 0) - checkout.renewsUsed <= 0}
+          disabled={
+            (libraryDoc.checkoutGroups[userDoc.checkoutGroup].maxRenews ?? 0) -
+              checkout.renewsUsed <=
+            0
+          }
           onClick={() => {
             httpsCallable(
               functions,
@@ -82,7 +92,8 @@ const CheckoutRow = ({ checkoutID }: { checkoutID: string }) => {
               });
           }}
         >
-          Renew (+7 Days)
+          Renew (+
+          {libraryDoc.checkoutGroups[userDoc.checkoutGroup].renewDuration} Days)
         </Button>
       </TableCell>
       <TableCell>
