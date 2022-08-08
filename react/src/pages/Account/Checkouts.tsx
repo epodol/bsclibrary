@@ -71,7 +71,7 @@ const CheckoutRow = ({ checkoutID }: { checkoutID: string }) => {
           disabled={
             (libraryDoc.checkoutGroups[userDoc.checkoutGroup].maxRenews ?? 0) -
               checkout.renewsUsed <=
-            0
+              0 || checkout.dueDate.toMillis() > Date.now()
           }
           onClick={() => {
             httpsCallable(

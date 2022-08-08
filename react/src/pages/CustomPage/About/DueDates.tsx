@@ -31,7 +31,7 @@ const DueDates = () => (
         </ul>
       </li>
       <li>
-        In the event that a book will due on an academic or national holiday or
+        In the event that a book is due on an academic or national holiday or
         break, the book will be due on{' '}
         <b className="font-weight-bold">the first day back</b>.
         <ul>
