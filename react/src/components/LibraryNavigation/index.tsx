@@ -112,6 +112,16 @@ const AuthNavBarItems = () => {
           Users
         </Button>
       )}
+      {(libraryDoc.userPermissions.MANAGE_LIBRARY.includes(user.uid) ||
+        libraryDoc.ownerUserID === user.uid) && (
+        <Button
+          color="inherit"
+          disabled={location.pathname === '/managelibrary'}
+          onClick={() => navigate('/managelibrary')}
+        >
+          Manage Library
+        </Button>
+      )}
     </>
   );
 };
