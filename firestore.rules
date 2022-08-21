@@ -29,18 +29,18 @@ service cloud.firestore {
         allow delete: if library in request.auth.token.librariesJoined && (library in request.auth.token.permissions.MANAGE_BOOKS);
       }
 
-      match /libraries/{library}/users/{user} {
-        allow get: if request.auth.uid == user || library in request.auth.token.permissions.MANAGE_USERS || library in request.auth.token.librariesOwned;
-        allow list: if library in request.auth.token.librariesJoined && (resource.data.uid == request.auth.uid || library in request.auth.token.permissions.MANAGE_USERS || library in request.auth.token.librariesOwned);
-        allow create, delete: if false;
-        allow update: if library in request.auth.token.librariesJoined && ((library in request.auth.token.permissions.MANAGE_USERS && user != request.auth.uid) || library in request.auth.token.librariesOwned);
-  }
-
       match /libraries/{library}/checkouts/{checkout} {
-        allow get: if library in request.auth.token.librariesJoined && request.auth.uid == resource.data.userID;
-        allow list: if library in request.auth.token.librariesJoined && (library in request.auth.token.permissions.CHECK_OUT || library in request.auth.token.permissions.MANAGE_CHECKOUTS || library in request.auth.token.librariesOwned);
+        allow get: if library in request.auth.token.librariesJoined && (request.auth.uid == resource.data.userID || library in request.auth.token.permissions.MANAGE_CHECKOUTS || library in request.auth.token.librariesOwned);
+        allow list: if library in request.auth.token.librariesJoined && (library in request.auth.token.permissions.MANAGE_CHECKOUTS || library in request.auth.token.librariesOwned);
         allow update: if library in request.auth.token.librariesJoined && (library in request.auth.token.permissions.MANAGE_CHECKOUTS || library in request.auth.token.librariesOwned);
         allow create, delete: if false;
+      }
+
+      match /libraries/{library}/users/{user} {
+        allow get: if request.auth.uid == user || library in request.auth.token.permissions.MANAGE_USERS || library in request.auth.token.librariesOwned;
+        allow list: if library in request.auth.token.librariesJoined && (resource.data.uid == request.auth.uid || library in request.auth.token.permissions.MANAGE_USERS || library in request.auth.token.permissions.CHECK_OUT || library in request.auth.token.librariesOwned);
+        allow create, delete: if false;
+        allow update: if library in request.auth.token.librariesJoined && ((library in request.auth.token.permissions.MANAGE_USERS && user != request.auth.uid) || library in request.auth.token.librariesOwned);
       }
 
       match /libraries/{library}/joinRequests/{joinRequest} {
@@ -48,6 +48,11 @@ service cloud.firestore {
         allow delete, update: if false;
         allow get: if joinRequest == request.auth.uid || library in request.auth.token.librariesJoined && (library in request.auth.token.permissions.MANAGE_USERS || library in request.auth.token.librariesOwned);
         allow list: if library in request.auth.token.librariesJoined && (library in request.auth.token.permissions.MANAGE_USERS || library in request.auth.token.librariesOwned);
+      }
+
+      match /libraries/{library}/statistics/{statistic} {
+        allow write, list: if false;
+        allow get: if library in request.auth.token.librariesJoined && (library in request.auth.token.permissions.MANAGE_LIBRARY || library in request.auth.token.librariesOwned);
       }
   }
 }
