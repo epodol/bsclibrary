@@ -5,6 +5,7 @@ import {
   collection,
   orderBy,
   where,
+  limit,
 } from 'firebase/firestore';
 
 import {
@@ -56,6 +57,10 @@ const useBuildCheckoutsQuery = (searchParams: URLSearchParams) => {
     );
   }
 
+  if (sortBy === null) {
+    query = firestoreQuery(query, orderBy('timeOut', 'desc'));
+  }
+
   const status = searchParams.get('status');
   if (status === 'active' && sortBy !== 'timeIn') {
     query = firestoreQuery(query, where('timeIn', '==', null));
@@ -63,6 +68,8 @@ const useBuildCheckoutsQuery = (searchParams: URLSearchParams) => {
   if (status === 'returned') {
     query = firestoreQuery(query, where('returned', '==', true));
   }
+
+  query = firestoreQuery(query, limit(50));
 
   return query;
 };

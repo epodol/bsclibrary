@@ -11,6 +11,7 @@ import {
   useFirebaseApp,
   useFirestore,
   useFirestoreDocData,
+  useSigninCheck,
   useUser,
 } from 'reactfire';
 import { getAnalytics, logEvent } from 'firebase/analytics';
@@ -22,7 +23,6 @@ import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
 import { doc } from 'firebase/firestore';
 import Library from '@common/types/Library';
 import Layout from 'src/components/Layout';
-import User from '@common/types/User';
 import About from 'src/pages/CustomPage/About';
 import Contribute from 'src/pages/CustomPage/Contribute';
 
@@ -70,9 +70,14 @@ const Routing = () => {
     doc(firestore, 'libraries', activeLibraryID)
   ).data as Library;
 
-  const userDoc: User = useFirestoreDocData(
-    doc(firestore, 'libraries', activeLibraryID, 'users', user.uid)
-  ).data as User;
+  const signInCheck = useSigninCheck({
+    validateCustomClaims: (claims) => ({
+      errors: {},
+      hasRequiredClaims: (claims?.librariesJoined as string[])?.includes(
+        activeLibraryID
+      ),
+    }),
+  }).data;
 
   const UnknownPage = () => {
     useEffect(() => {
@@ -97,7 +102,7 @@ const Routing = () => {
           <Route
             index
             element={
-              userDoc ? (
+              signInCheck.hasRequiredClaims ? (
                 <Page title="BASIS Scottsdale Library">
                   <LibraryHome />
                 </Page>
@@ -131,7 +136,7 @@ const Routing = () => {
           <Route
             path="account"
             element={
-              userDoc ? (
+              signInCheck.hasRequiredClaims ? (
                 <Page title="Account - BASIS Scottsdale Library">
                   <Account />
                 </Page>
@@ -142,7 +147,7 @@ const Routing = () => {
               )
             }
           />
-          {userDoc && (
+          {signInCheck.hasRequiredClaims && (
             <>
               <Route
                 path="books"

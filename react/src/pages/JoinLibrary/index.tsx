@@ -81,7 +81,7 @@ const JoinLibrary = () => {
             onClick={() => {
               if (!user.email) throw new Error('No email found!');
               const actionCodeSettings = {
-                url: window.location.href,
+                url: window.location.origin,
                 handleCodeInApp: true,
               };
               sendEmailVerification(user, actionCodeSettings)

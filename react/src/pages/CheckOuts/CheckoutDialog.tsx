@@ -203,16 +203,27 @@ const CheckoutDialog = () => {
               ),
             } as Partial<CheckoutType>;
 
-            setDoc(doc(firestore, 'checkouts', checkout.ID), newData, {
-              merge: true,
-            })
+            setDoc(
+              doc(
+                firestore,
+                'libraries',
+                activeLibraryID,
+                'checkouts',
+                checkout.ID
+              ),
+              newData,
+              {
+                merge: true,
+              }
+            )
               .then(() => {
                 NotificationHandler.addNotification({
                   message: 'The due date has been updated.',
                   severity: 'success',
                 });
               })
-              .catch(() => {
+              .catch((err) => {
+                console.error(err);
                 NotificationHandler.addNotification({
                   message: 'There was an error updating the due date.',
                   severity: 'error',

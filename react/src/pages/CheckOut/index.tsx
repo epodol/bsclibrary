@@ -165,7 +165,7 @@ const FindUserTable = ({
 };
 
 const EnterUserScheme = yup.object().shape({
-  userID: yup.string().required("You need to enter the User's ID"),
+  userID: yup.string().required("Please enter a user's ID."),
 });
 
 const EnterUser = ({
@@ -312,7 +312,7 @@ const EnterUser = ({
 };
 
 const ScanBooksScheme = yup.object().shape({
-  book: yup.string().required("You need to enter the User's ID"),
+  book: yup.string().required("Please enter a copy's identifier."),
 });
 
 const ScanBooks = ({

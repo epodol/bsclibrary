@@ -41,8 +41,6 @@ const approveUser = functions
       );
     }
 
-    console.log(data, typeof data.expiration);
-
     // Type Verification
     if (
       typeof data.firstName !== 'string' ||
@@ -116,12 +114,9 @@ const approveUser = functions
         const userClaims = user.customClaims;
 
         const newLibrariesJoined = [];
-        if (userClaims && Array.isArray(userClaims?.librariesJoined)) {
-          newLibrariesJoined.push(userClaims.librariesJoined);
-          newLibrariesJoined.push(data.libraryID);
-        } else {
-          newLibrariesJoined.push(data.libraryID);
-        }
+        if (userClaims && Array.isArray(userClaims?.librariesJoined))
+          newLibrariesJoined.push(...userClaims.librariesJoined);
+        newLibrariesJoined.push(data.libraryID);
 
         getAuth()
           .setCustomUserClaims(data.uid, {

@@ -92,7 +92,7 @@ const CreateAccount = () => {
                   actions.setSubmitting(false);
                   if (user.email) {
                     const actionCodeSettings = {
-                      url: window.location.href,
+                      url: window.location.origin,
                       handleCodeInApp: true,
                     };
                     sendEmailVerification(user, actionCodeSettings)

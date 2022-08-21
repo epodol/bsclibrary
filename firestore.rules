@@ -37,7 +37,8 @@ service cloud.firestore {
   }
 
       match /libraries/{library}/checkouts/{checkout} {
-        allow get, list: if library in request.auth.token.librariesJoined && (library in request.auth.token.permissions.CHECK_OUT || library in request.auth.token.permissions.MANAGE_CHECKOUTS || library in request.auth.token.librariesOwned);
+        allow get: if library in request.auth.token.librariesJoined && request.auth.uid == resource.data.userID;
+        allow list: if library in request.auth.token.librariesJoined && (library in request.auth.token.permissions.CHECK_OUT || library in request.auth.token.permissions.MANAGE_CHECKOUTS || library in request.auth.token.librariesOwned);
         allow update: if library in request.auth.token.librariesJoined && (library in request.auth.token.permissions.MANAGE_CHECKOUTS || library in request.auth.token.librariesOwned);
         allow create, delete: if false;
       }

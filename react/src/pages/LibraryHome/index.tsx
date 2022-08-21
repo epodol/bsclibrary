@@ -179,7 +179,7 @@ const Home = () => {
           For more information, click <Link to="/contribute">here.</Link>
         </h6>
         <br />
-        <h2>When will the Library be open?</h2>
+        <h2>When will the library be open?</h2>
         <h6>
           The BASIS Scottsdale Library will typically be open from{' '}
           <strong>

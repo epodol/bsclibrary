@@ -19,7 +19,7 @@ import {
 import {
   Firestore,
   connectFirestoreEmulator,
-  initializeFirestore,
+  getFirestore,
 } from 'firebase/firestore';
 import {
   FirebaseStorage,
@@ -81,9 +81,7 @@ const useInitFirebaseSDKs = (): {
 } => {
   const { status: useInitFirestoreStatus, data: firestore } = useInitFirestore(
     async (firebaseApp) => {
-      const firestoreInit = initializeFirestore(firebaseApp, {
-        host: undefined,
-      });
+      const firestoreInit = getFirestore(firebaseApp);
       if (isDev) connectFirestoreEmulator(firestoreInit, 'localhost', 8080);
       return firestoreInit;
     },
@@ -190,10 +188,10 @@ const useInitFirebaseSDKs = (): {
 };
 
 const AppWithFirebase = () => {
-  const { loading, auth, firestore, functions, storage, remoteConfig } =
+  const { auth, firestore, functions, storage, remoteConfig } =
     useInitFirebaseSDKs();
+
   if (
-    loading ||
     auth === null ||
     firestore === null ||
     functions === null ||
@@ -206,28 +204,36 @@ const AppWithFirebase = () => {
     <ThemeContextProvider>
       <CssBaseline />
       <NotificationProvider>
-        <AuthProvider sdk={auth}>
-          <FirestoreProvider sdk={firestore}>
-            <FunctionsProvider sdk={functions}>
-              <StorageProvider sdk={storage}>
-                <RemoteConfigProvider sdk={remoteConfig}>
-                  <ActiveLibraryIDProvider>
-                    <HomePageAuthCheck />
-                  </ActiveLibraryIDProvider>
-                </RemoteConfigProvider>
-              </StorageProvider>
-            </FunctionsProvider>
-          </FirestoreProvider>
-        </AuthProvider>
+        <Suspense fallback={<Loading />}>
+          <AuthProvider sdk={auth}>
+            <FirestoreProvider sdk={firestore}>
+              <FunctionsProvider sdk={functions}>
+                <StorageProvider sdk={storage}>
+                  <RemoteConfigProvider sdk={remoteConfig}>
+                    <ActiveLibraryIDProvider>
+                      <Suspense fallback={<Loading />}>
+                        <HomePageAuthCheck />
+                      </Suspense>
+                    </ActiveLibraryIDProvider>
+                  </RemoteConfigProvider>
+                </StorageProvider>
+              </FunctionsProvider>
+            </FirestoreProvider>
+          </AuthProvider>
+        </Suspense>
       </NotificationProvider>
     </ThemeContextProvider>
   );
 };
 
 const HomePageAuthCheck = () => {
-  const user = useUser().data;
-  const signInCheckResult = useSigninCheck().data;
   const activeLibraryID = useContext(ActiveLibraryID);
+  if (!activeLibraryID) throw new Error('No active library ID');
+  const user = useUser().data;
+  const signInCheckResult = useSigninCheck({
+    forceRefresh: true,
+    validateCustomClaims: () => ({ hasRequiredClaims: true, errors: {} }),
+  }).data;
 
   // User is signed in
   if (signInCheckResult.signedIn === true) {

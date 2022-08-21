@@ -21,7 +21,13 @@ import { useTheme } from '@mui/material/styles';
 
 import Library from '@common/types/Library';
 
-import { useAuth, useFirestore, useFirestoreDocData, useUser } from 'reactfire';
+import {
+  useAuth,
+  useFirestore,
+  useFirestoreDocData,
+  useSigninCheck,
+  useUser,
+} from 'reactfire';
 
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -30,7 +36,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import ThemeContext from 'src/contexts/MUITheme';
 import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
 import { doc } from 'firebase/firestore';
-import User from '@common/types/User';
 
 const AuthNavBarItems = () => {
   const location = useLocation();
@@ -43,15 +48,20 @@ const AuthNavBarItems = () => {
   const user = useUser().data;
   if (!user) throw new Error('No user!');
 
-  const userDoc: User = useFirestoreDocData(
-    doc(firestore, 'libraries', activeLibraryID, 'users', user.uid)
-  ).data as User;
-
   const libraryDoc: Library = useFirestoreDocData(
     doc(firestore, 'libraries', activeLibraryID)
   ).data as Library;
 
-  if (!userDoc) return <></>;
+  const signInCheck = useSigninCheck({
+    validateCustomClaims: (claims) => ({
+      errors: {},
+      hasRequiredClaims: (claims?.librariesJoined as string[])?.includes(
+        activeLibraryID
+      ),
+    }),
+  }).data;
+
+  if (!signInCheck.hasRequiredClaims) return <></>;
 
   return (
     <>

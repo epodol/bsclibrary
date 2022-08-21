@@ -33,7 +33,7 @@ const checkoutBook = functions
     }
 
     if (
-      !context.auth.token.permissions.CHECK_OUT.includes(data.libraryID) &&
+      !context.auth.token?.permissions?.CHECK_OUT?.includes(data.libraryID) &&
       !context.auth.token.librariesOwned.includes(data.libraryID)
     ) {
       throw new functions.https.HttpsError(

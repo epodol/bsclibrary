@@ -1,16 +1,16 @@
 import React, { StrictMode } from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import App from './App';
-
 import * as serviceWorker from './serviceWorker';
 
 const container = document.getElementById('root');
 
-render(
+const root = createRoot(container!);
+
+root.render(
   <StrictMode>
     <App />
-  </StrictMode>,
-  container
+  </StrictMode>
 );
 
 serviceWorker.register();

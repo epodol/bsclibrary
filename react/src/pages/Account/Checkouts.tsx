@@ -42,14 +42,10 @@ const CheckoutRow = ({ checkoutID }: { checkoutID: string }) => {
     doc(firestore, 'libraries', activeLibraryID, 'users', user.uid)
   ).data as User;
 
-  const checkoutRef = doc(
-    firestore,
-    'libraries',
-    activeLibraryID,
-    'checkouts',
-    checkoutID
-  );
-  const checkout = useFirestoreDocData(checkoutRef).data as unknown as Checkout;
+  const checkout = useFirestoreDocData(
+    doc(firestore, 'libraries', activeLibraryID, 'checkouts', checkoutID)
+  ).data as unknown as Checkout;
+
   return (
     <TableRow>
       <TableCell>
@@ -69,9 +65,9 @@ const CheckoutRow = ({ checkoutID }: { checkoutID: string }) => {
           }}
           variant="contained"
           disabled={
-            (libraryDoc.checkoutGroups[userDoc.checkoutGroup].maxRenews ?? 0) -
-              checkout.renewsUsed <=
-              0 || checkout.dueDate.toMillis() > Date.now()
+            checkout.renewsUsed >=
+              (libraryDoc.checkoutGroups[userDoc.checkoutGroup].maxRenews ??
+                0) || checkout.dueDate.toMillis() < Date.now()
           }
           onClick={() => {
             httpsCallable(

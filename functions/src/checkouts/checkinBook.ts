@@ -31,7 +31,7 @@ const checkinBook = functions
     }
 
     if (
-      !context.auth.token.permissions.CHECK_IN.includes(data.libraryID) &&
+      !context.auth.token.permissions?.CHECK_IN?.includes(data.libraryID) &&
       !context.auth.token.librariesOwned.includes(data.libraryID)
     ) {
       throw new functions.https.HttpsError(
