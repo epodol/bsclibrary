@@ -23,10 +23,10 @@ import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
 import { doc } from 'firebase/firestore';
 import Library from '@common/types/Library';
 import Layout from 'src/components/Layout';
-import About from 'src/pages/CustomPage/About';
-import Contribute from 'src/pages/CustomPage/Contribute';
 
 const LibraryHome = lazy(() => import('src/pages/LibraryHome'));
+const About = lazy(() => import('src/pages/CustomPage/About'));
+const Contribute = lazy(() => import('src/pages/CustomPage/Contribute'));
 const JoinLibrary = lazy(() => import('src/pages/JoinLibrary'));
 const Account = lazy(() => import('src/pages/Account'));
 const Users = lazy(() => import('src/pages/Users'));
@@ -37,6 +37,7 @@ const CheckOut = lazy(() => import('src/pages/CheckOut'));
 const CheckIn = lazy(() => import('src/pages/CheckIn'));
 const CheckOuts = lazy(() => import('src/pages/CheckOuts'));
 const CheckOutDialog = lazy(() => import('src/pages/CheckOuts/CheckoutDialog'));
+const ManageLibrary = lazy(() => import('src/pages/ManageLibrary'));
 
 const isDev = process.env.NODE_ENV !== 'production';
 
@@ -247,10 +248,23 @@ const Routing = () => {
                   />
                 </>
               )}
+              {(libraryDoc.userPermissions.MANAGE_LIBRARY.includes(user.uid) ||
+                libraryDoc.ownerUserID === user.uid) && (
+                <Route
+                  path="managelibrary"
+                  element={
+                    <Suspense fallback={<Loading />}>
+                      <Page title="Manage Library - BASIS Scottsdale Library">
+                        <ManageLibrary />
+                      </Page>
+                    </Suspense>
+                  }
+                />
+              )}
             </>
           )}
-          <Route path="/signin" element={<Navigate to="/" />} />
-          <Route path="/createaccount" element={<Navigate to="/" />} />
+          <Route path="/signin" element={<Navigate to="/account" />} />
+          <Route path="/createaccount" element={<Navigate to="/account" />} />
           <Route path="*" element={<UnknownPage />} />
         </Route>
       </Routes>
