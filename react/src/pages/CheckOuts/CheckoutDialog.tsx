@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { useFirestore, useFirestoreDocData } from 'reactfire';
+import { useFirestore, useFirestoreDocData, useUser } from 'reactfire';
 
 import {
   Dialog,
@@ -29,6 +29,9 @@ import Library from '@common/types/Library';
 const CheckoutDialog = () => {
   const activeLibraryID = useContext(ActiveLibraryID);
   if (!activeLibraryID) throw new Error('No active library ID!');
+
+  const activeUser = useUser().data;
+  if (!activeUser) throw new Error('No active user!');
 
   const params = useParams() as any;
 
@@ -103,60 +106,141 @@ const CheckoutDialog = () => {
       maxWidth="lg"
     >
       <DialogTitle>
-        Checkout Info <Chip label={checkout.timeIn ? 'Returned' : 'Active'} />
+        Checkout Info{' '}
+        <Chip
+          color={checkout.timeIn ? 'default' : 'primary'}
+          label={checkout.timeIn ? 'Returned' : 'Active'}
+        />
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          User:{' '}
-          {(libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
+          {(libraryDoc.userPermissions.MANAGE_USERS.includes(activeUser.uid) ||
             libraryDoc.ownerUserID === user.uid) && (
-            <Link to={`/users/${user.ID}`}>
-              {user.firstName} {user.lastName}
-            </Link>
+            <Link to={`/users/${user.ID}`}>User: </Link>
           )}
           {!(
-            libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
+            libraryDoc.userPermissions.MANAGE_USERS.includes(activeUser.uid) ||
             libraryDoc.ownerUserID === user.uid
-          ) && (
-            <>
-              {user.firstName} {user.lastName}
-            </>
-          )}
+          ) && <>User: </>}
+          <Chip
+            sx={{
+              marginInline: 1,
+            }}
+            onClick={() => {
+              navigator.clipboard
+                .writeText(`${user.firstName} ${user.lastName}`)
+                .then(() => {
+                  NotificationHandler.addNotification({
+                    message: 'Name copied to clipboard!',
+                    severity: 'success',
+                    timeout: 1000,
+                  });
+                });
+            }}
+            label={`${user.firstName} ${user.lastName}`}
+          />
+          <Chip
+            sx={{
+              marginInline: 1,
+            }}
+            onClick={() => {
+              navigator.clipboard.writeText(user.email).then(() => {
+                NotificationHandler.addNotification({
+                  message: 'Email copied to clipboard!',
+                  severity: 'success',
+                  timeout: 1000,
+                });
+              });
+            }}
+            label={user.email}
+          />
           <br />
-          Book:{' '}
-          <Link to={`/books/${book.ID}`}>
-            {book.volumeInfo.title} <i>{book.volumeInfo.subtitle}</i>
-          </Link>
           <br />
-          Copy: #{copy.identifier}
+          <Link to={`/books/${book.ID}`}>Book: </Link>
+          <Chip
+            sx={{
+              marginInline: 1,
+            }}
+            onClick={() => {
+              navigator.clipboard.writeText(book.volumeInfo.title).then(() => {
+                NotificationHandler.addNotification({
+                  message: 'Title copied to clipboard!',
+                  severity: 'success',
+                  timeout: 1000,
+                });
+              });
+            }}
+            label={book.volumeInfo.title}
+          />
+          <Chip
+            sx={{
+              marginInline: 1,
+            }}
+            onClick={() => {
+              navigator.clipboard
+                .writeText(book.volumeInfo.subtitle)
+                .then(() => {
+                  NotificationHandler.addNotification({
+                    message: 'Subtitle copied to clipboard!',
+                    severity: 'success',
+                    timeout: 1000,
+                  });
+                });
+            }}
+            label={book.volumeInfo.subtitle}
+          />
+          <br />
+          <br />
+          Copy:{' '}
+          <Chip
+            sx={{
+              marginInline: 1,
+            }}
+            onClick={() => {
+              navigator.clipboard.writeText(copy.identifier).then(() => {
+                NotificationHandler.addNotification({
+                  message: 'Copy identifier copied to clipboard!',
+                  severity: 'success',
+                  timeout: 1000,
+                });
+              });
+            }}
+            label={copy.identifier}
+          />
         </DialogContentText>
         <hr />
         <div>
           <ul>
             <li>
               <b>Time Out:</b>{' '}
-              {(libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
+              {(libraryDoc.userPermissions.MANAGE_USERS.includes(
+                activeUser.uid
+              ) ||
                 libraryDoc.ownerUserID === user.uid) && (
                 <Link to={`/users/${checkout.checkedOutBy}`}>
                   {checkout?.timeOut?.toDate()?.toLocaleString() || ''}
                 </Link>
               )}
               {!(
-                libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
-                libraryDoc.ownerUserID === user.uid
+                libraryDoc.userPermissions.MANAGE_USERS.includes(
+                  activeUser.uid
+                ) || libraryDoc.ownerUserID === user.uid
               ) && <>{checkout?.timeOut?.toDate()?.toLocaleString() || ''}</>}
             </li>
             <li>
               <b>Time In:</b>{' '}
-              {(libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
+              {(libraryDoc.userPermissions.MANAGE_USERS.includes(
+                activeUser.uid
+              ) ||
                 libraryDoc.ownerUserID === user.uid) && (
                 <Link to={`/users/${checkout.checkedInBy}`}>
                   {checkout?.timeIn?.toDate()?.toLocaleString() || ''}
                 </Link>
               )}
               {!(
-                libraryDoc.userPermissions.MANAGE_USERS.includes(user.uid) ||
-                libraryDoc.ownerUserID === user.uid
+                libraryDoc.userPermissions.MANAGE_USERS.includes(
+                  activeUser.uid
+                ) || libraryDoc.ownerUserID === user.uid
               ) && <>{checkout?.timeIn?.toDate()?.toLocaleString() || ''}</>}
             </li>
             <br />
@@ -193,6 +277,18 @@ const CheckoutDialog = () => {
         </div>
       </DialogContent>
       <DialogActions>
+        {!checkout.timeIn && (
+          <Button
+            onClick={() => {
+              window.open(
+                `mailto:${user.email}?subject=Your book, ${book.volumeInfo.title}, will be due soon!&body=Hello ${user.firstName} ${user.lastName},%0D%0A%0D%0AThis is a reminder that your book, ${book.volumeInfo.title} (https://bsclibrary.net/books/${book.ID}), is due soon.%0D%0A%0D%0APlease return it or renew it on our website (https://bsclibrary.net/account).%0D%0A%0D%0AThank you,%0D%0A%0D%0A${libraryDoc.name}%0D%0Ahttps://bsclibrary.net`
+              );
+            }}
+            color="primary"
+          >
+            Generate &quot;Due Soon&quot; Email
+          </Button>
+        )}
         <Button
           disabled={checkout.timeIn !== null}
           onClick={() => {
