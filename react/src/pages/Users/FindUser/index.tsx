@@ -13,6 +13,7 @@ import {
   TableRow,
   InputLabel,
   FormControl,
+  Chip,
 } from '@mui/material';
 import User from '@common/types/User';
 
@@ -65,6 +66,7 @@ const FindUserTable = ({
               <TableCell>Email</TableCell>
               <TableCell>Approved</TableCell>
               <TableCell>Expires</TableCell>
+              <TableCell>Identifier(s)</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -86,6 +88,15 @@ const FindUserTable = ({
                   </TableCell>
                   <TableCell>
                     {userInfo.expiration?.toDate().toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    {userInfo.identifiers.map((value) => (
+                      <Chip
+                        key={value}
+                        label={value}
+                        sx={{ marginInline: 0.5 }}
+                      />
+                    ))}
                   </TableCell>
                 </TableRow>
               );
