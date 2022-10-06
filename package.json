@@ -60,25 +60,25 @@
     "outdated:common": "cd common && npm outdated"
   },
   "devDependencies": {
-    "@types/node": "^16.11.51",
-    "@typescript-eslint/eslint-plugin": "^5.33.1",
-    "@typescript-eslint/parser": "^5.33.1",
-    "eslint": "^8.22.0",
+    "@types/node": "^16.11.64",
+    "@typescript-eslint/eslint-plugin": "^5.39.0",
+    "@typescript-eslint/parser": "^5.39.0",
+    "eslint": "^8.24.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-jest": "^26.8.5",
+    "eslint-plugin-jest": "^27.1.1",
     "eslint-plugin-jest-dom": "^4.0.2",
     "eslint-plugin-jsx-a11y": "^6.6.1",
     "eslint-plugin-prettier": "^4.2.1",
-    "firebase-tools": "^11.7.0",
+    "firebase-tools": "^11.14.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.7.1",
     "run-script-os": "^1.1.6",
-    "typescript": "^4.7.4"
+    "typescript": "^4.8.4"
   },
   "dependencies": {
-    "firebase": "^9.9.3",
+    "firebase": "^9.10.0",
     "reactfire": "^4.2.1"
   }
 }
