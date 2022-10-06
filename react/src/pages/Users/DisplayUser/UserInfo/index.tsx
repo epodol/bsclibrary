@@ -1,16 +1,25 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 
 import { useUser, useFirestore, useAuth, useFirestoreDocData } from 'reactfire';
 import * as yup from 'yup';
-import { Formik, Form } from 'formik';
+import { Formik, Form, FieldArray } from 'formik';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import PhoneInput from 'react-phone-number-input/input';
 
-import { TextField, Button, Grid, CircularProgress } from '@mui/material';
+import { TextField, Button, Grid, CircularProgress, Chip } from '@mui/material';
 import { VpnKey, Lock, LockOpen } from '@mui/icons-material';
 
 import NotificationContext from 'src/contexts/NotificationContext';
-import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDocs,
+  limit,
+  query,
+  serverTimestamp,
+  setDoc,
+  where,
+} from 'firebase/firestore';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import User from '@common/types/User';
 import ActiveLibraryID from 'src/contexts/ActiveLibraryID';
@@ -36,13 +45,18 @@ const UserInfo = ({ user }: { user: User }) => {
     doc(firestore, 'libraries', activeLibraryID)
   ).data as Library;
 
+  const usersRef = collection(firestore, 'libraries', activeLibraryID, 'users');
+
   const UserSchema = yup.object().shape({
     expiration: yup.date(),
     email: yup.string().email(),
     phoneNumber: yup.string().optional(),
     firstName: yup.string(),
     lastName: yup.string(),
+    identifiers: yup.array().of(yup.string()),
   });
+
+  const [newIdentifier, setNewIdentifier] = useState('');
 
   const userExpired = user?.expiration
     ? user.expiration.toDate() < new Date()
@@ -131,6 +145,7 @@ const UserInfo = ({ user }: { user: User }) => {
           phoneNumber: user.phoneNumber || '',
           firstName: user.firstName || '',
           lastName: user.lastName || '',
+          identifiers: user.identifiers || [],
         }}
         validationSchema={UserSchema}
         onSubmit={(values, actions) => {
@@ -142,6 +157,7 @@ const UserInfo = ({ user }: { user: User }) => {
             phoneNumber: values.phoneNumber === '' ? null : values.phoneNumber,
             firstName: values.firstName,
             lastName: values.lastName,
+            identifiers: values.identifiers,
           };
 
           setDoc(userDocRef, updatedUserData, { merge: true })
@@ -164,7 +180,7 @@ const UserInfo = ({ user }: { user: User }) => {
             });
         }}
       >
-        {({ values, isSubmitting, handleChange, setFieldValue }) => (
+        {({ values, isSubmitting, handleChange, setFieldValue, dirty }) => (
           <Form
             noValidate
             className="px-5"
@@ -243,6 +259,63 @@ const UserInfo = ({ user }: { user: User }) => {
                 />
               </Grid>
             </Grid>
+            <FieldArray
+              name="identifiers"
+              render={(arrayHelpers) => (
+                <TextField
+                  InputProps={
+                    values.identifiers.length !== 0
+                      ? {
+                          startAdornment: values.identifiers.map(
+                            (identifier, index) => (
+                              <Chip
+                                key={identifier.toString()}
+                                style={{ margin: 3 }}
+                                color="default"
+                                label={identifier}
+                                onDelete={() => arrayHelpers.remove(index)}
+                              />
+                            )
+                          ),
+                        }
+                      : undefined
+                  }
+                  label="User Identifiers"
+                  fullWidth
+                  value={newIdentifier.toString()}
+                  onChange={(event) => setNewIdentifier(event.target.value)}
+                  onKeyDown={async (e) => {
+                    if (e.code === 'Enter') {
+                      e.preventDefault();
+                      if (values.identifiers.includes(newIdentifier))
+                        setNewIdentifier('');
+                      else if (newIdentifier !== '') {
+                        const indentifiersQuery = query(
+                          usersRef,
+                          where(
+                            'identifiers',
+                            'array-contains',
+                            newIdentifier.trim()
+                          ),
+                          limit(1)
+                        );
+                        const docs = await getDocs(indentifiersQuery);
+                        if (docs.empty) arrayHelpers.push(newIdentifier.trim());
+                        else {
+                          NotificationHandler.addNotification({
+                            message: `A user already exists with this identifier.`,
+                            severity: 'error',
+                            timeout: 10000,
+                          });
+                        }
+                        setNewIdentifier('');
+                      }
+                    }
+                  }}
+                  sx={{ marginBlock: '1rem' }}
+                />
+              )}
+            />
             <br />
             <br />
             <div className="text-center">
@@ -254,6 +327,7 @@ const UserInfo = ({ user }: { user: User }) => {
                   size="large"
                   disabled={
                     isSubmitting ||
+                    !dirty ||
                     (currentUser.uid === user.uid &&
                       libraryDoc.ownerUserID !== user.uid)
                   }
