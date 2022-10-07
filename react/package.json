@@ -49,7 +49,7 @@
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "@types/react-phone-number-input": "^3.0.14",
-    "@types/react-router": "^5.1.18",
+    "@types/react-router": "^5.1.19",
     "@types/react-router-dom": "^5.3.3",
     "eslint-plugin-flowtype": "^8.0.3",
     "eslint-plugin-react": "^7.30.1",
