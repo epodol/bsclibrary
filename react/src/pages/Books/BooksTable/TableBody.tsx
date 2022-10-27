@@ -178,7 +178,6 @@ const TableBody = () => {
               const target = event.target as HTMLTextAreaElement;
               setSearch(target.value);
             }}
-            autoFocus
             sx={{
               width: {
                 xs: '95%',
